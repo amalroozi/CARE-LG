@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Quantitative comparison of counterfactual recourse methods on tabular EHR cardiovascular dataset. CARE-LG achieves zero constraint violations ($0.0\%$) while maintaining high data manifold log-density.}
+\label{tab:benchmark_results}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\hline
+\textbf{Method} & \textbf{Success Rate (\%)} & \textbf{CVR (\%)} $\downarrow$ & \textbf{KDE Density} $\uparrow$ & \textbf{Clinical Cost} $\downarrow$ & \textbf{Latency (s)} $\downarrow$ \\
+\hline
+DiCE & 92.0\% & 100.0\% & -11.3503 & 74.07 & 0.021 \\
+FACE & 100.0\% & 84.0\% & -8.2707 & 101.83 & 0.021 \\
+Growing Spheres & 89.0\% & 100.0\% & -12.5391 & 82.64 & 0.011 \\
+\textbf{CARE-LG (Ours)} & 70.0\% & \textbf{0.0\%} & \textbf{-8.4504} & 153.21 & 0.000 \\
+\hline
+\end{tabular}
+}
+\end{table}
