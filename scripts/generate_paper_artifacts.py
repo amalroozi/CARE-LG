@@ -101,7 +101,7 @@ def generate_publication_figure(fig_output_path, seed=42):
         effort_weights=CLINICAL_EFFORT_WEIGHTS,
         scaler=scaler,
         feature_cols=feature_cols,
-        k_neighbors=25,
+        k_neighbors=30,
         lambda_effort=1.0,
         max_samples=400
     )
@@ -111,25 +111,24 @@ def generate_publication_figure(fig_output_path, seed=42):
         X_tensor = torch.tensor(X_train, dtype=torch.float32).to(device)
         risk_scores = classifier(X_tensor).cpu().numpy().squeeze()
 
-    low_risk_mask = risk_scores < 0.35
-    high_risk_indices = np.where(risk_scores > 0.75)[0]
+    low_risk_mask = risk_scores < 0.45
+    high_risk_indices = np.where(risk_scores > 0.55)[0]
 
-    # Find a good source patient with a multi-step recourse path
+    # Find a source patient with a recourse path
     path = None
     source_idx = None
     for cand_idx in high_risk_indices:
         try:
             p = find_recourse_path(calg_matrix, cand_idx, low_risk_mask)
-            if len(p) >= 2:
+            if p is not None:
                 path = p
                 source_idx = cand_idx
-                break
+                if len(p) >= 2:
+                    break
         except Exception:
             continue
 
-    if path is None:
-        source_idx = high_risk_indices[0]
-        path = find_recourse_path(calg_matrix, source_idx, low_risk_mask)
+    assert path is not None, "Could not find recourse path for publication figure."
 
     source_x = X_train[source_idx]
 

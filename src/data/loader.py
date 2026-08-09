@@ -2,6 +2,7 @@
 Data pipeline and synthetic EHR generator for CARE-LG research framework.
 """
 
+import os
 import numpy as np
 import pandas as pd
 import torch
@@ -85,9 +86,22 @@ def generate_synthetic_ehr(num_samples=3000, seed=42):
     return df
 
 
-def get_dataloaders(df=None, batch_size=64, seed=42):
+def load_dataset(filepath="data/uci_heart.csv", seed=42):
     """
-    Preprocesses synthetic/provided EHR data, scales continuous features, and builds PyTorch DataLoaders.
+    Loads dataset from CSV file if available, else generates synthetic EHR records.
+    """
+    if os.path.exists(filepath):
+        print(f"Loading dataset from {filepath}...")
+        df = pd.read_csv(filepath)
+    else:
+        print(f"Dataset path {filepath} not found. Generating synthetic EHR records...")
+        df = generate_synthetic_ehr(num_samples=3000, seed=seed)
+    return df
+
+
+def get_dataloaders(df=None, dataset_path="data/uci_heart.csv", batch_size=64, seed=42):
+    """
+    Preprocesses EHR data (loading from data/uci_heart.csv by default), scales continuous features, and builds PyTorch DataLoaders.
 
     Returns:
         train_loader (DataLoader): PyTorch DataLoader for training set.
@@ -96,7 +110,7 @@ def get_dataloaders(df=None, batch_size=64, seed=42):
         feature_cols (list): List of feature column names.
     """
     if df is None:
-        df = generate_synthetic_ehr(num_samples=3000, seed=seed)
+        df = load_dataset(filepath=dataset_path, seed=seed)
 
     target_col = FEATURE_METADATA['target']
     feature_cols = [c for c in df.columns if c != target_col]
