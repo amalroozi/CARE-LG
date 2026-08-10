@@ -4,31 +4,31 @@
     "Success_Rate_Pct": 66.67,
     "CVR_Pct": 100.0,
     "KDE_Density": -13.5472,
-    "Clinical_Cost": 82.4786,
-    "Latency_Sec": 0.1238
+    "Clinical_Cost": 7.3594,
+    "Latency_Sec": 0.1263
   },
   {
     "Method": "FACE",
     "Success_Rate_Pct": 100.0,
-    "CVR_Pct": 100.0,
-    "KDE_Density": -7.2514,
-    "Clinical_Cost": 141.1786,
-    "Latency_Sec": 0.0037
+    "CVR_Pct": 95.24,
+    "KDE_Density": -7.2792,
+    "Clinical_Cost": 9.4316,
+    "Latency_Sec": 0.0036
   },
   {
     "Method": "GrowingSpheres",
-    "Success_Rate_Pct": 71.43,
+    "Success_Rate_Pct": 76.19,
     "CVR_Pct": 100.0,
-    "KDE_Density": -14.2879,
-    "Clinical_Cost": 97.9387,
-    "Latency_Sec": 0.0142
+    "KDE_Density": -15.0681,
+    "Clinical_Cost": 8.1565,
+    "Latency_Sec": 0.0147
   },
   {
     "Method": "CARE-LG",
-    "Success_Rate_Pct": 4.76,
-    "CVR_Pct": 100.0,
-    "KDE_Density": -7.1068,
-    "Clinical_Cost": 139.1,
-    "Latency_Sec": 0.0001
+    "Success_Rate_Pct": 66.67,
+    "CVR_Pct": 0.0,
+    "KDE_Density": -7.235,
+    "Clinical_Cost": 13.5521,
+    "Latency_Sec": 0.0004
   }
 ]

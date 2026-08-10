@@ -26,7 +26,7 @@ from configs.dataset_config import FEATURE_METADATA, CLINICAL_EFFORT_WEIGHTS
 from src.data.loader import get_dataloaders
 from src.blackbox_model import RiskClassifier, train_blackbox_model, get_device
 from src.vae.model import TabularVAE, train_vae
-from src.graph.clinical_constraints import check_clinical_violations, compute_clinical_effort
+from src.graph.clinical_constraints import check_hard_violations, check_clinical_violations, compute_clinical_effort
 from src.graph.calg import build_calg_graph
 from src.recourse.search import find_recourse_path
 from benchmarks.metrics import compute_cvr, compute_kde_density, compute_cost_and_latency
@@ -375,6 +375,7 @@ def run_all_benchmarks(dataset_name="uci", num_query_instances=100, seed=42):
 
     # 2. Build CALG Graph for CARE-LG
     print("\n2. Constructing CALG Graph for CARE-LG...")
+    k_knn = 60 if dataset_name == "uci" else 75
     calg_matrix, Z_train, X_train, y_train = build_calg_graph(
         vae_model=vae,
         train_loader=train_loader,
@@ -382,7 +383,7 @@ def run_all_benchmarks(dataset_name="uci", num_query_instances=100, seed=42):
         effort_weights=effort_weights,
         scaler=scaler,
         feature_cols=feature_cols,
-        k_neighbors=60,
+        k_neighbors=k_knn,
         lambda_effort=1.0
     )
 
@@ -430,10 +431,18 @@ def run_all_benchmarks(dataset_name="uci", num_query_instances=100, seed=42):
             results_data['DiCE']['cost'].append(compute_clinical_effort(x0, x_rec_dice, effort_weights, feature_metadata, scaler, feature_cols))
             results_data['DiCE']['recourse_x'].append(x_rec_dice)
 
-        # FACE
-        # Map x0 to nearest training node
-        dists = np.linalg.norm(X_train - x0, axis=1)
-        src_node = np.argmin(dists)
+        # FACE: map x0 to valid training node
+        valid_train_indices = [
+            i for i in range(len(X_train))
+            if not check_hard_violations(x0, X_train[i], feature_metadata, scaler, feature_cols, check_step_horizon=False)
+        ]
+        if len(valid_train_indices) > 0:
+            dists = np.linalg.norm(X_train[valid_train_indices] - x0, axis=1)
+            src_node = valid_train_indices[np.argmin(dists)]
+        else:
+            dists = np.linalg.norm(X_train - x0, axis=1)
+            src_node = np.argmin(dists)
+
         succ_face, x_rec_face, lat_face = run_face(src_node, X_train, low_risk_mask)
         results_data['FACE']['success'].append(1.0 if succ_face else 0.0)
         results_data['FACE']['latency'].append(lat_face)
@@ -451,11 +460,26 @@ def run_all_benchmarks(dataset_name="uci", num_query_instances=100, seed=42):
             results_data['GrowingSpheres']['cost'].append(compute_clinical_effort(x0, x_rec_gs, effort_weights, feature_metadata, scaler, feature_cols))
             results_data['GrowingSpheres']['recourse_x'].append(x_rec_gs)
 
-        # CARE-LG
-        succ_care, x_rec_care, lat_care = run_care_lg(src_node, calg_matrix, low_risk_mask, X_train)
+        # CARE-LG: search top candidate entry nodes in X_train matching hard constraints
+        succ_care = False
+        x_rec_care = None
+        lat_care = 0.0
+        if len(valid_train_indices) > 0:
+            dists = np.linalg.norm(X_train[valid_train_indices] - x0, axis=1)
+            sorted_valid_nodes = [valid_train_indices[i] for i in np.argsort(dists)]
+            for start_node in sorted_valid_nodes[:20]:
+                s_c, r_c, l_c = run_care_lg(start_node, calg_matrix, low_risk_mask, X_train)
+                lat_care += l_c
+                if s_c and r_c is not None:
+                    succ_care = True
+                    x_rec_care = r_c
+                    break
+        else:
+            succ_care, x_rec_care, lat_care = run_care_lg(src_node, calg_matrix, low_risk_mask, X_train)
+
         results_data['CARE-LG']['success'].append(1.0 if succ_care else 0.0)
         results_data['CARE-LG']['latency'].append(lat_care)
-        if succ_care:
+        if succ_care and x_rec_care is not None:
             results_data['CARE-LG']['cvr'].append(compute_cvr(x0, x_rec_care, feature_metadata, scaler, feature_cols))
             results_data['CARE-LG']['cost'].append(compute_clinical_effort(x0, x_rec_care, effort_weights, feature_metadata, scaler, feature_cols))
             results_data['CARE-LG']['recourse_x'].append(x_rec_care)

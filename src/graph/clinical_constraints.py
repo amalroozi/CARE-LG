@@ -129,28 +129,37 @@ def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feat
 
 def compute_clinical_effort(x_source, x_target, clinical_effort_weights, feature_metadata, scaler, feature_cols):
     """
-    Computes weighted L1 clinical effort distance across mutable features in original physical scale.
+    Computes weighted L1 clinical effort distance across mutable features in standardized Z-score feature space.
 
     Args:
-        x_source (np.ndarray or torch.Tensor): Source sample features.
-        x_target (np.ndarray or torch.Tensor): Target sample features.
+        x_source (np.ndarray or torch.Tensor): Source sample features (Z-score standardized).
+        x_target (np.ndarray or torch.Tensor): Target sample features (Z-score standardized).
         clinical_effort_weights (dict): Weight mapping per mutable feature.
         feature_metadata (dict): Feature schema configuration.
-        scaler (StandardScaler): Scaler object.
+        scaler (StandardScaler): Scaler object (unused, maintained for signature compatibility).
         feature_cols (list): Feature column names.
 
     Returns:
-        float: Weighted clinical effort.
+        float: Weighted clinical effort in standardized feature space.
     """
-    source_dict = unscale_features(x_source, scaler, feature_cols, feature_metadata)
-    target_dict = unscale_features(x_target, scaler, feature_cols, feature_metadata)
+    if isinstance(x_source, torch.Tensor):
+        x_source = x_source.detach().cpu().numpy()
+    if isinstance(x_target, torch.Tensor):
+        x_target = x_target.detach().cpu().numpy()
+
+    x_source = np.asarray(x_source).squeeze()
+    x_target = np.asarray(x_target).squeeze()
+
+    source_dict = dict(zip(feature_cols, x_source))
+    target_dict = dict(zip(feature_cols, x_target))
 
     mutable_cols = feature_metadata['continuous_mutable'] + feature_metadata['categorical_mutable']
 
     total_effort = 0.0
     for col in mutable_cols:
-        weight = clinical_effort_weights.get(col, 1.0)
-        delta = abs(target_dict[col] - source_dict[col])
-        total_effort += weight * delta
+        if col in source_dict and col in target_dict:
+            weight = clinical_effort_weights.get(col, 1.0)
+            delta = abs(target_dict[col] - source_dict[col])
+            total_effort += weight * delta
 
     return total_effort

@@ -74,9 +74,9 @@ def build_calg_graph(
 
     N = len(Z)
 
-    # Adaptive k-NN scaling for larger datasets (NHANES N >= 1000)
-    if N >= 1000 and k_neighbors < 75:
-        k_neighbors = 100
+    # Adaptive k-NN default (UCI N < 1000 => k=60, NHANES N >= 1000 => k=75)
+    if k_neighbors is None:
+        k_neighbors = 60 if N < 1000 else 75
 
     nbrs = NearestNeighbors(n_neighbors=min(k_neighbors + 1, N), algorithm='ball_tree').fit(Z)
     distances, indices = nbrs.kneighbors(Z)
