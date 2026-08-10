@@ -20,7 +20,7 @@ from src.vae.model import train_vae
 from src.graph.riemannian import compute_decoder_jacobian, compute_metric_tensor, riemannian_distance
 from src.graph.clinical_constraints import check_clinical_violations, compute_clinical_effort, unscale_features
 from src.graph.calg import build_calg_graph
-from src.recourse.search import find_recourse_path, decode_recourse_trajectory
+from src.recourse.search import find_recourse_path, decode_recourse_trajectory, format_clinical_explanation_report
 
 
 def test_day2():
@@ -147,8 +147,13 @@ def test_day2():
     print("\n   Decoded Step-by-Step Recourse Trajectory:")
     print(trajectory_df[['step', 'node_idx', 'age', 'sex', 'resting_bp', 'cholesterol', 'max_heart_rate', 'oldpeak']])
 
-    # 7. Verify Zero Violations Along Recourse Path
-    print("\n7. Verifying Constraint Integrity Along Recourse Path...")
+    # 7. Format & Print Plain-English Clinical Explanation Report
+    print("\n7. Generating Plain-English Clinical Recourse Report...")
+    report_str = format_clinical_explanation_report(trajectory_df, risk_scores, FEATURE_METADATA)
+    print("\n" + report_str)
+
+    # 8. Verify Zero Violations Along Recourse Path
+    print("\n8. Verifying Constraint Integrity Along Recourse Path...")
     for k in range(len(path) - 1):
         idx_curr = path[k]
         idx_next = path[k + 1]

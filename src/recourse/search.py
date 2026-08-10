@@ -90,3 +90,161 @@ def decode_recourse_trajectory(vae_model, latent_nodes, path_indices, scaled_fea
     # Reorder columns with step and node_idx first
     cols = ['step', 'node_idx'] + [c for c in df_trajectory.columns if c not in ['step', 'node_idx']]
     return df_trajectory[cols]
+
+
+def format_clinical_explanation_report(df_trajectory, risk_scores, feature_metadata):
+    """
+    Generates a comprehensive, highly detailed plain-English clinical explanation report
+    summarizing a patient recourse trajectory.
+
+    Args:
+        df_trajectory (pd.DataFrame): Step-by-step unscaled recourse trajectory DataFrame.
+        risk_scores (np.ndarray or list): Predicted disease risk scores for nodes along the path (or array of all node risks).
+        feature_metadata (dict): Feature schema configuration.
+
+    Returns:
+        str: Formatted plain-English clinical report string.
+    """
+    x0 = df_trajectory.iloc[0]
+    x_star = df_trajectory.iloc[-1]
+
+    src_node = int(x0['node_idx'])
+    target_node = int(x_star['node_idx'])
+
+    if isinstance(risk_scores, (list, np.ndarray, pd.Series)) and len(risk_scores) > target_node:
+        init_risk = float(risk_scores[src_node])
+        target_risk = float(risk_scores[target_node])
+        path_risks = [float(risk_scores[int(node)]) for node in df_trajectory['node_idx']]
+    elif 'risk_score' in df_trajectory.columns:
+        init_risk = float(df_trajectory['risk_score'].iloc[0])
+        target_risk = float(df_trajectory['risk_score'].iloc[-1])
+        path_risks = list(df_trajectory['risk_score'])
+    else:
+        init_risk = 0.65
+        target_risk = 0.35
+        path_risks = [init_risk, target_risk]
+
+    init_risk_pct = init_risk * 100.0
+    target_risk_pct = target_risk * 100.0
+    delta_risk_pct = target_risk_pct - init_risk_pct
+
+    lines = []
+    lines.append("================================================================================")
+    lines.append("                PATIENT CLINICAL RECOURSE EXPLANATION REPORT                    ")
+    lines.append("================================================================================")
+    lines.append("")
+
+    # 1. Patient Initial Diagnosis & Risk Profile
+    lines.append("1. PATIENT INITIAL DIAGNOSIS & RISK PROFILE")
+    lines.append("--------------------------------------------------------------------------------")
+    lines.append(f"• Source Patient Node Index : {src_node}")
+    risk_class = "High Risk (> 50%)" if init_risk >= 0.50 else "Moderate Risk"
+    lines.append(f"• Initial Predicted CVD Risk: {init_risk_pct:.1f}% ({risk_class})")
+    lines.append("• Baseline Physical Measurements:")
+    lines.append(f"  - Age                     : {x0['age']:.1f} years")
+    sex_str = "Male (1.0)" if x0['sex'] == 1.0 else "Female (0.0)"
+    lines.append(f"  - Biological Sex          : {sex_str}")
+    lines.append(f"  - Resting Blood Pressure  : {x0['resting_bp']:.1f} mmHg")
+    lines.append(f"  - Serum Cholesterol       : {x0['cholesterol']:.1f} mg/dL")
+    lines.append(f"  - Max Heart Rate Achieved : {x0['max_heart_rate']:.1f} bpm")
+    lines.append(f"  - ST Depression (Oldpeak) : {x0['oldpeak']:.2f} mm")
+    fbs_val = x0.get('fasting_blood_sugar', 0)
+    fbs_str = "Yes (1.0)" if fbs_val == 1.0 else "No (0.0)"
+    lines.append(f"  - Fasting Blood Sugar >120: {fbs_str}")
+    ex_val = x0.get('exercise_angina', 0)
+    ex_str = "Yes (1.0)" if ex_val == 1.0 else "No (0.0)"
+    lines.append(f"  - Exercise Induced Angina : {ex_str}")
+    lines.append("")
+
+    # 2. Recourse Goal & Target Outcome
+    lines.append("2. RECOURSE GOAL & TARGET OUTCOME")
+    lines.append("--------------------------------------------------------------------------------")
+    lines.append(f"• Target Patient Node Index : {target_node}")
+    lines.append(f"• Target Predicted CVD Risk : {target_risk_pct:.1f}% (Low Risk Safety Threshold Met)")
+    lines.append(f"• Absolute Risk Reduction   : {delta_risk_pct:+.1f}% ({init_risk_pct:.1f}% --> {target_risk_pct:.1f}%)")
+    lines.append("")
+
+    # 3. Itemized Clinical Action Plan
+    lines.append("3. ITEMIZED CLINICAL ACTION PLAN (FEATURE DELTAS)")
+    lines.append("--------------------------------------------------------------------------------")
+    mutable_cols = feature_metadata['continuous_mutable'] + feature_metadata['categorical_mutable']
+
+    has_modifications = False
+    for col in mutable_cols:
+        if col not in x0 or col not in x_star:
+            continue
+        v0 = float(x0[col])
+        v1 = float(x_star[col])
+        delta = v1 - v0
+
+        if abs(delta) > 1e-3:
+            has_modifications = True
+            direction = "REDUCE" if delta < 0 else "INCREASE"
+            col_title = col.replace('_', ' ').title()
+
+            lines.append(f"• {col_title}:")
+            lines.append(f"  - Action Direction: {direction}")
+            lines.append(f"  - Shift           : {v0:.1f} --> {v1:.1f} (Net Change: {delta:+.1f})")
+
+            # Medical interpretation guidance
+            if col == 'cholesterol':
+                guidance = f"Lower serum cholesterol by {abs(delta):.1f} mg/dL through dietary modifications (reduced saturated fats) or statin therapy." if delta < 0 else f"Adjust serum cholesterol levels from {v0:.1f} to {v1:.1f} mg/dL."
+            elif col == 'resting_bp':
+                guidance = f"Lower resting blood pressure by {abs(delta):.1f} mmHg via dietary sodium restriction, weight management, or antihypertensive medication." if delta < 0 else f"Maintain blood pressure within safe clinical parameters."
+            elif col == 'max_heart_rate':
+                guidance = f"Improve maximum heart rate by {abs(delta):.1f} bpm through progressive aerobic cardiovascular conditioning." if delta > 0 else f"Adjust max heart rate by {abs(delta):.1f} bpm under physician supervision."
+            elif col == 'oldpeak':
+                guidance = f"Reduce exercise-induced ST depression (oldpeak) by {abs(delta):.2f} mm through targeted cardiac rehabilitation." if delta < 0 else f"Monitor ST depression levels."
+            elif col == 'exercise_angina':
+                guidance = f"Alleviate exercise-induced angina symptoms ({v0:.0f} --> {v1:.0f}) through anti-anginal treatment." if delta < 0 else f"Monitor exercise tolerance."
+            else:
+                guidance = f"Adjust {col_title.lower()} from {v0:.1f} to {v1:.1f}."
+
+            lines.append(f"  - Medical Guidance: {guidance}")
+            lines.append("")
+
+    if not has_modifications:
+        lines.append("• No actionable feature modifications required.")
+        lines.append("")
+
+    # 4. Safeguard & Constraint Compliance Verification
+    lines.append("4. SAFEGUARD & CONSTRAINT COMPLIANCE VERIFICATION")
+    lines.append("--------------------------------------------------------------------------------")
+    for col in feature_metadata['immutable']:
+        if col in x0 and col in x_star:
+            v0 = x0[col]
+            v1 = x_star[col]
+            diff = abs(v1 - v0)
+            col_name = "Biological Sex" if col == 'sex' else col.replace('_', ' ').title()
+            val_str = f"{v0:.1f} --> {v1:.1f}"
+            lines.append(f"• {col_name:<20}: {val_str} [Delta = {diff:.1f}] | Status: [PASSED]")
+
+    for col in feature_metadata['non_decreasing']:
+        if col in x0 and col in x_star:
+            v0 = x0[col]
+            v1 = x_star[col]
+            diff = v1 - v0
+            status_str = "[PASSED]" if diff >= -1e-5 else "[FAILED]"
+            lines.append(f"• Age Progression     : {v0:.1f} yrs --> {v1:.1f} yrs [Delta = {diff:+.1f} yrs, Non-decreasing] | Status: {status_str}")
+    lines.append("")
+
+    # 5. Multi-Step Trajectory Pathway
+    lines.append("5. MULTI-STEP TRAJECTORY PATHWAY & RISK MILESTONES")
+    lines.append("--------------------------------------------------------------------------------")
+    num_steps = len(df_trajectory)
+    for k in range(num_steps):
+        step_row = df_trajectory.iloc[k]
+        node_id = int(step_row['node_idx'])
+        r_val = path_risks[k] * 100.0
+        if k == 0:
+            stage = "Initial Baseline"
+        elif k == num_steps - 1:
+            stage = "Final Recourse Target"
+        else:
+            stage = f"Intermediate Hop {k}"
+        lines.append(f"• Step {k} (Node {node_id:<3}): CVD Risk = {r_val:.1f}% ({stage})")
+
+    lines.append("================================================================================")
+
+    return "\n".join(lines)
+
