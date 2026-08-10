@@ -5,15 +5,15 @@
     "CVR_Pct": 100.0,
     "KDE_Density": -9.5151,
     "Clinical_Cost": 68.4308,
-    "Latency_Sec": 0.0216
+    "Latency_Sec": 0.0319
   },
   {
     "Method": "FACE",
     "Success_Rate_Pct": 100.0,
-    "CVR_Pct": 100.0,
+    "CVR_Pct": 80.0,
     "KDE_Density": -8.0855,
     "Clinical_Cost": 81.8233,
-    "Latency_Sec": 0.0446
+    "Latency_Sec": 0.0452
   },
   {
     "Method": "GrowingSpheres",
@@ -21,14 +21,14 @@
     "CVR_Pct": 100.0,
     "KDE_Density": -9.7643,
     "Clinical_Cost": 71.622,
-    "Latency_Sec": 0.0093
+    "Latency_Sec": 0.0088
   },
   {
     "Method": "CARE-LG",
-    "Success_Rate_Pct": 38.0,
-    "CVR_Pct": 86.84,
-    "KDE_Density": -8.0011,
-    "Clinical_Cost": 117.9664,
-    "Latency_Sec": 0.0
+    "Success_Rate_Pct": 97.0,
+    "CVR_Pct": 40.21,
+    "KDE_Density": -8.2,
+    "Clinical_Cost": 137.0752,
+    "Latency_Sec": 0.0001
   }
 ]

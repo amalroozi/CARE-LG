@@ -10,7 +10,7 @@ from sklearn.neighbors import NearestNeighbors
 from tqdm import tqdm
 
 from src.graph.riemannian import riemannian_distance
-from src.graph.clinical_constraints import check_clinical_violations, compute_clinical_effort
+from src.graph.clinical_constraints import check_hard_violations, check_soft_violations, check_clinical_violations, compute_clinical_effort
 
 
 def build_calg_graph(
@@ -20,7 +20,7 @@ def build_calg_graph(
     effort_weights,
     scaler,
     feature_cols,
-    k_neighbors=15,
+    k_neighbors=30,
     lambda_effort=1.0,
     max_samples=None
 ):
@@ -34,8 +34,8 @@ def build_calg_graph(
         effort_weights (dict): Clinical effort weights.
         scaler (StandardScaler): Scaler for continuous features.
         feature_cols (list): List of feature column names.
-        k_neighbors (int): Number of nearest neighbors per node (default: 15).
-        lambda_effort (float): Trade-off parameter between Riemannian distance and clinical effort (default: 1.0).
+        k_neighbors (int): Number of nearest neighbors per node (default: 30).
+        lambda_effort (float): Trade-off parameter between Riemannian distance and clinical effort.
         max_samples (int, optional): Subset max samples for faster graph building if specified.
 
     Returns:
@@ -74,8 +74,10 @@ def build_calg_graph(
 
     N = len(Z)
 
-    # Build k-NN candidate graph on latent points Z
-    # n_neighbors=k_neighbors+1 because each point is its own nearest neighbor
+    # Adaptive k-NN scaling for larger datasets (NHANES N >= 1000)
+    if N >= 1000 and k_neighbors < 75:
+        k_neighbors = 100
+
     nbrs = NearestNeighbors(n_neighbors=min(k_neighbors + 1, N), algorithm='ball_tree').fit(Z)
     distances, indices = nbrs.kneighbors(Z)
 
@@ -95,9 +97,9 @@ def build_calg_graph(
             z_j = Z[neighbor_idx]
             x_j = X[neighbor_idx]
 
-            # 1. Asymmetric Masking Check
-            if check_clinical_violations(x_i, x_j, feature_metadata, scaler, feature_cols):
-                continue  # Skip illegal edge (equivalent to W_ij = infinity)
+            # 1. HARD Mask Check (Immutable attributes & Age horizon cap > 3.0 yrs)
+            if check_hard_violations(x_i, x_j, feature_metadata, scaler, feature_cols):
+                continue  # Hard infinity (blocked edge)
 
             # 2. Compute Riemannian Geodesic Distance
             r_dist = riemannian_distance(z_i, z_j, vae_model)
@@ -105,8 +107,12 @@ def build_calg_graph(
             # 3. Compute Clinical Effort
             c_effort = compute_clinical_effort(x_i, x_j, effort_weights, feature_metadata, scaler, feature_cols)
 
-            # 4. Total Directed Edge Weight W_ij
+            # 4. Base Weight
             w_ij = r_dist + lambda_effort * c_effort
+
+            # 5. SOFT Directional Penalty (1e5x multiplier for soft non-monotonic directional shifts)
+            if check_soft_violations(x_i, x_j, feature_metadata, scaler, feature_cols):
+                w_ij = w_ij * 100000.0 + 10000.0
 
             row_indices.append(i)
             col_indices.append(neighbor_idx)

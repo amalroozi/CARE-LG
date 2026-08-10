@@ -7,13 +7,13 @@ import time
 import numpy as np
 import pandas as pd
 from sklearn.neighbors import KernelDensity
-from src.graph.clinical_constraints import check_clinical_violations, compute_clinical_effort, unscale_features
+from src.graph.clinical_constraints import check_hard_violations, check_clinical_violations, compute_clinical_effort, unscale_features
 
 
 def compute_cvr(source_x, recourse_x, feature_metadata, scaler, feature_cols):
     """
     Computes Constraint Violation Rate (CVR) for a recourse recommendation:
-    Returns 1.0 (100%) if any clinical violation occurs (age decrease or immutable feature change), else 0.0 (0%).
+    Returns 1.0 (100%) if any hard clinical violation occurs (age decrease or immutable feature change), else 0.0 (0%).
 
     Args:
         source_x (np.ndarray or torch.Tensor): Original query patient feature vector.
@@ -25,7 +25,7 @@ def compute_cvr(source_x, recourse_x, feature_metadata, scaler, feature_cols):
     Returns:
         float: 1.0 if violation exists, 0.0 otherwise.
     """
-    has_violation = check_clinical_violations(source_x, recourse_x, feature_metadata, scaler, feature_cols)
+    has_violation = check_hard_violations(source_x, recourse_x, feature_metadata, scaler, feature_cols, check_step_horizon=False)
     return 1.0 if has_violation else 0.0
 
 

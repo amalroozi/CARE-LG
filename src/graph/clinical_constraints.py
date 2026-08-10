@@ -43,78 +43,88 @@ def unscale_features(x, scaler, feature_cols, feature_metadata):
     return x_dict
 
 
-def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feature_cols, tol=1e-5):
+def check_hard_violations(x_source, x_target, feature_metadata, scaler, feature_cols, check_step_horizon=True):
     """
-    Checks for clinical rule violations between x_source and x_target:
-    1. Non-decreasing features (e.g. age cannot decrease).
-    2. Realistic age horizon (max age increase per single step <= 3.0 years).
-    3. Immutable attributes (e.g. sex or fasting_blood_sugar cannot change).
-    4. Directional medical safeguards:
-       - Cholesterol cannot increase (Delta cholesterol > 0 => violation).
-       - Exercise angina cannot be acquired (0 -> 1 => violation).
-       - Resting BP cannot increase substantially (Delta resting_bp > 5.0 mmHg => violation).
-
-    Args:
-        x_source (np.ndarray or torch.Tensor): Source sample features.
-        x_target (np.ndarray or torch.Tensor): Target sample features.
-        feature_metadata (dict): Feature schema configuration.
-        scaler (StandardScaler): Scaler object.
-        feature_cols (list): Feature column names.
-        tol (float): Tolerance threshold for floating point comparison.
+    Checks for HARD clinical violations that strictly block graph edges (W_ij = infinity):
+    1. Immutable attributes (e.g. sex, fasting_blood_sugar).
+    2. Age reduction (age cannot decrease by > 0.1 yrs).
+    3. Realistic age horizon cap (single-step age increase > 3.0 yrs, evaluated when check_step_horizon=True).
 
     Returns:
-        bool: True if any violation exists, False if transition is clinically valid.
+        bool: True if hard violation exists, False otherwise.
     """
     source_dict = unscale_features(x_source, scaler, feature_cols, feature_metadata)
     target_dict = unscale_features(x_target, scaler, feature_cols, feature_metadata)
 
-    # 1. Non-decreasing feature check (e.g., age cannot decrease)
-    for col in feature_metadata['non_decreasing']:
-        if target_dict[col] < source_dict[col] - tol:
-            return True
-
-    # 2. Realistic Age Horizon Cap (age increase <= 3.0 years per single step)
-    if 'age' in source_dict and 'age' in target_dict:
-        if (target_dict['age'] - source_dict['age']) > (3.0 + tol):
-            return True
-
-    # 3. Immutable attribute check (e.g., sex, fasting_blood_sugar)
+    # 1. Immutable attribute check
     for col in feature_metadata['immutable']:
-        if abs(target_dict[col] - source_dict[col]) > tol:
+        if col in source_dict and col in target_dict:
+            if abs(target_dict[col] - source_dict[col]) > 1e-4:
+                return True
+
+    # 2. Non-decreasing age check
+    for col in feature_metadata['non_decreasing']:
+        if col in source_dict and col in target_dict:
+            if target_dict[col] < source_dict[col] - 0.1:
+                return True
+
+    # 3. Age horizon cap (single-step increase > 3.0 yrs during edge evaluation)
+    if check_step_horizon and 'age' in source_dict and 'age' in target_dict:
+        if (target_dict['age'] - source_dict['age']) > 3.05:
             return True
 
-    # 4. Directional Medical Safeguards:
-    # 4a. Serum Cholesterol cannot increase (both UCI & NHANES)
+    return False
+
+
+def check_soft_violations(x_source, x_target, feature_metadata, scaler, feature_cols):
+    """
+    Checks for SOFT directional medical violations penalized via heavy edge weight multiplier (1e5x):
+    1. Cholesterol increase > 1.0 mg/dL.
+    2. Systolic BP increase > 1.0 mmHg.
+    3. Resting BP increase > 5.0 mmHg.
+    4. BMI increase > 0.1 units.
+    5. HbA1c increase > 0.05 units.
+    6. Exercise angina acquired (0 -> 1).
+
+    Returns:
+        bool: True if soft directional violation exists, False otherwise.
+    """
+    source_dict = unscale_features(x_source, scaler, feature_cols, feature_metadata)
+    target_dict = unscale_features(x_target, scaler, feature_cols, feature_metadata)
+
     if 'cholesterol' in source_dict and 'cholesterol' in target_dict:
-        if target_dict['cholesterol'] > source_dict['cholesterol'] + tol:
+        if (target_dict['cholesterol'] - source_dict['cholesterol']) > 1.0:
             return True
 
-    # 4b. Exercise angina cannot be acquired (UCI: 0.0 -> 1.0)
     if 'exercise_angina' in source_dict and 'exercise_angina' in target_dict:
         if source_dict['exercise_angina'] <= 0.5 and target_dict['exercise_angina'] > 0.5:
             return True
 
-    # 4c. Resting blood pressure cannot increase substantially (UCI: Delta > 5.0 mmHg)
     if 'resting_bp' in source_dict and 'resting_bp' in target_dict:
-        if (target_dict['resting_bp'] - source_dict['resting_bp']) > (5.0 + tol):
+        if (target_dict['resting_bp'] - source_dict['resting_bp']) > 5.0:
             return True
 
-    # 4d. Systolic blood pressure cannot increase (NHANES: Delta > 0)
     if 'systolic_bp' in source_dict and 'systolic_bp' in target_dict:
-        if target_dict['systolic_bp'] > source_dict['systolic_bp'] + tol:
+        if (target_dict['systolic_bp'] - source_dict['systolic_bp']) > 1.0:
             return True
 
-    # 4e. Body Mass Index (BMI) cannot increase (NHANES: Delta > 0)
     if 'bmi' in source_dict and 'bmi' in target_dict:
-        if target_dict['bmi'] > source_dict['bmi'] + tol:
+        if (target_dict['bmi'] - source_dict['bmi']) > 0.1:
             return True
 
-    # 4f. Glycemic HbA1c cannot increase (NHANES: Delta > 0)
     if 'glycemic_hba1c' in source_dict and 'glycemic_hba1c' in target_dict:
-        if target_dict['glycemic_hba1c'] > source_dict['glycemic_hba1c'] + tol:
+        if (target_dict['glycemic_hba1c'] - source_dict['glycemic_hba1c']) > 0.05:
             return True
 
     return False
+
+
+def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feature_cols, tol=1e-5):
+    """
+    Checks for clinical rule violations between x_source and x_target (returns True if hard or soft violation exists).
+    """
+    return check_hard_violations(x_source, x_target, feature_metadata, scaler, feature_cols) or \
+           check_soft_violations(x_source, x_target, feature_metadata, scaler, feature_cols)
 
 
 def compute_clinical_effort(x_source, x_target, clinical_effort_weights, feature_metadata, scaler, feature_cols):
