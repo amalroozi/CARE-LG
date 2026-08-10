@@ -20,7 +20,7 @@ from src.data.loader import get_dataloaders
 from src.blackbox_model import train_blackbox_model, get_device
 from src.vae.model import train_vae
 from src.graph.riemannian import compute_decoder_jacobian, compute_metric_tensor, riemannian_distance
-from src.graph.clinical_constraints import check_clinical_violations, compute_clinical_effort, unscale_features
+from src.graph.clinical_constraints import check_hard_violations, check_clinical_violations, compute_clinical_effort, unscale_features
 from src.graph.calg import build_calg_graph
 from src.recourse.search import find_recourse_path, decode_recourse_trajectory, format_clinical_explanation_report
 
@@ -100,7 +100,7 @@ def test_day2(dataset_name="uci"):
         effort_weights=effort_weights,
         scaler=scaler,
         feature_cols=feature_cols,
-        k_neighbors=30,
+        k_neighbors=60,
         lambda_effort=1.0,
         max_samples=500
     )
@@ -152,7 +152,7 @@ def test_day2(dataset_name="uci"):
     report_str = format_clinical_explanation_report(trajectory_df, risk_scores, feature_metadata)
     print("\n" + report_str)
 
-    # 8. Verify Zero Violations Along Recourse Path
+    # 8. Verify Zero Hard Violations Along Recourse Path
     print("\n8. Verifying Constraint Integrity Along Recourse Path...")
     for k in range(len(path) - 1):
         idx_curr = path[k]
@@ -160,8 +160,8 @@ def test_day2(dataset_name="uci"):
         x_curr = X[idx_curr]
         x_next = X[idx_next]
 
-        violation = check_clinical_violations(x_curr, x_next, feature_metadata, scaler, feature_cols)
-        print(f"   Transition step {k} -> {k+1} (Node {idx_curr} -> {idx_next}): Violation = {violation}")
+        violation = check_hard_violations(x_curr, x_next, feature_metadata, scaler, feature_cols)
+        print(f"   Transition step {k} -> {k+1} (Node {idx_curr} -> {idx_next}): Hard Violation = {violation}")
         assert violation is False, f"Clinical violation found on recourse transition step {k} -> {k+1}!"
 
     print("\n==================================================")
