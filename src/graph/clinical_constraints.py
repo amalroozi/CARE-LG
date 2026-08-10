@@ -47,7 +47,12 @@ def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feat
     """
     Checks for clinical rule violations between x_source and x_target:
     1. Non-decreasing features (e.g. age cannot decrease).
-    2. Immutable attributes (e.g. sex or fasting_blood_sugar cannot change).
+    2. Realistic age horizon (max age increase per single step <= 3.0 years).
+    3. Immutable attributes (e.g. sex or fasting_blood_sugar cannot change).
+    4. Directional medical safeguards:
+       - Cholesterol cannot increase (Delta cholesterol > 0 => violation).
+       - Exercise angina cannot be acquired (0 -> 1 => violation).
+       - Resting BP cannot increase substantially (Delta resting_bp > 5.0 mmHg => violation).
 
     Args:
         x_source (np.ndarray or torch.Tensor): Source sample features.
@@ -63,14 +68,35 @@ def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feat
     source_dict = unscale_features(x_source, scaler, feature_cols, feature_metadata)
     target_dict = unscale_features(x_target, scaler, feature_cols, feature_metadata)
 
-    # 1. Non-decreasing feature check (e.g., age)
+    # 1. Non-decreasing feature check (e.g., age cannot decrease)
     for col in feature_metadata['non_decreasing']:
         if target_dict[col] < source_dict[col] - tol:
             return True
 
-    # 2. Immutable attribute check (e.g., sex, fasting_blood_sugar)
+    # 2. Realistic Age Horizon Cap (age increase <= 3.0 years per single step)
+    if 'age' in source_dict and 'age' in target_dict:
+        if (target_dict['age'] - source_dict['age']) > (3.0 + tol):
+            return True
+
+    # 3. Immutable attribute check (e.g., sex, fasting_blood_sugar)
     for col in feature_metadata['immutable']:
         if abs(target_dict[col] - source_dict[col]) > tol:
+            return True
+
+    # 4. Directional Medical Safeguards:
+    # 4a. Serum Cholesterol cannot increase
+    if 'cholesterol' in source_dict and 'cholesterol' in target_dict:
+        if target_dict['cholesterol'] > source_dict['cholesterol'] + tol:
+            return True
+
+    # 4b. Exercise angina cannot be acquired (0.0 -> 1.0)
+    if 'exercise_angina' in source_dict and 'exercise_angina' in target_dict:
+        if source_dict['exercise_angina'] <= 0.5 and target_dict['exercise_angina'] > 0.5:
+            return True
+
+    # 4c. Resting blood pressure cannot increase substantially (Delta > 5.0 mmHg)
+    if 'resting_bp' in source_dict and 'resting_bp' in target_dict:
+        if (target_dict['resting_bp'] - source_dict['resting_bp']) > (5.0 + tol):
             return True
 
     return False
