@@ -10,6 +10,8 @@ DATASET_CONFIGS = {
             'categorical_mutable': ['exercise_angina', 'slope'],
             'non_decreasing': ['age'],
             'immutable': ['sex', 'fasting_blood_sugar'],
+            'directional_reduce': ['resting_bp', 'cholesterol', 'oldpeak', 'exercise_angina', 'slope'],
+            'directional_increase': ['max_heart_rate'],
             'target': 'heart_disease_risk'
         },
         'CLINICAL_EFFORT_WEIGHTS': {
@@ -28,6 +30,8 @@ DATASET_CONFIGS = {
             'categorical_mutable': [],
             'non_decreasing': ['age'],
             'immutable': ['sex'],
+            'directional_reduce': ['systolic_bp', 'diastolic_bp', 'cholesterol', 'bmi', 'glycemic_hba1c'],
+            'directional_increase': [],
             'target': 'cvd_risk_flag'
         },
         'CLINICAL_EFFORT_WEIGHTS': {

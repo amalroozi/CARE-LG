@@ -152,7 +152,7 @@ def test_day2(dataset_name="uci"):
     report_str = format_clinical_explanation_report(trajectory_df, risk_scores, feature_metadata)
     print("\n" + report_str)
 
-    # 8. Verify Zero Hard Violations Along Recourse Path
+    # 8. Verify Zero Structural Violations Along Recourse Path
     print("\n8. Verifying Constraint Integrity Along Recourse Path...")
     for k in range(len(path) - 1):
         idx_curr = path[k]
@@ -160,8 +160,8 @@ def test_day2(dataset_name="uci"):
         x_curr = X[idx_curr]
         x_next = X[idx_next]
 
-        violation = check_hard_violations(x_curr, x_next, feature_metadata, scaler, feature_cols)
-        print(f"   Transition step {k} -> {k+1} (Node {idx_curr} -> {idx_next}): Hard Violation = {violation}")
+        violation = check_clinical_violations(x_curr, x_next, feature_metadata, scaler, feature_cols)
+        print(f"   Transition step {k} -> {k+1} (Node {idx_curr} -> {idx_next}): Violation = {violation}")
         assert violation is False, f"Clinical violation found on recourse transition step {k} -> {k+1}!"
 
     print("\n==================================================")

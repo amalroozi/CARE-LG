@@ -43,12 +43,33 @@ def unscale_features(x, scaler, feature_cols, feature_metadata):
     return x_dict
 
 
+def validate_exhaustive_column_classification(feature_cols, feature_metadata):
+    """
+    Enforces a strict runtime assertion ensuring EVERY feature column in feature_cols
+    is explicitly classified into one of the constraint categories in feature_metadata.
+    """
+    classified_set = set(
+        feature_metadata.get('immutable', []) +
+        feature_metadata.get('non_decreasing', []) +
+        feature_metadata.get('directional_reduce', []) +
+        feature_metadata.get('directional_increase', [])
+    )
+    legacy_mutable = set(
+        feature_metadata.get('continuous_mutable', []) +
+        feature_metadata.get('categorical_mutable', [])
+    )
+    all_classified = classified_set.union(legacy_mutable)
+
+    unclassified = set(feature_cols) - all_classified
+    assert len(unclassified) == 0, f"FAIL-SAFE TRIGGERED: Unclassified feature columns detected: {unclassified}"
+
+
 def check_hard_violations(x_source, x_target, feature_metadata, scaler, feature_cols, check_step_horizon=True):
     """
     Checks for HARD clinical violations that strictly block graph edges (W_ij = infinity):
-    1. Immutable attributes (e.g. sex, fasting_blood_sugar).
+    1. Immutable attributes (e.g. sex, ca, thal, fasting_blood_sugar).
     2. Age reduction (age cannot decrease by > 0.1 yrs).
-    3. Realistic age horizon cap (single-step age increase > 3.0 yrs, evaluated when check_step_horizon=True).
+    3. Realistic age horizon cap (single-step age increase > 3.05 yrs, evaluated when check_step_horizon=True).
 
     Returns:
         bool: True if hard violation exists, False otherwise.
@@ -57,18 +78,18 @@ def check_hard_violations(x_source, x_target, feature_metadata, scaler, feature_
     target_dict = unscale_features(x_target, scaler, feature_cols, feature_metadata)
 
     # 1. Immutable attribute check
-    for col in feature_metadata['immutable']:
+    for col in feature_metadata.get('immutable', []):
         if col in source_dict and col in target_dict:
             if abs(target_dict[col] - source_dict[col]) > 1e-4:
                 return True
 
     # 2. Non-decreasing age check
-    for col in feature_metadata['non_decreasing']:
+    for col in feature_metadata.get('non_decreasing', []):
         if col in source_dict and col in target_dict:
             if target_dict[col] < source_dict[col] - 0.1:
                 return True
 
-    # 3. Age horizon cap (single-step increase > 3.0 yrs during edge evaluation)
+    # 3. Age horizon cap (single-step increase > 3.05 yrs during edge evaluation)
     if check_step_horizon and 'age' in source_dict and 'age' in target_dict:
         if (target_dict['age'] - source_dict['age']) > 3.05:
             return True
@@ -78,52 +99,54 @@ def check_hard_violations(x_source, x_target, feature_metadata, scaler, feature_
 
 def check_soft_violations(x_source, x_target, feature_metadata, scaler, feature_cols):
     """
-    Checks for SOFT directional medical violations penalized via heavy edge weight multiplier (1e5x):
-    1. Cholesterol increase > 1.0 mg/dL.
-    2. Systolic BP increase > 1.0 mmHg.
-    3. Resting BP increase > 5.0 mmHg.
-    4. BMI increase > 0.1 units.
-    5. HbA1c increase > 0.05 units.
-    6. Exercise angina acquired (0 -> 1).
+    Checks for directional medical violations beyond noise tolerances:
+    - Cholesterol / BP: epsilon = 1.0 (5.0 for resting_bp)
+    - HbA1c / Oldpeak: epsilon = 0.05
+    - BMI: epsilon = 0.1
+    - Categorical / Max Heart Rate: epsilon = 0.5 / 1.0
 
     Returns:
-        bool: True if soft directional violation exists, False otherwise.
+        bool: True if directional violation exists beyond noise tolerance, False otherwise.
     """
     source_dict = unscale_features(x_source, scaler, feature_cols, feature_metadata)
     target_dict = unscale_features(x_target, scaler, feature_cols, feature_metadata)
 
-    if 'cholesterol' in source_dict and 'cholesterol' in target_dict:
-        if (target_dict['cholesterol'] - source_dict['cholesterol']) > 1.0:
-            return True
+    epsilons = {
+        'cholesterol': 1.0,
+        'systolic_bp': 1.0,
+        'diastolic_bp': 1.0,
+        'resting_bp': 5.0,
+        'bmi': 0.1,
+        'glycemic_hba1c': 0.05,
+        'oldpeak': 0.05,
+        'exercise_angina': 0.5,
+        'slope': 0.5,
+        'fasting_blood_sugar': 0.5
+    }
 
-    if 'exercise_angina' in source_dict and 'exercise_angina' in target_dict:
-        if source_dict['exercise_angina'] <= 0.5 and target_dict['exercise_angina'] > 0.5:
-            return True
+    # Directional Reduce: target - source > eps => violation
+    for col in feature_metadata.get('directional_reduce', []):
+        if col in source_dict and col in target_dict:
+            eps = epsilons.get(col, 0.1)
+            if (target_dict[col] - source_dict[col]) > eps:
+                return True
 
-    if 'resting_bp' in source_dict and 'resting_bp' in target_dict:
-        if (target_dict['resting_bp'] - source_dict['resting_bp']) > 5.0:
-            return True
-
-    if 'systolic_bp' in source_dict and 'systolic_bp' in target_dict:
-        if (target_dict['systolic_bp'] - source_dict['systolic_bp']) > 1.0:
-            return True
-
-    if 'bmi' in source_dict and 'bmi' in target_dict:
-        if (target_dict['bmi'] - source_dict['bmi']) > 0.1:
-            return True
-
-    if 'glycemic_hba1c' in source_dict and 'glycemic_hba1c' in target_dict:
-        if (target_dict['glycemic_hba1c'] - source_dict['glycemic_hba1c']) > 0.05:
-            return True
+    # Directional Increase: target - source < -eps => violation
+    for col in feature_metadata.get('directional_increase', []):
+        if col in source_dict and col in target_dict:
+            eps = epsilons.get(col, 1.0)
+            if (target_dict[col] - source_dict[col]) < -eps:
+                return True
 
     return False
 
 
-def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feature_cols, tol=1e-5):
+def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feature_cols, check_step_horizon=True):
     """
-    Checks for clinical rule violations between x_source and x_target (returns True if hard or soft violation exists).
+    Checks for structural clinical violations between x_source and x_target.
+    Returns True if ANY constraint (hard or directional) is violated beyond noise tolerance (triggers W_ij = infinity edge pruning).
     """
-    return check_hard_violations(x_source, x_target, feature_metadata, scaler, feature_cols) or \
+    return check_hard_violations(x_source, x_target, feature_metadata, scaler, feature_cols, check_step_horizon=check_step_horizon) or \
            check_soft_violations(x_source, x_target, feature_metadata, scaler, feature_cols)
 
 

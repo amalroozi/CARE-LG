@@ -375,7 +375,7 @@ def run_all_benchmarks(dataset_name="uci", num_query_instances=100, seed=42):
 
     # 2. Build CALG Graph for CARE-LG
     print("\n2. Constructing CALG Graph for CARE-LG...")
-    k_knn = 60 if dataset_name == "uci" else 75
+    k_knn = 40 if dataset_name == "uci" else 80
     calg_matrix, Z_train, X_train, y_train = build_calg_graph(
         vae_model=vae,
         train_loader=train_loader,

@@ -5,7 +5,7 @@
     "CVR_Pct": 100.0,
     "KDE_Density": -9.5151,
     "Clinical_Cost": 5.1331,
-    "Latency_Sec": 0.0346
+    "Latency_Sec": 0.0306
   },
   {
     "Method": "FACE",
@@ -21,14 +21,14 @@
     "CVR_Pct": 100.0,
     "KDE_Density": -9.7643,
     "Clinical_Cost": 5.4696,
-    "Latency_Sec": 0.0091
+    "Latency_Sec": 0.0093
   },
   {
     "Method": "CARE-LG",
     "Success_Rate_Pct": 99.0,
     "CVR_Pct": 0.0,
-    "KDE_Density": -8.3622,
-    "Clinical_Cost": 9.0721,
-    "Latency_Sec": 0.0001
+    "KDE_Density": -8.2879,
+    "Clinical_Cost": 8.2534,
+    "Latency_Sec": 0.0002
   }
 ]

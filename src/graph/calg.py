@@ -10,7 +10,11 @@ from sklearn.neighbors import NearestNeighbors
 from tqdm import tqdm
 
 from src.graph.riemannian import riemannian_distance
-from src.graph.clinical_constraints import check_hard_violations, check_soft_violations, check_clinical_violations, compute_clinical_effort
+from src.graph.clinical_constraints import (
+    validate_exhaustive_column_classification,
+    check_clinical_violations,
+    compute_clinical_effort
+)
 
 
 def build_calg_graph(
@@ -20,12 +24,12 @@ def build_calg_graph(
     effort_weights,
     scaler,
     feature_cols,
-    k_neighbors=30,
+    k_neighbors=None,
     lambda_effort=1.0,
     max_samples=None
 ):
     """
-    Constructs the Clinical Adaptive Latent Graph (CALG).
+    Constructs the Clinical Adaptive Latent Graph (CALG) under mathematically guaranteed structural hard masking.
 
     Args:
         vae_model (nn.Module): Trained TabularVAE model.
@@ -34,7 +38,7 @@ def build_calg_graph(
         effort_weights (dict): Clinical effort weights.
         scaler (StandardScaler): Scaler for continuous features.
         feature_cols (list): List of feature column names.
-        k_neighbors (int): Number of nearest neighbors per node (default: 30).
+        k_neighbors (int, optional): Number of nearest neighbors per node (default: 40 for UCI, 80 for NHANES).
         lambda_effort (float): Trade-off parameter between Riemannian distance and clinical effort.
         max_samples (int, optional): Subset max samples for faster graph building if specified.
 
@@ -44,6 +48,9 @@ def build_calg_graph(
         scaled_features (np.ndarray): Original scaled feature array X of shape (N, D).
         targets (np.ndarray): Target labels array y of shape (N,).
     """
+    # 1. Fail-Safe Exhaustive Column Classification Assertion
+    validate_exhaustive_column_classification(feature_cols, feature_metadata)
+
     vae_model.eval()
     device = next(vae_model.parameters()).device
 
@@ -74,9 +81,9 @@ def build_calg_graph(
 
     N = len(Z)
 
-    # Adaptive k-NN default (UCI N < 1000 => k=60, NHANES N >= 1000 => k=75)
+    # Adaptive k-density tuning (UCI N < 1000 => k=40, NHANES N >= 1000 => k=80)
     if k_neighbors is None:
-        k_neighbors = 60 if N < 1000 else 75
+        k_neighbors = 40 if N < 1000 else 80
 
     nbrs = NearestNeighbors(n_neighbors=min(k_neighbors + 1, N), algorithm='ball_tree').fit(Z)
     distances, indices = nbrs.kneighbors(Z)
@@ -85,7 +92,7 @@ def build_calg_graph(
     col_indices = []
     edge_weights = []
 
-    print(f"Building CALG graph over N={N} nodes with k={k_neighbors} neighbors...")
+    print(f"Building CALG graph over N={N} nodes with k={k_neighbors} neighbors (Structural Hard Masking)...")
     for i in tqdm(range(N), desc="CALG Edges"):
         z_i = Z[i]
         x_i = X[i]
@@ -97,22 +104,18 @@ def build_calg_graph(
             z_j = Z[neighbor_idx]
             x_j = X[neighbor_idx]
 
-            # 1. HARD Mask Check (Immutable attributes & Age horizon cap > 3.0 yrs)
-            if check_hard_violations(x_i, x_j, feature_metadata, scaler, feature_cols):
-                continue  # Hard infinity (blocked edge)
+            # Structural Hard Masking (Prune any non-compliant edge => W_ij = infinity)
+            if check_clinical_violations(x_i, x_j, feature_metadata, scaler, feature_cols):
+                continue
 
-            # 2. Compute Riemannian Geodesic Distance
+            # Compute Riemannian Geodesic Distance
             r_dist = riemannian_distance(z_i, z_j, vae_model)
 
-            # 3. Compute Clinical Effort
+            # Compute Clinical Effort in Standardized Space
             c_effort = compute_clinical_effort(x_i, x_j, effort_weights, feature_metadata, scaler, feature_cols)
 
-            # 4. Base Weight
+            # Total Directed Edge Weight W_ij
             w_ij = r_dist + lambda_effort * c_effort
-
-            # 5. SOFT Directional Penalty (1e5x multiplier for soft non-monotonic directional shifts)
-            if check_soft_violations(x_i, x_j, feature_metadata, scaler, feature_cols):
-                w_ij = w_ij * 100000.0 + 10000.0
 
             row_indices.append(i)
             col_indices.append(neighbor_idx)
