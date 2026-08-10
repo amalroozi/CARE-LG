@@ -84,19 +84,34 @@ def check_clinical_violations(x_source, x_target, feature_metadata, scaler, feat
             return True
 
     # 4. Directional Medical Safeguards:
-    # 4a. Serum Cholesterol cannot increase
+    # 4a. Serum Cholesterol cannot increase (both UCI & NHANES)
     if 'cholesterol' in source_dict and 'cholesterol' in target_dict:
         if target_dict['cholesterol'] > source_dict['cholesterol'] + tol:
             return True
 
-    # 4b. Exercise angina cannot be acquired (0.0 -> 1.0)
+    # 4b. Exercise angina cannot be acquired (UCI: 0.0 -> 1.0)
     if 'exercise_angina' in source_dict and 'exercise_angina' in target_dict:
         if source_dict['exercise_angina'] <= 0.5 and target_dict['exercise_angina'] > 0.5:
             return True
 
-    # 4c. Resting blood pressure cannot increase substantially (Delta > 5.0 mmHg)
+    # 4c. Resting blood pressure cannot increase substantially (UCI: Delta > 5.0 mmHg)
     if 'resting_bp' in source_dict and 'resting_bp' in target_dict:
         if (target_dict['resting_bp'] - source_dict['resting_bp']) > (5.0 + tol):
+            return True
+
+    # 4d. Systolic blood pressure cannot increase (NHANES: Delta > 0)
+    if 'systolic_bp' in source_dict and 'systolic_bp' in target_dict:
+        if target_dict['systolic_bp'] > source_dict['systolic_bp'] + tol:
+            return True
+
+    # 4e. Body Mass Index (BMI) cannot increase (NHANES: Delta > 0)
+    if 'bmi' in source_dict and 'bmi' in target_dict:
+        if target_dict['bmi'] > source_dict['bmi'] + tol:
+            return True
+
+    # 4f. Glycemic HbA1c cannot increase (NHANES: Delta > 0)
+    if 'glycemic_hba1c' in source_dict and 'glycemic_hba1c' in target_dict:
+        if target_dict['glycemic_hba1c'] > source_dict['glycemic_hba1c'] + tol:
             return True
 
     return False

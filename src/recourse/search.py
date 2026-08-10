@@ -144,16 +144,30 @@ def format_clinical_explanation_report(df_trajectory, risk_scores, feature_metad
     lines.append(f"  - Age                     : {x0['age']:.1f} years")
     sex_str = "Male (1.0)" if x0['sex'] == 1.0 else "Female (0.0)"
     lines.append(f"  - Biological Sex          : {sex_str}")
-    lines.append(f"  - Resting Blood Pressure  : {x0['resting_bp']:.1f} mmHg")
-    lines.append(f"  - Serum Cholesterol       : {x0['cholesterol']:.1f} mg/dL")
-    lines.append(f"  - Max Heart Rate Achieved : {x0['max_heart_rate']:.1f} bpm")
-    lines.append(f"  - ST Depression (Oldpeak) : {x0['oldpeak']:.2f} mm")
-    fbs_val = x0.get('fasting_blood_sugar', 0)
-    fbs_str = "Yes (1.0)" if fbs_val == 1.0 else "No (0.0)"
-    lines.append(f"  - Fasting Blood Sugar >120: {fbs_str}")
-    ex_val = x0.get('exercise_angina', 0)
-    ex_str = "Yes (1.0)" if ex_val == 1.0 else "No (0.0)"
-    lines.append(f"  - Exercise Induced Angina : {ex_str}")
+    if 'resting_bp' in x0:
+        lines.append(f"  - Resting Blood Pressure  : {x0['resting_bp']:.1f} mmHg")
+    if 'systolic_bp' in x0:
+        lines.append(f"  - Systolic Blood Pressure : {x0['systolic_bp']:.1f} mmHg")
+    if 'diastolic_bp' in x0:
+        lines.append(f"  - Diastolic Blood Pressure: {x0['diastolic_bp']:.1f} mmHg")
+    if 'cholesterol' in x0:
+        lines.append(f"  - Serum Cholesterol       : {x0['cholesterol']:.1f} mg/dL")
+    if 'max_heart_rate' in x0:
+        lines.append(f"  - Max Heart Rate Achieved : {x0['max_heart_rate']:.1f} bpm")
+    if 'oldpeak' in x0:
+        lines.append(f"  - ST Depression (Oldpeak) : {x0['oldpeak']:.2f} mm")
+    if 'bmi' in x0:
+        lines.append(f"  - Body Mass Index (BMI)   : {x0['bmi']:.1f} kg/m²")
+    if 'glycemic_hba1c' in x0:
+        lines.append(f"  - Glycemic HbA1c Level    : {x0['glycemic_hba1c']:.2f}%")
+    if 'fasting_blood_sugar' in x0:
+        fbs_val = x0.get('fasting_blood_sugar', 0)
+        fbs_str = "Yes (1.0)" if fbs_val == 1.0 else "No (0.0)"
+        lines.append(f"  - Fasting Blood Sugar >120: {fbs_str}")
+    if 'exercise_angina' in x0:
+        ex_val = x0.get('exercise_angina', 0)
+        ex_str = "Yes (1.0)" if ex_val == 1.0 else "No (0.0)"
+        lines.append(f"  - Exercise Induced Angina : {ex_str}")
     lines.append("")
 
     # 2. Recourse Goal & Target Outcome
@@ -191,6 +205,14 @@ def format_clinical_explanation_report(df_trajectory, risk_scores, feature_metad
                 guidance = f"Lower serum cholesterol by {abs(delta):.1f} mg/dL through dietary modifications (reduced saturated fats) or statin therapy." if delta < 0 else f"Adjust serum cholesterol levels from {v0:.1f} to {v1:.1f} mg/dL."
             elif col == 'resting_bp':
                 guidance = f"Lower resting blood pressure by {abs(delta):.1f} mmHg via dietary sodium restriction, weight management, or antihypertensive medication." if delta < 0 else f"Maintain blood pressure within safe clinical parameters."
+            elif col == 'systolic_bp':
+                guidance = f"Reduce systolic blood pressure by {abs(delta):.1f} mmHg via dietary sodium restriction, weight management, or antihypertensive medication." if delta < 0 else f"Maintain systolic BP within safe clinical range."
+            elif col == 'diastolic_bp':
+                guidance = f"Reduce diastolic blood pressure by {abs(delta):.1f} mmHg via lifestyle management." if delta < 0 else f"Maintain diastolic BP within safe clinical range."
+            elif col == 'bmi':
+                guidance = f"Reduce Body Mass Index (BMI) by {abs(delta):.1f} kg/m² through nutritional management and regular physical activity." if delta < 0 else f"Maintain healthy weight parameters."
+            elif col == 'glycemic_hba1c':
+                guidance = f"Lower HbA1c level by {abs(delta):.2f}% through glycemic control, dietary modifications, or diabetes medication." if delta < 0 else f"Maintain glycemic control."
             elif col == 'max_heart_rate':
                 guidance = f"Improve maximum heart rate by {abs(delta):.1f} bpm through progressive aerobic cardiovascular conditioning." if delta > 0 else f"Adjust max heart rate by {abs(delta):.1f} bpm under physician supervision."
             elif col == 'oldpeak':

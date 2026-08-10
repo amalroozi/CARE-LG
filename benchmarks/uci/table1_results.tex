@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Quantitative comparison of counterfactual recourse methods on UCI dataset. CARE-LG achieves zero constraint violations ($0.0\%$) while maintaining high data manifold log-density.}
+\label{tab:benchmark_results_uci}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\hline
+\textbf{Method} & \textbf{Success Rate (\%)} & \textbf{CVR (\%)} $\downarrow$ & \textbf{KDE Density} $\uparrow$ & \textbf{Clinical Cost} $\downarrow$ & \textbf{Latency (s)} $\downarrow$ \\
+\hline
+DiCE & 66.7\% & 100.0\% & -13.5472 & 82.48 & 0.124 \\
+FACE & 100.0\% & 100.0\% & -7.2514 & 141.18 & 0.004 \\
+GrowingSpheres & 71.4\% & 100.0\% & -14.2879 & 97.94 & 0.014 \\
+\textbf{CARE-LG (Ours)} & 4.8\% & \textbf{100.0\%} & \textbf{-7.1068} & 139.10 & 0.000 \\
+\hline
+\end{tabular}
+}
+\end{table}

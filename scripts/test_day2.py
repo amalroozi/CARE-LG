@@ -1,9 +1,11 @@
 """
 Day 2 verification script for CARE-LG research framework.
 Tests Riemannian metric tensor, clinical constraints masking, CALG graph construction, Dijkstra pathfinding, and recourse trajectory decoding.
+Supports multi-dataset selection via --dataset uci / nhanes.
 """
 
 import sys
+import argparse
 from pathlib import Path
 
 # Ensure project root is in python path
@@ -13,7 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 import numpy as np
 import torch
-from configs.dataset_config import FEATURE_METADATA, CLINICAL_EFFORT_WEIGHTS
+from configs.dataset_config import get_dataset_config
 from src.data.loader import get_dataloaders
 from src.blackbox_model import train_blackbox_model, get_device
 from src.vae.model import train_vae
@@ -23,17 +25,19 @@ from src.graph.calg import build_calg_graph
 from src.recourse.search import find_recourse_path, decode_recourse_trajectory, format_clinical_explanation_report
 
 
-def test_day2():
+def test_day2(dataset_name="uci"):
     print("==================================================")
-    print("CARE-LG Day 2 Graph Engine & Recourse Verification")
+    print(f"CARE-LG Day 2 Graph Engine Verification ({dataset_name.upper()} Dataset)")
     print("==================================================")
+
+    feature_metadata, effort_weights, dataset_path = get_dataset_config(dataset_name)
 
     device = get_device()
     print(f"Using PyTorch device: {device}")
 
     # 1. Load Data & Train Core Models
-    print("\n1. Loading Data & Training VAE + Classifier Models...")
-    train_loader, test_loader, scaler, feature_cols = get_dataloaders(batch_size=64, seed=42)
+    print(f"\n1. Loading {dataset_name.upper()} Data & Training VAE + Classifier Models...")
+    train_loader, test_loader, scaler, feature_cols = get_dataloaders(dataset_name=dataset_name, batch_size=64, seed=42)
     input_dim = len(feature_cols)
 
     classifier = train_blackbox_model(train_loader, input_dim=input_dim, epochs=15, device=device)
@@ -58,27 +62,24 @@ def test_day2():
 
     # 3. Test Clinical Constraints & Asymmetric Masking
     print("\n3. Testing Clinical Constraint Masking...")
-    # Get a sample feature vector
     X_sample, _ = next(iter(train_loader))
     x_src = X_sample[0].numpy()
 
     # Create a target with age reduction (violation)
     x_violate_age = x_src.copy()
-    src_unscaled = unscale_features(x_src, scaler, feature_cols, FEATURE_METADATA)
-    # Reduce age by 5 years
+    src_unscaled = unscale_features(x_src, scaler, feature_cols, feature_metadata)
     age_idx = feature_cols.index('age')
-    cont_cols = FEATURE_METADATA['continuous_mutable'] + FEATURE_METADATA['non_decreasing']
+    cont_cols = feature_metadata['continuous_mutable'] + feature_metadata['non_decreasing']
     age_cont_idx = cont_cols.index('age')
 
     violating_age_unscaled = src_unscaled['age'] - 5.0
-    # Create copy for scaling
     cont_vals = np.array([src_unscaled[c] for c in cont_cols]).reshape(1, -1)
     cont_vals[0, age_cont_idx] = violating_age_unscaled
     scaled_cont = scaler.transform(cont_vals).squeeze()
     for i, c in enumerate(cont_cols):
         x_violate_age[feature_cols.index(c)] = scaled_cont[i]
 
-    has_age_violation = check_clinical_violations(x_src, x_violate_age, FEATURE_METADATA, scaler, feature_cols)
+    has_age_violation = check_clinical_violations(x_src, x_violate_age, feature_metadata, scaler, feature_cols)
     print(f"   Age reduction violation detected: {has_age_violation} (expected: True)")
     assert has_age_violation is True
 
@@ -86,7 +87,7 @@ def test_day2():
     x_violate_sex = x_src.copy()
     sex_idx = feature_cols.index('sex')
     x_violate_sex[sex_idx] = 1.0 - x_src[sex_idx]
-    has_sex_violation = check_clinical_violations(x_src, x_violate_sex, FEATURE_METADATA, scaler, feature_cols)
+    has_sex_violation = check_clinical_violations(x_src, x_violate_sex, feature_metadata, scaler, feature_cols)
     print(f"   Immutable attribute violation detected: {has_sex_violation} (expected: True)")
     assert has_sex_violation is True
 
@@ -95,8 +96,8 @@ def test_day2():
     calg_matrix, Z, X, y = build_calg_graph(
         vae_model=vae,
         train_loader=train_loader,
-        feature_metadata=FEATURE_METADATA,
-        effort_weights=CLINICAL_EFFORT_WEIGHTS,
+        feature_metadata=feature_metadata,
+        effort_weights=effort_weights,
         scaler=scaler,
         feature_cols=feature_cols,
         k_neighbors=30,
@@ -115,7 +116,6 @@ def test_day2():
 
     print(f"   Risk Scores - Min: {risk_scores.min():.4f}, Max: {risk_scores.max():.4f}, Mean: {risk_scores.mean():.4f}")
 
-    # Identify high-risk source candidate and low-risk target candidates
     high_risk_candidates = np.where(risk_scores > 0.55)[0]
     low_risk_mask = risk_scores < 0.45
 
@@ -143,13 +143,13 @@ def test_day2():
     print(f"   Target Node Index: {target_idx} (Final Risk: {risk_scores[target_idx]:.4f})")
 
     # Decode recourse trajectory
-    trajectory_df = decode_recourse_trajectory(vae, Z, path, X, scaler, feature_cols, FEATURE_METADATA)
-    print("\n   Decoded Step-by-Step Recourse Trajectory:")
-    print(trajectory_df[['step', 'node_idx', 'age', 'sex', 'resting_bp', 'cholesterol', 'max_heart_rate', 'oldpeak']])
+    trajectory_df = decode_recourse_trajectory(vae, Z, path, X, scaler, feature_cols, feature_metadata)
+    print("\n   Decoded Step-by-Step Recourse Trajectory Summary:")
+    print(trajectory_df.head(len(path)))
 
     # 7. Format & Print Plain-English Clinical Explanation Report
     print("\n7. Generating Plain-English Clinical Recourse Report...")
-    report_str = format_clinical_explanation_report(trajectory_df, risk_scores, FEATURE_METADATA)
+    report_str = format_clinical_explanation_report(trajectory_df, risk_scores, feature_metadata)
     print("\n" + report_str)
 
     # 8. Verify Zero Violations Along Recourse Path
@@ -160,14 +160,18 @@ def test_day2():
         x_curr = X[idx_curr]
         x_next = X[idx_next]
 
-        violation = check_clinical_violations(x_curr, x_next, FEATURE_METADATA, scaler, feature_cols)
+        violation = check_clinical_violations(x_curr, x_next, feature_metadata, scaler, feature_cols)
         print(f"   Transition step {k} -> {k+1} (Node {idx_curr} -> {idx_next}): Violation = {violation}")
         assert violation is False, f"Clinical violation found on recourse transition step {k} -> {k+1}!"
 
     print("\n==================================================")
-    print("SUCCESS: Day 2 Graph Engine & Recourse Verified with 0 Errors!")
+    print(f"SUCCESS: Day 2 Graph Engine & Recourse Verified for {dataset_name.upper()} with 0 Errors!")
     print("==================================================")
 
 
 if __name__ == "__main__":
-    test_day2()
+    parser = argparse.ArgumentParser(description="CARE-LG Day 2 Graph Verification")
+    parser.add_argument("--dataset", type=str, default="uci", choices=["uci", "nhanes"], help="Dataset to evaluate (uci or nhanes)")
+    args = parser.parse_args()
+
+    test_day2(dataset_name=args.dataset)

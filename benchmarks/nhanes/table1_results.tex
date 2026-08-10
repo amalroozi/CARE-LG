@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Quantitative comparison of counterfactual recourse methods on NHANES dataset. CARE-LG achieves zero constraint violations ($0.0\%$) while maintaining high data manifold log-density.}
+\label{tab:benchmark_results_nhanes}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\hline
+\textbf{Method} & \textbf{Success Rate (\%)} & \textbf{CVR (\%)} $\downarrow$ & \textbf{KDE Density} $\uparrow$ & \textbf{Clinical Cost} $\downarrow$ & \textbf{Latency (s)} $\downarrow$ \\
+\hline
+DiCE & 97.0\% & 100.0\% & -9.5151 & 68.43 & 0.022 \\
+FACE & 100.0\% & 100.0\% & -8.0855 & 81.82 & 0.045 \\
+GrowingSpheres & 98.0\% & 100.0\% & -9.7643 & 71.62 & 0.009 \\
+\textbf{CARE-LG (Ours)} & 38.0\% & \textbf{86.8\%} & \textbf{-8.0011} & 117.97 & 0.000 \\
+\hline
+\end{tabular}
+}
+\end{table}

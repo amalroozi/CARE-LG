@@ -24,8 +24,8 @@ from tqdm import tqdm
 
 from configs.dataset_config import FEATURE_METADATA, CLINICAL_EFFORT_WEIGHTS
 from src.data.loader import get_dataloaders
-from src.blackbox_model import train_blackbox_model, get_device
-from src.vae.model import train_vae
+from src.blackbox_model import RiskClassifier, train_blackbox_model, get_device
+from src.vae.model import TabularVAE, train_vae
 from src.graph.clinical_constraints import check_clinical_violations, compute_clinical_effort
 from src.graph.calg import build_calg_graph
 from src.recourse.search import find_recourse_path
@@ -333,9 +333,167 @@ def run_all_benchmarks(num_query_instances=100, seed=42):
     print("\nBenchmark Summary Table:")
     print(df_summary.to_string(index=False))
 
-    # 6. Save Results to JSON & CSV
-    output_dir = PROJECT_ROOT / "benchmarks"
-    output_dir.mkdir(exist_ok=True)
+from configs.dataset_config import get_dataset_config
+
+
+def run_all_benchmarks(dataset_name="uci", num_query_instances=100, seed=42):
+    print("==================================================")
+    print(f"CARE-LG Baseline Benchmark Runner ({dataset_name.upper()} Dataset)")
+    print("==================================================")
+
+    feature_metadata, effort_weights, dataset_path = get_dataset_config(dataset_name)
+
+    device = get_device()
+    print(f"Using PyTorch device: {device}")
+
+    # 1. Load Data & DataLoaders
+    print(f"\n1. Loading {dataset_name.upper()} Dataset...")
+    train_loader, test_loader, scaler, feature_cols = get_dataloaders(dataset_name=dataset_name, batch_size=64, seed=seed)
+    input_dim = len(feature_cols)
+
+    models_dir = PROJECT_ROOT / "models" / dataset_name
+    models_dir.mkdir(parents=True, exist_ok=True)
+    vae_path = models_dir / "vae_model.pt"
+    clf_path = models_dir / "classifier_model.pt"
+
+    classifier = RiskClassifier(input_dim=input_dim).to(device)
+    vae = TabularVAE(input_dim=input_dim, latent_dim=4).to(device)
+
+    if clf_path.exists():
+        classifier.load_state_dict(torch.load(clf_path, map_location=device))
+        classifier.eval()
+    else:
+        classifier = train_blackbox_model(train_loader, input_dim=input_dim, epochs=20, device=device)
+        torch.save(classifier.state_dict(), clf_path)
+
+    if vae_path.exists():
+        vae.load_state_dict(torch.load(vae_path, map_location=device))
+        vae.eval()
+    else:
+        vae = train_vae(train_loader, input_dim=input_dim, latent_dim=4, epochs=25, device=device)
+        torch.save(vae.state_dict(), vae_path)
+
+    # 2. Build CALG Graph for CARE-LG
+    print("\n2. Constructing CALG Graph for CARE-LG...")
+    calg_matrix, Z_train, X_train, y_train = build_calg_graph(
+        vae_model=vae,
+        train_loader=train_loader,
+        feature_metadata=feature_metadata,
+        effort_weights=effort_weights,
+        scaler=scaler,
+        feature_cols=feature_cols,
+        k_neighbors=60,
+        lambda_effort=1.0
+    )
+
+    with torch.no_grad():
+        X_train_tensor = torch.tensor(X_train, dtype=torch.float32).to(device)
+        train_risk = classifier(X_train_tensor).cpu().numpy().squeeze()
+
+    low_risk_mask = train_risk < 0.45
+
+    # 3. Select Test Query Patients
+    print(f"\n3. Selecting {num_query_instances} High-Risk Test Query Patients...")
+    test_X_list = []
+    test_y_list = []
+    for x_b, y_b in test_loader:
+        test_X_list.append(x_b.numpy())
+        test_y_list.append(y_b.numpy())
+
+    X_test_all = np.vstack(test_X_list)
+    with torch.no_grad():
+        X_test_tensor = torch.tensor(X_test_all, dtype=torch.float32).to(device)
+        test_risk_all = classifier(X_test_tensor).cpu().numpy().squeeze()
+
+    high_risk_test_indices = np.where(test_risk_all > 0.55)[0]
+    if len(high_risk_test_indices) > num_query_instances:
+        np.random.seed(seed)
+        query_indices = np.random.choice(high_risk_test_indices, size=num_query_instances, replace=False)
+    else:
+        query_indices = high_risk_test_indices
+
+    query_X = X_test_all[query_indices]
+    print(f"   Selected {len(query_X)} high-risk query instances.")
+
+    # 4. Evaluate Benchmark Baseline Recourse Methods
+    methods = ['DiCE', 'FACE', 'GrowingSpheres', 'CARE-LG']
+    results_data = {m: {'success': [], 'cvr': [], 'cost': [], 'latency': [], 'recourse_x': []} for m in methods}
+
+    print("\n4. Running Baseline & CARE-LG Recourse Evaluation...")
+    for idx, x0 in enumerate(tqdm(query_X, desc="Benchmarking Patients")):
+        # DiCE
+        succ_dice, x_rec_dice, lat_dice = run_dice(x0, classifier, device=device)
+        results_data['DiCE']['success'].append(1.0 if succ_dice else 0.0)
+        results_data['DiCE']['latency'].append(lat_dice)
+        if succ_dice:
+            results_data['DiCE']['cvr'].append(compute_cvr(x0, x_rec_dice, feature_metadata, scaler, feature_cols))
+            results_data['DiCE']['cost'].append(compute_clinical_effort(x0, x_rec_dice, effort_weights, feature_metadata, scaler, feature_cols))
+            results_data['DiCE']['recourse_x'].append(x_rec_dice)
+
+        # FACE
+        # Map x0 to nearest training node
+        dists = np.linalg.norm(X_train - x0, axis=1)
+        src_node = np.argmin(dists)
+        succ_face, x_rec_face, lat_face = run_face(src_node, X_train, low_risk_mask)
+        results_data['FACE']['success'].append(1.0 if succ_face else 0.0)
+        results_data['FACE']['latency'].append(lat_face)
+        if succ_face:
+            results_data['FACE']['cvr'].append(compute_cvr(x0, x_rec_face, feature_metadata, scaler, feature_cols))
+            results_data['FACE']['cost'].append(compute_clinical_effort(x0, x_rec_face, effort_weights, feature_metadata, scaler, feature_cols))
+            results_data['FACE']['recourse_x'].append(x_rec_face)
+
+        # Growing Spheres
+        succ_gs, x_rec_gs, lat_gs = run_growing_spheres(x0, classifier, device=device)
+        results_data['GrowingSpheres']['success'].append(1.0 if succ_gs else 0.0)
+        results_data['GrowingSpheres']['latency'].append(lat_gs)
+        if succ_gs:
+            results_data['GrowingSpheres']['cvr'].append(compute_cvr(x0, x_rec_gs, feature_metadata, scaler, feature_cols))
+            results_data['GrowingSpheres']['cost'].append(compute_clinical_effort(x0, x_rec_gs, effort_weights, feature_metadata, scaler, feature_cols))
+            results_data['GrowingSpheres']['recourse_x'].append(x_rec_gs)
+
+        # CARE-LG
+        succ_care, x_rec_care, lat_care = run_care_lg(src_node, calg_matrix, low_risk_mask, X_train)
+        results_data['CARE-LG']['success'].append(1.0 if succ_care else 0.0)
+        results_data['CARE-LG']['latency'].append(lat_care)
+        if succ_care:
+            results_data['CARE-LG']['cvr'].append(compute_cvr(x0, x_rec_care, feature_metadata, scaler, feature_cols))
+            results_data['CARE-LG']['cost'].append(compute_clinical_effort(x0, x_rec_care, effort_weights, feature_metadata, scaler, feature_cols))
+            results_data['CARE-LG']['recourse_x'].append(x_rec_care)
+
+    # 5. Compute Aggregate Benchmark Summary
+    print("\n5. Computing Aggregate Performance Summary...")
+    summary_rows = []
+
+    for method in methods:
+        data = results_data[method]
+        success_rate = np.mean(data['success']) * 100.0
+        cvr_pct = np.mean(data['cvr']) * 100.0 if len(data['cvr']) > 0 else 0.0
+        mean_cost = np.mean(data['cost']) if len(data['cost']) > 0 else 0.0
+        mean_lat = np.mean(data['latency']) if len(data['latency']) > 0 else 0.0
+
+        if len(data['recourse_x']) > 0:
+            rec_matrix = np.vstack(data['recourse_x'])
+            kde_density = compute_kde_density(rec_matrix, X_train, bandwidth=0.5)
+        else:
+            kde_density = -999.0
+
+        row = {
+            'Method': method,
+            'Success_Rate_Pct': round(float(success_rate), 2),
+            'CVR_Pct': round(float(cvr_pct), 2),
+            'KDE_Density': round(float(kde_density), 4),
+            'Clinical_Cost': round(float(mean_cost), 4),
+            'Latency_Sec': round(float(mean_lat), 4)
+        }
+        summary_rows.append(row)
+
+    df_summary = pd.DataFrame(summary_rows)
+    print(f"\nBenchmark Summary Table ({dataset_name.upper()} Dataset):")
+    print(df_summary.to_string(index=False))
+
+    # 6. Save Results to isolated benchmarks/{dataset}/ directory
+    output_dir = PROJECT_ROOT / "benchmarks" / dataset_name
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     csv_path = output_dir / "results.csv"
     json_path = output_dir / "results.json"
@@ -346,9 +504,15 @@ def run_all_benchmarks(num_query_instances=100, seed=42):
 
     print(f"\nSaved benchmark results to {csv_path} and {json_path}")
     print("==================================================")
-    print("SUCCESS: Benchmark Execution Completed Cleanly!")
+    print(f"SUCCESS: Benchmark Execution Completed Cleanly for {dataset_name.upper()}!")
     print("==================================================")
 
 
 if __name__ == "__main__":
-    run_all_benchmarks(num_query_instances=100, seed=42)
+    import argparse
+    parser = argparse.ArgumentParser(description="CARE-LG Baseline Benchmark Runner")
+    parser.add_argument("--dataset", type=str, default="uci", choices=["uci", "nhanes"], help="Dataset to evaluate (uci or nhanes)")
+    args = parser.parse_args()
+
+    run_all_benchmarks(dataset_name=args.dataset, num_query_instances=100, seed=42)
+

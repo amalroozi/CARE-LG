@@ -1,5 +1,6 @@
 """
-Data pipeline and synthetic EHR generator for CARE-LG research framework.
+Data pipeline and loader for CARE-LG research framework.
+Supports multi-dataset loading (UCI Heart & NHANES Cohort).
 """
 
 import os
@@ -10,7 +11,7 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from configs.dataset_config import FEATURE_METADATA
+from configs.dataset_config import get_dataset_config, FEATURE_METADATA
 
 
 class EHRDataset(Dataset):
@@ -31,29 +32,22 @@ class EHRDataset(Dataset):
 
 def generate_synthetic_ehr(num_samples=3000, seed=42):
     """
-    Generates synthetic tabular cardiovascular EHR records matching FEATURE_METADATA schema.
-
-    Returns:
-        pd.DataFrame: Synthetic dataset with feature columns and target 'heart_disease_risk'.
+    Generates synthetic tabular cardiovascular EHR records matching UCI metadata schema.
     """
     np.random.seed(seed)
 
-    # Immutable & Non-decreasing
     age = np.random.normal(54, 10, num_samples).clip(30, 80).astype(float)
     sex = np.random.binomial(1, 0.6, num_samples).astype(float)
     fasting_blood_sugar = np.random.binomial(1, 0.2, num_samples).astype(float)
 
-    # Continuous Mutable
     resting_bp = np.random.normal(130, 18, num_samples).clip(90, 200).astype(float)
     cholesterol = np.random.normal(240, 45, num_samples).clip(120, 500).astype(float)
     max_heart_rate = np.random.normal(150, 22, num_samples).clip(70, 210).astype(float)
     oldpeak = np.random.exponential(0.8, num_samples).clip(0, 6.2).astype(float)
 
-    # Categorical Mutable
     exercise_angina = np.random.binomial(1, 0.3, num_samples).astype(float)
     slope = np.random.choice([0, 1, 2], size=num_samples, p=[0.3, 0.5, 0.2]).astype(float)
 
-    # Risk score logistic function
     logit = (
         0.04 * (age - 50)
         + 0.5 * sex
@@ -82,8 +76,7 @@ def generate_synthetic_ehr(num_samples=3000, seed=42):
         'heart_disease_risk': heart_disease_risk
     }
 
-    df = pd.DataFrame(data)
-    return df
+    return pd.DataFrame(data)
 
 
 def load_dataset(filepath="data/uci_heart.csv", seed=42):
@@ -91,7 +84,6 @@ def load_dataset(filepath="data/uci_heart.csv", seed=42):
     Loads dataset from CSV file if available, else generates synthetic EHR records.
     """
     if os.path.exists(filepath):
-        print(f"Loading dataset from {filepath}...")
         df = pd.read_csv(filepath)
     else:
         print(f"Dataset path {filepath} not found. Generating synthetic EHR records...")
@@ -99,9 +91,9 @@ def load_dataset(filepath="data/uci_heart.csv", seed=42):
     return df
 
 
-def get_dataloaders(df=None, dataset_path="data/uci_heart.csv", batch_size=64, seed=42):
+def get_dataloaders(df=None, dataset_name="uci", dataset_path=None, batch_size=64, seed=42):
     """
-    Preprocesses EHR data (loading from data/uci_heart.csv by default), scales continuous features, and builds PyTorch DataLoaders.
+    Preprocesses EHR dataset (UCI or NHANES), scales continuous features, and builds PyTorch DataLoaders.
 
     Returns:
         train_loader (DataLoader): PyTorch DataLoader for training set.
@@ -109,14 +101,19 @@ def get_dataloaders(df=None, dataset_path="data/uci_heart.csv", batch_size=64, s
         scaler (StandardScaler): Fitted StandardScaler object for continuous features.
         feature_cols (list): List of feature column names.
     """
+    feature_metadata, _, default_path = get_dataset_config(dataset_name)
+
+    if dataset_path is None:
+        dataset_path = default_path
+
     if df is None:
         df = load_dataset(filepath=dataset_path, seed=seed)
 
-    target_col = FEATURE_METADATA['target']
+    target_col = feature_metadata['target']
     feature_cols = [c for c in df.columns if c != target_col]
 
     # Continuous features to scale
-    continuous_cols = FEATURE_METADATA['continuous_mutable'] + FEATURE_METADATA['non_decreasing']
+    continuous_cols = feature_metadata['continuous_mutable'] + feature_metadata['non_decreasing']
 
     X = df[feature_cols].copy()
     y = df[target_col].values
