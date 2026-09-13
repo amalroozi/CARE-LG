@@ -4,7 +4,15 @@ pandas
 scikit-learn
 scipy
 networkx
-carla-recourse
 matplotlib
 seaborn
 tqdm
+# --- added experiments_v6_audit/DEEP_AUDIT.md issue #3 resolution ---
+# load-bearing for experiments_v6 / src's neurosymbolic layer, explanation
+# system, and UI, previously untracked here; versions pinned to what was
+# actually installed and verified this session.
+clingo>=5.8.2
+shap>=0.51.0
+fastapi>=0.141.1
+uvicorn[standard]>=0.52.4
+pytest>=9.1.1

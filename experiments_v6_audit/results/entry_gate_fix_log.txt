@@ -1,0 +1,36 @@
+[verify-gate] uci seed=0 original_relaxed_gate : success= 64.0% decodedCVR= 31.2% realCVR= 68.8%
+[verify-gate] uci seed=0 fixed_strict_gate     : success= 32.0% decodedCVR= 50.0% realCVR=  0.0%
+  [1.1s]
+[verify-gate] uci seed=1 original_relaxed_gate : success= 75.0% decodedCVR= 33.3% realCVR= 33.3%
+[verify-gate] uci seed=1 fixed_strict_gate     : success= 55.0% decodedCVR= 45.5% realCVR=  0.0%
+  [0.3s]
+[verify-gate] uci seed=2 original_relaxed_gate : success= 87.0% decodedCVR= 45.0% realCVR= 60.0%
+[verify-gate] uci seed=2 fixed_strict_gate     : success= 47.8% decodedCVR= 63.6% realCVR=  0.0%
+  [0.3s]
+[verify-gate] uci seed=3 original_relaxed_gate : success= 63.6% decodedCVR= 50.0% realCVR= 57.1%
+[verify-gate] uci seed=3 fixed_strict_gate     : success= 36.4% decodedCVR= 37.5% realCVR=  0.0%
+  [0.3s]
+[verify-gate] uci seed=4 original_relaxed_gate : success= 69.6% decodedCVR= 50.0% realCVR= 75.0%
+[verify-gate] uci seed=4 fixed_strict_gate     : success= 21.7% decodedCVR= 40.0% realCVR=  0.0%
+  [0.3s]
+[verify-gate] nhanes_real seed=0 original_relaxed_gate : success= 45.5% decodedCVR= 84.8% realCVR= 69.1%
+[verify-gate] nhanes_real seed=0 fixed_strict_gate     : success= 37.1% decodedCVR= 65.4% realCVR=  0.0%
+  [12.4s]
+[verify-gate] nhanes_real seed=1 original_relaxed_gate : success= 41.1% decodedCVR= 84.2% realCVR= 76.5%
+[verify-gate] nhanes_real seed=1 fixed_strict_gate     : success= 32.4% decodedCVR= 67.4% realCVR=  0.0%
+  [13.0s]
+[verify-gate] nhanes_real seed=2 original_relaxed_gate : success= 48.3% decodedCVR= 69.1% realCVR= 68.1%
+[verify-gate] nhanes_real seed=2 fixed_strict_gate     : success= 40.0% decodedCVR= 53.8% realCVR=  0.0%
+  [12.3s]
+[verify-gate] nhanes_real seed=3 original_relaxed_gate : success= 44.2% decodedCVR= 86.3% realCVR= 64.2%
+[verify-gate] nhanes_real seed=3 fixed_strict_gate     : success= 37.7% decodedCVR= 72.8% realCVR=  0.0%
+  [12.6s]
+[verify-gate] nhanes_real seed=4 original_relaxed_gate : success= 48.3% decodedCVR= 80.7% realCVR= 78.3%
+[verify-gate] nhanes_real seed=4 fixed_strict_gate     : success= 41.2% decodedCVR= 54.7% realCVR=  0.0%
+  [13.8s]
+
+[verify-gate] === FULL SUMMARY (mean +/- std over seeds) ===
+uci          original_relaxed_gate : success=71.8+/-9.6%  decodedCVR=41.9+/-9.1%  realCVR=58.8+/-15.9%
+uci          fixed_strict_gate     : success=38.6+/-13.1%  decodedCVR=47.3+/-10.3%  realCVR=0.0+/-0.0%
+nhanes_real  original_relaxed_gate : success=45.5+/-3.0%  decodedCVR=81.0+/-7.0%  realCVR=71.3+/-5.9%
+nhanes_real  fixed_strict_gate     : success=37.7+/-3.4%  decodedCVR=62.8+/-8.3%  realCVR=0.0+/-0.0%

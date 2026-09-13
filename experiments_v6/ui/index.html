@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>CARE-LG v6</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 24px;
+         background: #f7f7f8; color: #111; max-width: 980px; margin-inline: auto; }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 20px; }
+  .panel { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .panel h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: #444; margin: 0 0 12px; }
+  label { display: block; font-size: 12px; color: #555; margin-bottom: 4px; }
+  select, button { font-size: 14px; padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; }
+  button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+  button:disabled { background: #aaa; cursor: default; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: end; }
+  .gauge { display: flex; gap: 24px; align-items: center; }
+  .gauge-box { text-align: center; }
+  .gauge-val { font-size: 28px; font-weight: 700; }
+  .risk-high { color: #dc2626; } .risk-low { color: #16a34a; }
+  .step { border-left: 3px solid #2563eb; margin-bottom: 8px; }
+  .step summary { cursor: pointer; padding: 8px; font-size: 13px; font-weight: 600; }
+  .step-body { padding: 0 12px 12px; font-size: 13px; color: #333; }
+  .rule-line { font-family: ui-monospace, monospace; font-size: 12px; margin: 2px 0; }
+  .abstain { background: #fef2f2; border-color: #fecaca; }
+  .abstain h2 { color: #b91c1c; }
+  .cert-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .cert-certified_infeasible { background: #fee2e2; color: #991b1b; }
+  .cert-confirmed_blindspot { background: #fef9c3; color: #854d0e; }
+  .cert-unresolved { background: #e5e7eb; color: #374151; }
+  .shap-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; margin: 2px 0; }
+  .shap-track { flex: 1; height: 10px; background: #eee; border-radius: 4px; overflow: hidden; }
+  .shap-fill-pos { background: #dc2626; height: 100%; }
+  .shap-fill-neg { background: #16a34a; height: 100%; }
+  .delta-chip { display: inline-block; background: #eef2ff; color: #3730a3; border-radius: 4px; padding: 1px 6px;
+                font-size: 12px; margin: 2px 4px 2px 0; font-family: ui-monospace, monospace; }
+  .note { font-size: 11px; color: #888; margin-top: 8px; }
+</style>
+</head>
+<body>
+<h1>CARE-LG v6 — recourse explorer</h1>
+<div class="sub">Corrected pipeline (B1/B2-fixed, real-value CVR = 0.0%) · neurosymbolic guideline layer · SHAP + semifactual explanations · preference elicitation. Functional demo, not a polished product.</div>
+
+<div class="panel">
+  <h2>1 &middot; Patient</h2>
+  <div class="row">
+    <div>
+      <label>Dataset</label>
+      <select id="dataset">
+        <option value="uci">UCI Heart</option>
+        <option value="nhanes_real">Real NHANES</option>
+      </select>
+    </div>
+    <div>
+      <label>Seed</label>
+      <select id="seed">
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+      </select>
+    </div>
+    <div>
+      <label>Patient (high-risk test cohort)</label>
+      <select id="patient"></select>
+    </div>
+    <div>
+      <label>Preference profile</label>
+      <select id="profile"></select>
+    </div>
+    <div><button id="run">Run recourse search</button></div>
+  </div>
+  <div class="note">Patients are loaded from the real held-out test cohort for the selected (dataset, seed) — none are fabricated.</div>
+</div>
+
+<div class="panel" id="gauge-panel" hidden>
+  <h2>2 &middot; Risk gauge</h2>
+  <div class="gauge">
+    <div class="gauge-box"><div>Before</div><div class="gauge-val" id="risk-before">–</div></div>
+    <div style="font-size:20px;color:#999;">→</div>
+    <div class="gauge-box"><div>After</div><div class="gauge-val" id="risk-after">–</div></div>
+  </div>
+</div>
+
+<div class="panel" id="shap-panel" hidden>
+  <h2>Risk attribution (SHAP)</h2>
+  <div id="shap-list"></div>
+</div>
+
+<div class="panel" id="plan-panel" hidden>
+  <h2>4 &middot; Step-by-step recourse plan</h2>
+  <div id="plan-steps"></div>
+</div>
+
+<div class="panel" id="guideline-context-panel" hidden style="background:#fffbeb;">
+  <h2>Guideline context (real NHANES only)</h2>
+  <div id="guideline-context-body" style="font-size:13px; line-height:1.6;"></div>
+  <div class="note">Statin indication (10-yr ASCVD &ge;7.5%, 2013 ACC/AHA PCE) and BP target
+    (differentiated by diabetes status, 2017 ACC/AHA guideline) -- wired in this session per
+    experiments_v6_audit/DEEP_AUDIT.md issue #8. Not available for UCI (its label is not
+    ASCVD/PCE-based).</div>
+</div>
+
+<div class="panel abstain" id="abstain-panel" hidden>
+  <h2>5 &middot; Abstention</h2>
+  <div id="cert-badge"></div>
+  <p id="semifactual-text" style="font-size:13px; line-height:1.5;"></p>
+</div>
+
+<script>
+const API = "";
+let currentProfiles = [];
+
+async function loadPatients() {
+  const dataset = document.getElementById('dataset').value;
+  const seed = document.getElementById('seed').value;
+  const res = await fetch(`${API}/api/patients?dataset=${dataset}&seed=${seed}`);
+  const data = await res.json();
+  const patientSel = document.getElementById('patient');
+  patientSel.innerHTML = data.patients.map(p =>
+    `<option value="${p.patient_idx}">#${p.patient_idx} (risk ${(p.risk*100).toFixed(0)}%)</option>`
+  ).join('');
+  currentProfiles = data.preference_profiles;
+  const profileSel = document.getElementById('profile');
+  profileSel.innerHTML = currentProfiles.map(p => `<option value="${p}">${p}</option>`).join('');
+}
+
+function riskClass(r) { return r >= 0.55 ? 'risk-high' : 'risk-low'; }
+
+function renderShap(items) {
+  const el = document.getElementById('shap-list');
+  const maxAbs = Math.max(...items.map(i => Math.abs(i.value)), 1e-6);
+  el.innerHTML = items.map(i => {
+    const pct = Math.min(100, Math.abs(i.value) / maxAbs * 100);
+    const cls = i.value >= 0 ? 'shap-fill-pos' : 'shap-fill-neg';
+    return `<div class="shap-bar"><div style="width:110px">${i.feature}</div>
+      <div class="shap-track"><div class="${cls}" style="width:${pct}%"></div></div>
+      <div style="width:60px; text-align:right">${i.value.toFixed(3)}</div></div>`;
+  }).join('');
+  document.getElementById('shap-panel').hidden = false;
+}
+
+async function run() {
+  const dataset = document.getElementById('dataset').value;
+  const seed = parseInt(document.getElementById('seed').value);
+  const patient_idx = parseInt(document.getElementById('patient').value);
+  const profile = document.getElementById('profile').value;
+
+  document.getElementById('gauge-panel').hidden = true;
+  document.getElementById('plan-panel').hidden = true;
+  document.getElementById('abstain-panel').hidden = true;
+  document.getElementById('shap-panel').hidden = true;
+  document.getElementById('guideline-context-panel').hidden = true;
+
+  const res = await fetch(`${API}/api/recourse`, {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({dataset, seed, patient_idx, profile})
+  });
+  const data = await res.json();
+
+  if (data.guideline_context) {
+    const gc = data.guideline_context;
+    document.getElementById('guideline-context-body').innerHTML =
+      `<p><b>10-yr ASCVD risk:</b> ${gc.ascvd_10yr_risk_pct.toFixed(1)}% &mdash; ${gc.statin_text}</p>
+       <p><b>Diabetes status:</b> ${gc.diabetic ? 'diabetic' : 'non-diabetic'} &mdash; ${gc.bp_target_text}</p>`;
+    document.getElementById('guideline-context-panel').hidden = false;
+  }
+
+  document.getElementById('risk-before').textContent = (data.risk_before*100).toFixed(1) + '%';
+  document.getElementById('risk-before').className = 'gauge-val ' + riskClass(data.risk_before);
+  document.getElementById('gauge-panel').hidden = false;
+  renderShap(data.shap_top_features);
+
+  if (data.success) {
+    document.getElementById('risk-after').textContent = (data.risk_after*100).toFixed(1) + '%';
+    document.getElementById('risk-after').className = 'gauge-val ' + riskClass(data.risk_after);
+    const stepsEl = document.getElementById('plan-steps');
+    stepsEl.innerHTML = data.steps.map(s => {
+      const chips = Object.entries(s.feature_deltas).map(([f,d]) =>
+        `<span class="delta-chip">${f}: ${d>=0?'+':''}${d.toFixed(2)}</span>`).join('');
+      const rules = s.guideline_derivation.map(l => `<div class="rule-line">${l}</div>`).join('');
+      return `<details class="step" open><summary>Step ${s.step}</summary>
+        <div class="step-body">${chips}<div style="margin-top:6px">${rules}</div></div></details>`;
+    }).join('');
+    stepsEl.insertAdjacentHTML('beforeend',
+      `<div class="note">path length: ${data.path_len} hop(s) · clinical effort: ${data.effort.toFixed(2)} · cost: ${data.cost.toFixed(3)}</div>`);
+    document.getElementById('plan-panel').hidden = false;
+  } else {
+    document.getElementById('risk-after').textContent = '(no path)';
+    document.getElementById('risk-after').className = 'gauge-val';
+    const badge = document.getElementById('cert-badge');
+    badge.innerHTML = `<span class="cert-badge cert-${data.certification}">${data.certification.replace(/_/g,' ')}</span>`;
+    document.getElementById('semifactual-text').textContent = data.semifactual_explanation;
+    document.getElementById('abstain-panel').hidden = false;
+  }
+}
+
+document.getElementById('dataset').addEventListener('change', loadPatients);
+document.getElementById('seed').addEventListener('change', loadPatients);
+document.getElementById('run').addEventListener('click', run);
+loadPatients();
+</script>
+</body>
+</html>

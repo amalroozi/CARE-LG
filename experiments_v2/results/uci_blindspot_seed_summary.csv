@@ -1,0 +1,6 @@
+seed,n_high_risk,n_abstain,pct_abstain,pct_certified_infeasible,pct_confirmed_blindspot,pct_unresolved
+0,25,9,36.0,100.0,0.0,0.0
+1,20,5,25.0,100.0,0.0,0.0
+2,23,3,13.043478260869565,100.0,0.0,0.0
+3,22,8,36.36363636363637,100.0,0.0,0.0
+4,23,7,30.434782608695652,100.0,0.0,0.0

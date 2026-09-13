@@ -1,0 +1,12 @@
+feature,n_missing,pct_missing,n_total
+age,0,0.0,9445
+sex,0,0.0,9445
+systolic_bp,988,10.461,9445
+diastolic_bp,988,10.461,9445
+cholesterol,719,7.612,9445
+bmi,181,1.916,9445
+glycemic_hba1c,540,5.717,9445
+race_group,0,0.0,9445
+treated_bp,0,0.0,9445
+smoker,0,0.0,9445
+diabetic,0,0.0,9445

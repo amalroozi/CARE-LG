@@ -1,0 +1,6 @@
+dataset,seed,n_high_risk,n_abstain_true,n_abstain_analyzed,pct_abstain,was_subsampled,pct_certified_infeasible,pct_confirmed_blindspot,pct_unresolved,pct_abstain_stage_no_path,pct_abstain_stage_risk_check
+uci,0,25,9,9,36.0,False,66.66666666666667,0.0,33.333333333333336,0.0,100.0
+uci,1,20,20,20,100.0,False,35.0,0.0,65.0,0.0,100.0
+uci,2,23,5,5,21.73913043478261,False,60.0,0.0,40.0,0.0,100.0
+uci,3,22,21,21,95.45454545454545,False,57.142857142857146,0.0,42.857142857142854,0.0,100.0
+uci,4,23,21,21,91.30434782608695,False,71.42857142857143,0.0,28.571428571428573,0.0,100.0

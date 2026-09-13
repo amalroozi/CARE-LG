@@ -14,6 +14,16 @@ DATASET_CONFIGS = {
             'directional_increase': ['max_heart_rate'],
             'target': 'heart_disease_risk'
         },
+        # NOTE (experiments_v6_audit/DEEP_AUDIT.md issue #9, resolved
+        # experiments_v6/CHANGES.md "Phase 7"): these weights are illustrative,
+        # hand-set constants with no cited derivation -- git history shows no
+        # earlier rationale beyond the comment "representing the difficulty/
+        # cost of changing each feature." They are NOT derived from a patient
+        # survey, published treatment-burden score, or any other clinical
+        # burden-of-change instrument. Every clinical-effort number reported
+        # anywhere in this project (experiments_v2 through v6, including
+        # Phase 6's preference-elicitation cost reweighting) inherits this
+        # limitation.
         'CLINICAL_EFFORT_WEIGHTS': {
             'resting_bp': 1.5,
             'cholesterol': 2.0,
@@ -34,6 +44,9 @@ DATASET_CONFIGS = {
             'directional_increase': [],
             'target': 'cvd_risk_flag'
         },
+        # NOTE: same caveat as 'uci' above (experiments_v6_audit/DEEP_AUDIT.md
+        # issue #9) -- illustrative, uncited weights, not derived from clinical
+        # burden-of-change data.
         'CLINICAL_EFFORT_WEIGHTS': {
             'systolic_bp': 1.5,
             'diastolic_bp': 1.5,

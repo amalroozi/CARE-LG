@@ -1,0 +1,13 @@
+dataset,cell,n,pct_immutable,pct_non_decreasing,pct_age_horizon,pct_directional
+uci,old_latent_pruning,28,0.0,53.57142857142857,3.571428571428571,17.857142857142858
+uci,dsr_c1,73,0.0,0.0,0.0,0.0
+uci,dsr_c1c2,0,,,,
+uci,dsr_full,0,,,,
+uci,dsr_full_euclidean,0,,,,
+uci,dsr_bands_no_identity,0,,,,
+nhanes_real,old_latent_pruning,807,29.615861214374224,28.004956629491947,8.054522924411401,42.37918215613383
+nhanes_real,dsr_c1,1157,0.0,0.0,13.48314606741573,0.0
+nhanes_real,dsr_c1c2,6,83.33333333333334,0.0,83.33333333333334,0.0
+nhanes_real,dsr_full,0,,,,
+nhanes_real,dsr_full_euclidean,0,,,,
+nhanes_real,dsr_bands_no_identity,2,0.0,0.0,50.0,0.0

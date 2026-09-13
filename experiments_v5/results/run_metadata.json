@@ -1,0 +1,24 @@
+{
+  "git_sha": "539d87b795b78bb8f9446f99b0fabeded2c84841",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "cells": [
+    "old_latent_pruning",
+    "egd_riemannian",
+    "egd_euclidean"
+  ],
+  "low_risk_threshold": 0.45,
+  "device": "cpu",
+  "torch_version": "2.13.0",
+  "timestamp": "2026-09-06 17:35:18",
+  "smoke": false
+}

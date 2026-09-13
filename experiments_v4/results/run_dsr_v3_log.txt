@@ -1,0 +1,194 @@
+[dsr] metadata: {
+  "git_sha": "539d87b795b78bb8f9446f99b0fabeded2c84841",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "decoders": [
+    "v3"
+  ],
+  "method_cells": [
+    "old_latent_pruning",
+    "dsr_c1",
+    "dsr_c1c2",
+    "dsr_full",
+    "dsr_full_euclidean",
+    "dsr_bands_no_identity"
+  ],
+  "tau_levels": [
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    0.8,
+    0.9,
+    0.95,
+    0.99
+  ],
+  "operating_tau_quantile": 0.95,
+  "calib_frac": 0.15,
+  "low_risk_threshold": 0.45,
+  "device": "cpu",
+  "torch_version": "2.13.0",
+  "timestamp": "2026-09-06 16:15:51",
+  "smoke": false
+}
+[dsr] uci seed=0 decoder=v3: setup 1.1s, N_train=201 N_calib=36 N_high_risk=22 N_low_risk=87
+[dsr]   tau@0.95: age=5.563, resting_bp=27.892, cholesterol=80.656, max_heart_rate=34.686, oldpeak=2.274
+[dsr]   old_latent_pruning         success=   7/22   decodedCVR= 57.1% in 0.1s
+[dsr]   dsr_c1                     success=  15/22   decodedCVR= 13.3% in 0.1s
+[dsr]   dsr_c1c2                   success=   0/22   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full                   success=   0/22   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_full_euclidean         success=   0/22   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_bands_no_identity      success=   0/22   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full @tau_q=0.05  success=   0/22   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.1   success=   0/22   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.25  success=   0/22   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.5   success=   0/22   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/22   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/22   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/22   decodedCVR=  nan%
+[dsr] uci seed=1 decoder=v3: setup 0.2s, N_train=201 N_calib=36 N_high_risk=11 N_low_risk=102
+[dsr]   tau@0.95: age=5.549, resting_bp=29.855, cholesterol=109.312, max_heart_rate=35.381, oldpeak=2.418
+[dsr]   old_latent_pruning         success=   4/11   decodedCVR=100.0% in 0.0s
+[dsr]   dsr_c1                     success=   9/11   decodedCVR= 11.1% in 0.0s
+[dsr]   dsr_c1c2                   success=   0/11   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full                   success=   0/11   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full_euclidean         success=   0/11   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_bands_no_identity      success=   0/11   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full @tau_q=0.05  success=   0/11   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.1   success=   0/11   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.25  success=   0/11   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.5   success=   0/11   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/11   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/11   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/11   decodedCVR=  nan%
+[dsr] uci seed=2 decoder=v3: setup 0.2s, N_train=201 N_calib=36 N_high_risk=20 N_low_risk=91
+[dsr]   tau@0.95: age=4.787, resting_bp=43.027, cholesterol=98.277, max_heart_rate=37.929, oldpeak=1.551
+[dsr]   old_latent_pruning         success=   8/20   decodedCVR= 62.5% in 0.0s
+[dsr]   dsr_c1                     success=  19/20   decodedCVR= 21.1% in 0.1s
+[dsr]   dsr_c1c2                   success=   0/20   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full                   success=   0/20   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_full_euclidean         success=   0/20   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_bands_no_identity      success=   0/20   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full @tau_q=0.05  success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.1   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.25  success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.5   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/20   decodedCVR=  nan%
+[dsr] uci seed=3 decoder=v3: setup 0.2s, N_train=201 N_calib=36 N_high_risk=20 N_low_risk=76
+[dsr]   tau@0.95: age=5.173, resting_bp=28.682, cholesterol=79.323, max_heart_rate=38.216, oldpeak=1.902
+[dsr]   old_latent_pruning         success=   3/20   decodedCVR= 66.7% in 0.0s
+[dsr]   dsr_c1                     success=  15/20   decodedCVR= 33.3% in 0.1s
+[dsr]   dsr_c1c2                   success=   0/20   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full                   success=   0/20   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full_euclidean         success=   0/20   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_bands_no_identity      success=   0/20   decodedCVR=  nan% in 0.0s
+[dsr]   dsr_full @tau_q=0.05  success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.1   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.25  success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.5   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/20   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/20   decodedCVR=  nan%
+[dsr] uci seed=4 decoder=v3: setup 0.2s, N_train=201 N_calib=36 N_high_risk=26 N_low_risk=52
+[dsr]   tau@0.95: age=4.207, resting_bp=40.206, cholesterol=95.335, max_heart_rate=33.963, oldpeak=2.248
+[dsr]   old_latent_pruning         success=   6/26   decodedCVR= 83.3% in 0.1s
+[dsr]   dsr_c1                     success=  15/26   decodedCVR= 13.3% in 0.1s
+[dsr]   dsr_c1c2                   success=   0/26   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_full                   success=   0/26   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_full_euclidean         success=   0/26   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_bands_no_identity      success=   0/26   decodedCVR=  nan% in 0.1s
+[dsr]   dsr_full @tau_q=0.05  success=   0/26   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.1   success=   0/26   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.25  success=   0/26   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.5   success=   0/26   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/26   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/26   decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/26   decodedCVR=  nan%
+[dsr] wrote 1287 rows for uci
+[dsr] nhanes_real seed=0 decoder=v3: setup 2.6s, N_train=3086 N_calib=545 N_high_risk=410 N_low_risk=1494
+[dsr]   tau@0.95: age=2.220, systolic_bp=16.021, diastolic_bp=9.487, cholesterol=53.391, bmi=12.723, glycemic_hba1c=1.184
+[dsr]   old_latent_pruning         success= 131/410  decodedCVR= 75.6% in 4.3s
+[dsr]   dsr_c1                     success= 246/410  decodedCVR=  1.2% in 4.2s
+[dsr]   dsr_c1c2                   success=   0/410  decodedCVR=  nan% in 3.8s
+[dsr]   dsr_full                   success=   0/410  decodedCVR=  nan% in 3.9s
+[dsr]   dsr_full_euclidean         success=   0/410  decodedCVR=  nan% in 3.9s
+[dsr]   dsr_bands_no_identity      success=   0/410  decodedCVR=  nan% in 3.8s
+[dsr]   dsr_full @tau_q=0.05  success= 117/410  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.1   success=  72/410  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.25  success=   9/410  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.5   success=   0/410  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/410  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/410  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/410  decodedCVR=  nan%
+[dsr] nhanes_real seed=1 decoder=v3: setup 2.5s, N_train=3086 N_calib=545 N_high_risk=445 N_low_risk=1524
+[dsr]   tau@0.95: age=2.240, systolic_bp=16.848, diastolic_bp=10.706, cholesterol=54.734, bmi=8.750, glycemic_hba1c=1.735
+[dsr]   old_latent_pruning         success= 168/445  decodedCVR= 72.6% in 4.5s
+[dsr]   dsr_c1                     success= 240/445  decodedCVR=  1.7% in 4.6s
+[dsr]   dsr_c1c2                   success=   0/445  decodedCVR=  nan% in 4.3s
+[dsr]   dsr_full                   success=   0/445  decodedCVR=  nan% in 4.8s
+[dsr]   dsr_full_euclidean         success=   0/445  decodedCVR=  nan% in 4.3s
+[dsr]   dsr_bands_no_identity      success=   0/445  decodedCVR=  nan% in 4.6s
+[dsr]   dsr_full @tau_q=0.05  success=  67/445  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.1   success=  23/445  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.25  success=   1/445  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.5   success=   0/445  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/445  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/445  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/445  decodedCVR=  nan%
+[dsr] nhanes_real seed=2 decoder=v3: setup 2.8s, N_train=3086 N_calib=545 N_high_risk=442 N_low_risk=1476
+[dsr]   tau@0.95: age=2.412, systolic_bp=15.659, diastolic_bp=10.403, cholesterol=44.640, bmi=10.720, glycemic_hba1c=1.903
+[dsr]   old_latent_pruning         success= 174/442  decodedCVR= 51.1% in 4.5s
+[dsr]   dsr_c1                     success= 265/442  decodedCVR=  0.8% in 4.8s
+[dsr]   dsr_c1c2                   success=   5/442  decodedCVR= 80.0% in 4.2s
+[dsr]   dsr_full                   success=   0/442  decodedCVR=  nan% in 4.2s
+[dsr]   dsr_full_euclidean         success=   0/442  decodedCVR=  nan% in 4.3s
+[dsr]   dsr_bands_no_identity      success=   2/442  decodedCVR=  0.0% in 4.1s
+[dsr]   dsr_full @tau_q=0.05  success= 137/442  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.1   success=  91/442  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.25  success=  27/442  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.5   success=   7/442  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.8   success=   0/442  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/442  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/442  decodedCVR=  nan%
+[dsr] nhanes_real seed=3 decoder=v3: setup 2.7s, N_train=3086 N_calib=545 N_high_risk=427 N_low_risk=1550
+[dsr]   tau@0.95: age=2.179, systolic_bp=16.225, diastolic_bp=9.544, cholesterol=53.110, bmi=8.659, glycemic_hba1c=1.334
+[dsr]   old_latent_pruning         success= 186/427  decodedCVR= 62.9% in 4.3s
+[dsr]   dsr_c1                     success= 225/427  decodedCVR=  0.4% in 4.7s
+[dsr]   dsr_c1c2                   success=   1/427  decodedCVR=100.0% in 5.6s
+[dsr]   dsr_full                   success=   0/427  decodedCVR=  nan% in 5.0s
+[dsr]   dsr_full_euclidean         success=   0/427  decodedCVR=  nan% in 4.2s
+[dsr]   dsr_bands_no_identity      success=   0/427  decodedCVR=  nan% in 4.1s
+[dsr]   dsr_full @tau_q=0.05  success= 111/427  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.1   success=  60/427  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.25  success=  18/427  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.5   success=   4/427  decodedCVR= 25.0%
+[dsr]   dsr_full @tau_q=0.8   success=   0/427  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/427  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/427  decodedCVR=  nan%
+[dsr] nhanes_real seed=4 decoder=v3: setup 6.4s, N_train=3086 N_calib=545 N_high_risk=414 N_low_risk=1580
+[dsr]   tau@0.95: age=1.858, systolic_bp=18.332, diastolic_bp=10.088, cholesterol=58.240, bmi=11.744, glycemic_hba1c=1.410
+[dsr]   old_latent_pruning         success= 148/414  decodedCVR= 79.1% in 7.7s
+[dsr]   dsr_c1                     success= 181/414  decodedCVR=  8.3% in 5.5s
+[dsr]   dsr_c1c2                   success=   0/414  decodedCVR=  nan% in 5.1s
+[dsr]   dsr_full                   success=   0/414  decodedCVR=  nan% in 4.2s
+[dsr]   dsr_full_euclidean         success=   0/414  decodedCVR=  nan% in 4.3s
+[dsr]   dsr_bands_no_identity      success=   0/414  decodedCVR=  nan% in 4.0s
+[dsr]   dsr_full @tau_q=0.05  success=  67/414  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.1   success=  28/414  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.25  success=   5/414  decodedCVR=  0.0%
+[dsr]   dsr_full @tau_q=0.5   success=   0/414  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.8   success=   0/414  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.9   success=   0/414  decodedCVR=  nan%
+[dsr]   dsr_full @tau_q=0.99  success=   0/414  decodedCVR=  nan%
+[dsr] wrote 27794 rows for nhanes_real

@@ -1,0 +1,76 @@
+[egd] metadata: {
+  "git_sha": "539d87b795b78bb8f9446f99b0fabeded2c84841",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "cells": [
+    "old_latent_pruning",
+    "egd_riemannian",
+    "egd_euclidean"
+  ],
+  "low_risk_threshold": 0.45,
+  "device": "cpu",
+  "torch_version": "2.13.0",
+  "timestamp": "2026-09-06 17:35:18",
+  "smoke": false
+}
+[egd] uci seed=0: setup 1.0s, N_train=237 N_high_risk=25 N_low_risk=113
+[egd]   EGD edge table built in 0.1s
+[egd]   egd_riemannian   success=  16/25   decodedCVR=  0.0% in 0.2s
+[egd]   egd_euclidean    success=   0/25   decodedCVR=  nan% in 0.1s
+[egd]   old_latent_pruning success=  16/25   decodedCVR= 56.2% in 0.1s
+[egd] uci seed=1: setup 0.3s, N_train=237 N_high_risk=20 N_low_risk=117
+[egd]   EGD edge table built in 0.0s
+[egd]   egd_riemannian   success=   0/20   decodedCVR=  nan% in 0.1s
+[egd]   egd_euclidean    success=   0/20   decodedCVR=  nan% in 0.1s
+[egd]   old_latent_pruning success=  15/20   decodedCVR= 60.0% in 0.1s
+[egd] uci seed=2: setup 0.3s, N_train=237 N_high_risk=23 N_low_risk=108
+[egd]   EGD edge table built in 0.0s
+[egd]   egd_riemannian   success=  18/23   decodedCVR=  0.0% in 0.1s
+[egd]   egd_euclidean    success=   0/23   decodedCVR=  nan% in 0.1s
+[egd]   old_latent_pruning success=  20/23   decodedCVR= 45.0% in 0.1s
+[egd] uci seed=3: setup 0.3s, N_train=237 N_high_risk=22 N_low_risk=118
+[egd]   EGD edge table built in 0.0s
+[egd]   egd_riemannian   success=   1/22   decodedCVR=  0.0% in 0.1s
+[egd]   egd_euclidean    success=   0/22   decodedCVR=  nan% in 0.1s
+[egd]   old_latent_pruning success=  14/22   decodedCVR= 71.4% in 0.1s
+[egd] uci seed=4: setup 0.3s, N_train=237 N_high_risk=23 N_low_risk=120
+[egd]   EGD edge table built in 0.0s
+[egd]   egd_riemannian   success=   2/23   decodedCVR=  0.0% in 0.1s
+[egd]   egd_euclidean    success=   0/23   decodedCVR=  nan% in 0.1s
+[egd]   old_latent_pruning success=  16/23   decodedCVR= 56.2% in 0.1s
+[egd] wrote 339 rows for uci
+[egd] nhanes_real seed=0: setup 3.2s, N_train=3631 N_high_risk=420 N_low_risk=1715
+[egd]   EGD edge table built in 1.0s
+[egd]   egd_riemannian   success=   0/420  decodedCVR=  nan% in 10.0s
+[egd]   egd_euclidean    success=   0/420  decodedCVR=  nan% in 9.3s
+[egd]   old_latent_pruning success= 191/420  decodedCVR= 74.9% in 6.0s
+[egd] nhanes_real seed=1: setup 3.2s, N_train=3631 N_high_risk=445 N_low_risk=1805
+[egd]   EGD edge table built in 1.0s
+[egd]   egd_riemannian   success=  12/445  decodedCVR=  0.0% in 11.3s
+[egd]   egd_euclidean    success=   1/445  decodedCVR=  0.0% in 10.0s
+[egd]   old_latent_pruning success= 183/445  decodedCVR= 82.5% in 6.4s
+[egd] nhanes_real seed=2: setup 3.2s, N_train=3631 N_high_risk=422 N_low_risk=1824
+[egd]   EGD edge table built in 0.9s
+[egd]   egd_riemannian   success=  10/422  decodedCVR=  0.0% in 10.8s
+[egd]   egd_euclidean    success=   4/422  decodedCVR=  0.0% in 9.5s
+[egd]   old_latent_pruning success= 204/422  decodedCVR= 87.7% in 6.2s
+[egd] nhanes_real seed=3: setup 3.3s, N_train=3631 N_high_risk=430 N_low_risk=1813
+[egd]   EGD edge table built in 1.0s
+[egd]   egd_riemannian   success=   0/430  decodedCVR=  nan% in 9.8s
+[egd]   egd_euclidean    success=   0/430  decodedCVR=  nan% in 9.6s
+[egd]   old_latent_pruning success= 190/430  decodedCVR= 76.8% in 6.3s
+[egd] nhanes_real seed=4: setup 3.3s, N_train=3631 N_high_risk=439 N_low_risk=1796
+[egd]   EGD edge table built in 1.1s
+[egd]   egd_riemannian   success=   0/439  decodedCVR=  nan% in 11.0s
+[egd]   egd_euclidean    success=   0/439  decodedCVR=  nan% in 10.0s
+[egd]   old_latent_pruning success= 212/439  decodedCVR= 71.7% in 6.7s
+[egd] wrote 6468 rows for nhanes_real

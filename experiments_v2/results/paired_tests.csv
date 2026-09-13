@@ -1,0 +1,9 @@
+cell_a,cell_b,metric,n_pairs,statistic,pvalue,median_diff,dataset
+riemannian_hard,euclidean_hard,kde,81,45.0,0.23432097173768163,0.0,uci
+riemannian_hard,euclidean_hard,effort,81,55.0,0.5014474714870738,0.0,uci
+riemannian_hard,riemannian_soft_lam1.0,kde,81,300.0,0.003137811753587894,0.0,uci
+riemannian_hard,riemannian_soft_lam1.0,effort,81,294.0,0.002566200166949438,0.0,uci
+riemannian_hard,euclidean_hard,kde,675,12604.0,0.054342951857845455,0.0,nhanes
+riemannian_hard,euclidean_hard,effort,675,12923.0,0.10279220752250297,0.0,nhanes
+riemannian_hard,riemannian_soft_lam1.0,kde,675,72586.5,0.07839228376683072,0.0,nhanes
+riemannian_hard,riemannian_soft_lam1.0,effort,675,11927.5,2.469151521653581e-68,-0.9687302112579346,nhanes

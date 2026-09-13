@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\caption{CARE-LG ablation grid vs. baselines on UCI. Mean$\pm$std over 5 seeds. ``Decoded CVR'' is the full hard+directional constraint check re-run on VAE-DECODED trajectory endpoints (Phase 3), not the original repo's hard-only CVR\%.}
+\label{tab:table1_uci}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\hline
+\textbf{Method} & \textbf{Success (\%)} & \textbf{Decoded CVR (\%)} $\downarrow$ & \textbf{KDE} $\uparrow$ & \textbf{Effort} $\downarrow$ & \textbf{Latency (s)} $\downarrow$ \\
+\hline
+R+hard (CARE-LG) & 71.8$\pm$9.6 & 83.6$\pm$26.9 & -7.392$\pm$0.213 & 1.72$\pm$1.38 & 0.0010$\pm$0.0000 \\
+R+soft (λ=1) & 100.0$\pm$0.0 & 90.0$\pm$19.9 & -7.375$\pm$0.213 & 1.75$\pm$1.32 & 0.0010$\pm$0.0000 \\
+R+soft (λ=10) & 100.0$\pm$0.0 & 90.0$\pm$19.9 & -7.375$\pm$0.213 & 1.75$\pm$1.32 & 0.0010$\pm$0.0000 \\
+E+hard (≈FACE-in-latent-space) & 71.8$\pm$9.6 & 85.0$\pm$23.7 & -7.394$\pm$0.211 & 1.71$\pm$1.37 & 0.0010$\pm$0.0001 \\
+E+soft (λ=1) & 100.0$\pm$0.0 & 90.9$\pm$17.9 & -7.377$\pm$0.212 & 1.75$\pm$1.30 & 0.0010$\pm$0.0000 \\
+E+none & 100.0$\pm$0.0 & 76.7$\pm$28.3 & -7.495$\pm$0.234 & 0.96$\pm$0.82 & 0.0010$\pm$0.0000 \\
+DiCE & 67.6$\pm$30.0 & 100.0$\pm$0.0 & -11.409$\pm$1.538 & 7.66$\pm$0.18 & 0.0070$\pm$0.0037 \\
+FACE & 100.0$\pm$0.0 & 92.7$\pm$4.7 & -7.157$\pm$0.076 & 8.54$\pm$0.69 & 0.0034$\pm$0.0001 \\
+GrowingSpheres (substitutes REVISE — see CHANGES.md) & 58.0$\pm$17.7 & 100.0$\pm$0.0 & -14.760$\pm$1.324 & 8.97$\pm$0.74 & 0.0012$\pm$0.0001 \\
+\hline
+\end{tabular}
+}
+\end{table}

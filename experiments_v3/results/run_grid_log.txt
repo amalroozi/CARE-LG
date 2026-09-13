@@ -1,0 +1,188 @@
+[grid] metadata: {
+  "git_sha": "539d87b795b78bb8f9446f99b0fabeded2c84841",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "grid_cells": [
+    "riemannian_hard",
+    "riemannian_soft_lam0.1",
+    "riemannian_soft_lam1.0",
+    "riemannian_soft_lam10.0",
+    "riemannian_soft_lam100.0",
+    "riemannian_none",
+    "euclidean_hard",
+    "euclidean_soft_lam0.1",
+    "euclidean_soft_lam1.0",
+    "euclidean_soft_lam10.0",
+    "euclidean_soft_lam100.0",
+    "euclidean_none"
+  ],
+  "k_neighbors": {
+    "uci": 40,
+    "nhanes": 80
+  },
+  "high_risk_threshold": 0.55,
+  "low_risk_threshold": 0.45,
+  "device": "cpu",
+  "torch_version": "2.13.0",
+  "timestamp": "2026-09-05 16:35:49",
+  "smoke": false
+}
+[grid] dataset=uci seed=0 : training models + building edge table...
+[grid]   setup done in 1.1s. N_train=237, N_high_risk_test=25, N_low_risk_train=113
+[grid]   cell=riemannian_hard              n=  25 success=  16 ( 64.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam0.1       n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam1.0       n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam10.0      n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam100.0     n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=riemannian_none              n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=euclidean_hard               n=  25 success=  16 ( 64.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam0.1        n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam1.0        n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam10.0       n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam100.0      n=  25 success=  25 (100.0%) in 0.1s
+[grid]   cell=euclidean_none               n=  25 success=  25 (100.0%) in 0.1s
+[grid] checkpointed 300 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/uci_per_patient.csv
+[grid] dataset=uci seed=1 : training models + building edge table...
+[grid]   setup done in 0.2s. N_train=237, N_high_risk_test=20, N_low_risk_train=117
+[grid]   cell=riemannian_hard              n=  20 success=  15 ( 75.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam0.1       n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam1.0       n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam10.0      n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam100.0     n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=riemannian_none              n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=euclidean_hard               n=  20 success=  15 ( 75.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam0.1        n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam1.0        n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam10.0       n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam100.0      n=  20 success=  20 (100.0%) in 0.1s
+[grid]   cell=euclidean_none               n=  20 success=  20 (100.0%) in 0.1s
+[grid] checkpointed 540 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/uci_per_patient.csv
+[grid] dataset=uci seed=2 : training models + building edge table...
+[grid]   setup done in 0.2s. N_train=237, N_high_risk_test=23, N_low_risk_train=108
+[grid]   cell=riemannian_hard              n=  23 success=  20 ( 87.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam0.1       n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam1.0       n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam10.0      n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam100.0     n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_none              n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_hard               n=  23 success=  20 ( 87.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam0.1        n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam1.0        n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam10.0       n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam100.0      n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_none               n=  23 success=  23 (100.0%) in 0.1s
+[grid] checkpointed 816 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/uci_per_patient.csv
+[grid] dataset=uci seed=3 : training models + building edge table...
+[grid]   setup done in 0.2s. N_train=237, N_high_risk_test=22, N_low_risk_train=118
+[grid]   cell=riemannian_hard              n=  22 success=  14 ( 63.6%) in 0.1s
+[grid]   cell=riemannian_soft_lam0.1       n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam1.0       n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam10.0      n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam100.0     n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=riemannian_none              n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=euclidean_hard               n=  22 success=  14 ( 63.6%) in 0.1s
+[grid]   cell=euclidean_soft_lam0.1        n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam1.0        n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam10.0       n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam100.0      n=  22 success=  22 (100.0%) in 0.1s
+[grid]   cell=euclidean_none               n=  22 success=  22 (100.0%) in 0.1s
+[grid] checkpointed 1080 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/uci_per_patient.csv
+[grid] dataset=uci seed=4 : training models + building edge table...
+[grid]   setup done in 0.2s. N_train=237, N_high_risk_test=23, N_low_risk_train=120
+[grid]   cell=riemannian_hard              n=  23 success=  16 ( 69.6%) in 0.1s
+[grid]   cell=riemannian_soft_lam0.1       n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam1.0       n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam10.0      n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_soft_lam100.0     n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=riemannian_none              n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_hard               n=  23 success=  16 ( 69.6%) in 0.1s
+[grid]   cell=euclidean_soft_lam0.1        n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam1.0        n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam10.0       n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_soft_lam100.0      n=  23 success=  23 (100.0%) in 0.1s
+[grid]   cell=euclidean_none               n=  23 success=  23 (100.0%) in 0.1s
+[grid] checkpointed 1356 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/uci_per_patient.csv
+[grid] dataset=nhanes_real seed=0 : training models + building edge table...
+[grid]   setup done in 3.0s. N_train=3631, N_high_risk_test=420, N_low_risk_train=1715
+[grid]   cell=riemannian_hard              n= 420 success= 191 ( 45.5%) in 5.1s
+[grid]   cell=riemannian_soft_lam0.1       n= 420 success= 420 (100.0%) in 6.3s
+[grid]   cell=riemannian_soft_lam1.0       n= 420 success= 420 (100.0%) in 6.1s
+[grid]   cell=riemannian_soft_lam10.0      n= 420 success= 420 (100.0%) in 6.0s
+[grid]   cell=riemannian_soft_lam100.0     n= 420 success= 420 (100.0%) in 6.1s
+[grid]   cell=riemannian_none              n= 420 success= 420 (100.0%) in 6.3s
+[grid]   cell=euclidean_hard               n= 420 success= 191 ( 45.5%) in 5.0s
+[grid]   cell=euclidean_soft_lam0.1        n= 420 success= 420 (100.0%) in 6.1s
+[grid]   cell=euclidean_soft_lam1.0        n= 420 success= 420 (100.0%) in 6.1s
+[grid]   cell=euclidean_soft_lam10.0       n= 420 success= 420 (100.0%) in 6.2s
+[grid]   cell=euclidean_soft_lam100.0      n= 420 success= 420 (100.0%) in 6.2s
+[grid]   cell=euclidean_none               n= 420 success= 420 (100.0%) in 6.2s
+[grid] checkpointed 5040 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/nhanes_real_per_patient.csv
+[grid] dataset=nhanes_real seed=1 : training models + building edge table...
+[grid]   setup done in 3.0s. N_train=3631, N_high_risk_test=445, N_low_risk_train=1805
+[grid]   cell=riemannian_hard              n= 445 success= 183 ( 41.1%) in 5.3s
+[grid]   cell=riemannian_soft_lam0.1       n= 445 success= 445 (100.0%) in 6.6s
+[grid]   cell=riemannian_soft_lam1.0       n= 445 success= 445 (100.0%) in 6.5s
+[grid]   cell=riemannian_soft_lam10.0      n= 445 success= 445 (100.0%) in 6.6s
+[grid]   cell=riemannian_soft_lam100.0     n= 445 success= 445 (100.0%) in 6.5s
+[grid]   cell=riemannian_none              n= 445 success= 445 (100.0%) in 6.8s
+[grid]   cell=euclidean_hard               n= 445 success= 183 ( 41.1%) in 5.5s
+[grid]   cell=euclidean_soft_lam0.1        n= 445 success= 445 (100.0%) in 6.7s
+[grid]   cell=euclidean_soft_lam1.0        n= 445 success= 445 (100.0%) in 6.5s
+[grid]   cell=euclidean_soft_lam10.0       n= 445 success= 445 (100.0%) in 6.5s
+[grid]   cell=euclidean_soft_lam100.0      n= 445 success= 445 (100.0%) in 6.4s
+[grid]   cell=euclidean_none               n= 445 success= 445 (100.0%) in 6.5s
+[grid] checkpointed 10380 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/nhanes_real_per_patient.csv
+[grid] dataset=nhanes_real seed=2 : training models + building edge table...
+[grid]   setup done in 3.0s. N_train=3631, N_high_risk_test=422, N_low_risk_train=1824
+[grid]   cell=riemannian_hard              n= 422 success= 204 ( 48.3%) in 5.1s
+[grid]   cell=riemannian_soft_lam0.1       n= 422 success= 422 (100.0%) in 6.2s
+[grid]   cell=riemannian_soft_lam1.0       n= 422 success= 422 (100.0%) in 6.0s
+[grid]   cell=riemannian_soft_lam10.0      n= 422 success= 422 (100.0%) in 6.1s
+[grid]   cell=riemannian_soft_lam100.0     n= 422 success= 422 (100.0%) in 6.2s
+[grid]   cell=riemannian_none              n= 422 success= 422 (100.0%) in 6.4s
+[grid]   cell=euclidean_hard               n= 422 success= 204 ( 48.3%) in 5.1s
+[grid]   cell=euclidean_soft_lam0.1        n= 422 success= 422 (100.0%) in 6.0s
+[grid]   cell=euclidean_soft_lam1.0        n= 422 success= 422 (100.0%) in 6.0s
+[grid]   cell=euclidean_soft_lam10.0       n= 422 success= 422 (100.0%) in 6.1s
+[grid]   cell=euclidean_soft_lam100.0      n= 422 success= 422 (100.0%) in 6.3s
+[grid]   cell=euclidean_none               n= 422 success= 422 (100.0%) in 6.1s
+[grid] checkpointed 15444 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/nhanes_real_per_patient.csv
+[grid] dataset=nhanes_real seed=3 : training models + building edge table...
+[grid]   setup done in 3.0s. N_train=3631, N_high_risk_test=430, N_low_risk_train=1813
+[grid]   cell=riemannian_hard              n= 430 success= 190 ( 44.2%) in 5.0s
+[grid]   cell=riemannian_soft_lam0.1       n= 430 success= 430 (100.0%) in 7.0s
+[grid]   cell=riemannian_soft_lam1.0       n= 430 success= 430 (100.0%) in 6.3s
+[grid]   cell=riemannian_soft_lam10.0      n= 430 success= 430 (100.0%) in 6.2s
+[grid]   cell=riemannian_soft_lam100.0     n= 430 success= 430 (100.0%) in 6.5s
+[grid]   cell=riemannian_none              n= 430 success= 430 (100.0%) in 6.6s
+[grid]   cell=euclidean_hard               n= 430 success= 190 ( 44.2%) in 5.1s
+[grid]   cell=euclidean_soft_lam0.1        n= 430 success= 430 (100.0%) in 6.2s
+[grid]   cell=euclidean_soft_lam1.0        n= 430 success= 430 (100.0%) in 7.1s
+[grid]   cell=euclidean_soft_lam10.0       n= 430 success= 430 (100.0%) in 6.8s
+[grid]   cell=euclidean_soft_lam100.0      n= 430 success= 430 (100.0%) in 6.8s
+[grid]   cell=euclidean_none               n= 430 success= 430 (100.0%) in 6.4s
+[grid] checkpointed 20604 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/nhanes_real_per_patient.csv
+[grid] dataset=nhanes_real seed=4 : training models + building edge table...
+[grid]   setup done in 3.5s. N_train=3631, N_high_risk_test=439, N_low_risk_train=1796
+[grid]   cell=riemannian_hard              n= 439 success= 212 ( 48.3%) in 9.8s
+[grid]   cell=riemannian_soft_lam0.1       n= 439 success= 439 (100.0%) in 8.7s
+[grid]   cell=riemannian_soft_lam1.0       n= 439 success= 439 (100.0%) in 6.9s
+[grid]   cell=riemannian_soft_lam10.0      n= 439 success= 439 (100.0%) in 7.3s
+[grid]   cell=riemannian_soft_lam100.0     n= 439 success= 439 (100.0%) in 7.1s
+[grid]   cell=riemannian_none              n= 439 success= 439 (100.0%) in 6.9s
+[grid]   cell=euclidean_hard               n= 439 success= 212 ( 48.3%) in 5.5s
+[grid]   cell=euclidean_soft_lam0.1        n= 439 success= 439 (100.0%) in 6.5s
+[grid]   cell=euclidean_soft_lam1.0        n= 439 success= 439 (100.0%) in 6.4s
+[grid]   cell=euclidean_soft_lam10.0       n= 439 success= 439 (100.0%) in 6.4s
+[grid]   cell=euclidean_soft_lam100.0      n= 439 success= 439 (100.0%) in 6.4s
+[grid]   cell=euclidean_none               n= 439 success= 439 (100.0%) in 6.4s
+[grid] checkpointed 25872 rows to /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/results/nhanes_real_per_patient.csv

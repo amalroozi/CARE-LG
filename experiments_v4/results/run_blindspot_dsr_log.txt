@@ -1,0 +1,68 @@
+[blindspot-dsr] uci dsr_c1 seed=0: 22 high-risk, 7 true abstentions (31.8%), analyzing 7 in 0.0s
+[blindspot-dsr] uci dsr_c1 seed=1: 11 high-risk, 2 true abstentions (18.2%), analyzing 2 in 0.0s
+[blindspot-dsr] uci dsr_c1 seed=2: 20 high-risk, 1 true abstentions (5.0%), analyzing 1 in 0.0s
+[blindspot-dsr] uci dsr_c1 seed=3: 20 high-risk, 5 true abstentions (25.0%), analyzing 5 in 0.0s
+[blindspot-dsr] uci dsr_c1 seed=4: 26 high-risk, 11 true abstentions (42.3%), analyzing 11 in 0.1s
+[blindspot-dsr] uci dsr_full seed=0: 22 high-risk, 22 true abstentions (100.0%), analyzing 22 in 0.1s
+[blindspot-dsr]   built densification probes in 0.2s (reused for all remaining abstentions this seed)
+[blindspot-dsr] uci dsr_full seed=1: 11 high-risk, 11 true abstentions (100.0%), analyzing 11 in 0.0s
+[blindspot-dsr]   built densification probes in 0.8s (reused for all remaining abstentions this seed)
+[blindspot-dsr] uci dsr_full seed=2: 20 high-risk, 20 true abstentions (100.0%), analyzing 20 in 0.1s
+[blindspot-dsr]   built densification probes in 0.2s (reused for all remaining abstentions this seed)
+[blindspot-dsr] uci dsr_full seed=3: 20 high-risk, 20 true abstentions (100.0%), analyzing 20 in 0.1s
+[blindspot-dsr]   built densification probes in 0.1s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 26 abstentions found, analyzing a random sample of 25 (seed=4) -- see --max-abstentions-per-seed
+[blindspot-dsr] uci dsr_full seed=4: 26 high-risk, 26 true abstentions (100.0%), analyzing 25 in 0.1s
+[blindspot-dsr]   built densification probes in 0.1s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 164 abstentions found, analyzing a random sample of 25 (seed=0) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_c1 seed=0: 410 high-risk, 164 true abstentions (40.0%), analyzing 25 in 4.7s
+[blindspot-dsr]   built densification probes in 2.8s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 205 abstentions found, analyzing a random sample of 25 (seed=1) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_c1 seed=1: 445 high-risk, 205 true abstentions (46.1%), analyzing 25 in 4.4s
+[blindspot-dsr]   built densification probes in 3.4s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 177 abstentions found, analyzing a random sample of 25 (seed=2) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_c1 seed=2: 442 high-risk, 177 true abstentions (40.0%), analyzing 25 in 5.0s
+[blindspot-dsr]   built densification probes in 2.8s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 202 abstentions found, analyzing a random sample of 25 (seed=3) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_c1 seed=3: 427 high-risk, 202 true abstentions (47.3%), analyzing 25 in 4.4s
+[blindspot-dsr]   built densification probes in 2.7s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 233 abstentions found, analyzing a random sample of 25 (seed=4) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_c1 seed=4: 414 high-risk, 233 true abstentions (56.3%), analyzing 25 in 4.2s
+[blindspot-dsr]   built densification probes in 2.7s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 410 abstentions found, analyzing a random sample of 25 (seed=0) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_full seed=0: 410 high-risk, 410 true abstentions (100.0%), analyzing 25 in 4.5s
+[blindspot-dsr]   built densification probes in 2.9s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 445 abstentions found, analyzing a random sample of 25 (seed=1) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_full seed=1: 445 high-risk, 445 true abstentions (100.0%), analyzing 25 in 4.5s
+[blindspot-dsr]   built densification probes in 2.6s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 442 abstentions found, analyzing a random sample of 25 (seed=2) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_full seed=2: 442 high-risk, 442 true abstentions (100.0%), analyzing 25 in 4.7s
+[blindspot-dsr]   built densification probes in 2.6s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 427 abstentions found, analyzing a random sample of 25 (seed=3) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_full seed=3: 427 high-risk, 427 true abstentions (100.0%), analyzing 25 in 4.6s
+[blindspot-dsr]   built densification probes in 2.6s (reused for all remaining abstentions this seed)
+[blindspot-dsr]   NOTE: 414 abstentions found, analyzing a random sample of 25 (seed=4) -- see --max-abstentions-per-seed
+[blindspot-dsr] nhanes_real dsr_full seed=4: 414 high-risk, 414 true abstentions (100.0%), analyzing 25 in 4.3s
+[blindspot-dsr]   built densification probes in 2.8s (reused for all remaining abstentions this seed)
+[blindspot-dsr] === summary ===
+    dataset     cell  seed  n_high_risk  n_abstain_true  n_abstain_analyzed  pct_abstain  was_subsampled  pct_certified_infeasible  pct_confirmed_blindspot  pct_unresolved
+        uci   dsr_c1     0           22               7                   7    31.818182           False                100.000000                      0.0        0.000000
+        uci   dsr_c1     1           11               2                   2    18.181818           False                100.000000                      0.0        0.000000
+        uci   dsr_c1     2           20               1                   1     5.000000           False                100.000000                      0.0        0.000000
+        uci   dsr_c1     3           20               5                   5    25.000000           False                100.000000                      0.0        0.000000
+        uci   dsr_c1     4           26              11                  11    42.307692           False                100.000000                      0.0        0.000000
+        uci dsr_full     0           22              22                  22   100.000000           False                 68.181818                      0.0       31.818182
+        uci dsr_full     1           11              11                  11   100.000000           False                 63.636364                      0.0       36.363636
+        uci dsr_full     2           20              20                  20   100.000000           False                 60.000000                      0.0       40.000000
+        uci dsr_full     3           20              20                  20   100.000000           False                 85.000000                      0.0       15.000000
+        uci dsr_full     4           26              26                  25   100.000000            True                 76.000000                      0.0       24.000000
+nhanes_real   dsr_c1     0          410             164                  25    40.000000            True                 84.000000                      0.0       16.000000
+nhanes_real   dsr_c1     1          445             205                  25    46.067416            True                 80.000000                      0.0       20.000000
+nhanes_real   dsr_c1     2          442             177                  25    40.045249            True                 88.000000                      0.0       12.000000
+nhanes_real   dsr_c1     3          427             202                  25    47.306792            True                 84.000000                      0.0       16.000000
+nhanes_real   dsr_c1     4          414             233                  25    56.280193            True                 92.000000                      4.0        4.000000
+nhanes_real dsr_full     0          410             410                  25   100.000000            True                 72.000000                      0.0       28.000000
+nhanes_real dsr_full     1          445             445                  25   100.000000            True                 60.000000                      0.0       40.000000
+nhanes_real dsr_full     2          442             442                  25   100.000000            True                 44.000000                      0.0       56.000000
+nhanes_real dsr_full     3          427             427                  25   100.000000            True                 48.000000                      0.0       52.000000
+nhanes_real dsr_full     4          414             414                  25   100.000000            True                 72.000000                      0.0       28.000000

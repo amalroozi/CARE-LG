@@ -1,0 +1,11 @@
+dataset,cell,seed,n_high_risk,n_abstain_true,n_abstain_analyzed,pct_abstain,was_subsampled,pct_certified_infeasible,pct_confirmed_blindspot,pct_unresolved
+uci,dsr_c1,0,22,7,7,31.818181818181817,False,100.0,0.0,0.0
+uci,dsr_c1,1,11,2,2,18.181818181818183,False,100.0,0.0,0.0
+uci,dsr_c1,2,20,1,1,5.0,False,100.0,0.0,0.0
+uci,dsr_c1,3,20,5,5,25.0,False,100.0,0.0,0.0
+uci,dsr_c1,4,26,11,11,42.30769230769231,False,100.0,0.0,0.0
+uci,dsr_full,0,22,22,22,100.0,False,68.18181818181819,0.0,31.818181818181817
+uci,dsr_full,1,11,11,11,100.0,False,63.63636363636363,0.0,36.36363636363637
+uci,dsr_full,2,20,20,20,100.0,False,60.0,0.0,40.0
+uci,dsr_full,3,20,20,20,100.0,False,85.0,0.0,15.0
+uci,dsr_full,4,26,26,25,100.0,True,76.0,0.0,24.0

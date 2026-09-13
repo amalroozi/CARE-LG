@@ -1,0 +1,58 @@
+{
+  "_note": "Real-world intervention names associated with each mutable feature's clinically-admissible direction, cited against the SAME guideline registry already used in src/graph/neurosymbolic.py ([PCE2013], [HTN2017], [ADA2023], [CHOL2018]). These are named intervention CATEGORIES from established clinical guidance, not fabricated numbers -- no dose, percentage, or outcome statistic is claimed here; those come only from this project's own executed code (feature deltas, risk scores).",
+  "resting_bp": {
+    "name": "DASH diet + sodium restriction",
+    "description": "Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering blood pressure.",
+    "citation": "HTN2017"
+  },
+  "systolic_bp": {
+    "name": "DASH diet + sodium restriction",
+    "description": "Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering blood pressure.",
+    "citation": "HTN2017"
+  },
+  "diastolic_bp": {
+    "name": "DASH diet + sodium restriction",
+    "description": "Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering blood pressure.",
+    "citation": "HTN2017"
+  },
+  "cholesterol": {
+    "name": "Statin therapy + reduced dietary saturated fat",
+    "description": "Lipid-lowering pharmacotherapy (statins) combined with reduced saturated/trans fat intake, the guideline's core approach to lowering LDL/total cholesterol.",
+    "citation": "CHOL2018"
+  },
+  "bmi": {
+    "name": "Structured weight-management program",
+    "description": "A combined dietary-calorie-reduction and physical-activity program aimed at gradual, sustained weight loss.",
+    "citation": "HTN2017"
+  },
+  "glycemic_hba1c": {
+    "name": "Glycemic control program (diet, exercise, medication adherence)",
+    "description": "Combined lifestyle and pharmacologic management of blood glucose aimed at lowering HbA1c toward guideline targets.",
+    "citation": "ADA2023"
+  },
+  "fasting_blood_sugar": {
+    "name": "Glycemic control program (diet, exercise, medication adherence)",
+    "description": "Combined lifestyle and pharmacologic management of blood glucose.",
+    "citation": "ADA2023"
+  },
+  "max_heart_rate": {
+    "name": "Supervised cardiovascular exercise training",
+    "description": "A structured aerobic exercise program aimed at improving exercise capacity (reflected in a higher achievable heart rate during exercise testing).",
+    "citation": "HTN2017"
+  },
+  "oldpeak": {
+    "name": "Cardiac rehabilitation / anti-ischemic therapy",
+    "description": "Guideline-directed medical therapy and supervised cardiac rehabilitation aimed at reducing exercise-induced ST-segment depression, a marker of myocardial ischemia.",
+    "citation": "CHOL2018"
+  },
+  "exercise_angina": {
+    "name": "Anti-anginal therapy + cardiac rehabilitation",
+    "description": "Medical therapy and supervised exercise rehabilitation aimed at reducing or eliminating exercise-induced chest pain.",
+    "citation": "CHOL2018"
+  },
+  "slope": {
+    "name": "Guideline-directed medical therapy for ischemia",
+    "description": "Medical management aimed at improving the ST-segment response pattern observed during exercise testing.",
+    "citation": "CHOL2018"
+  }
+}

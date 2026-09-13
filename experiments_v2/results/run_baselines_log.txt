@@ -1,0 +1,50 @@
+[baselines] uci seed=0: 25 patients in 1.3s
+method
+DiCE              0.80
+FACE              1.00
+GrowingSpheres    0.64
+[baselines] uci seed=1: 20 patients in 0.5s
+method
+DiCE              0.20
+FACE              1.00
+GrowingSpheres    0.45
+[baselines] uci seed=2: 23 patients in 0.4s
+method
+DiCE              0.608696
+FACE              1.000000
+GrowingSpheres    0.347826
+[baselines] uci seed=3: 22 patients in 0.3s
+method
+DiCE              0.772727
+FACE              1.000000
+GrowingSpheres    0.681818
+[baselines] uci seed=4: 23 patients in 0.3s
+method
+DiCE              1.000000
+FACE              1.000000
+GrowingSpheres    0.782609
+[baselines] nhanes seed=0: 149 patients in 8.4s
+method
+DiCE              0.953020
+FACE              1.000000
+GrowingSpheres    0.966443
+[baselines] nhanes seed=1: 135 patients in 7.6s
+method
+DiCE              0.962963
+FACE              1.000000
+GrowingSpheres    0.955556
+[baselines] nhanes seed=2: 137 patients in 7.8s
+method
+DiCE              0.985401
+FACE              1.000000
+GrowingSpheres    0.978102
+[baselines] nhanes seed=3: 137 patients in 7.6s
+method
+DiCE              0.985401
+FACE              1.000000
+GrowingSpheres    0.941606
+[baselines] nhanes seed=4: 117 patients in 6.6s
+method
+DiCE              0.974359
+FACE              1.000000
+GrowingSpheres    0.957265

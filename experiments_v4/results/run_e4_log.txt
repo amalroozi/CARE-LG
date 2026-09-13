@@ -1,0 +1,7 @@
+[e4] nhanes_real: running dsr_full_euclidean at tau_q=0.05 (matches dsr_full's best operating point)
+[e4]   nhanes_real seed=0: 125/410 succeeded in 6.2s
+[e4]   nhanes_real seed=1: 82/445 succeeded in 7.0s
+[e4]   nhanes_real seed=2: 153/442 succeeded in 6.9s
+[e4]   nhanes_real seed=3: 118/427 succeeded in 6.6s
+[e4]   nhanes_real seed=4: 76/414 succeeded in 5.7s
+[e4] wrote 2138 rows to nhanes_real_e4_euclidean_best_tau.csv

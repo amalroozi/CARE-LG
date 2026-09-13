@@ -1,0 +1,28 @@
+[blindspot] uci seed=0: 25 high-risk patients, 17 R+hard abstentions (68.0%) in 1.6s
+[blindspot] uci seed=1: 20 high-risk patients, 9 R+hard abstentions (45.0%) in 0.6s
+[blindspot] uci seed=2: 23 high-risk patients, 12 R+hard abstentions (52.2%) in 0.6s
+[blindspot] uci seed=3: 22 high-risk patients, 14 R+hard abstentions (63.6%) in 0.7s
+[blindspot] uci seed=4: 23 high-risk patients, 18 R+hard abstentions (78.3%) in 0.7s
+
+[blindspot] === UCI summary across seeds ===
+ seed  n_high_risk  n_abstain  pct_abstain  pct_certified_infeasible  pct_confirmed_blindspot  pct_unresolved
+    0           25         17    68.000000                 88.235294                      0.0       11.764706
+    1           20          9    45.000000                 77.777778                      0.0       22.222222
+    2           23         12    52.173913                 91.666667                      0.0        8.333333
+    3           22         14    63.636364                 92.857143                      0.0        7.142857
+    4           23         18    78.260870                 88.888889                      0.0       11.111111
+
+[blindspot] nhanes_real seed=0: 420 high-risk patients, 264 R+hard abstentions (62.9%) in 50.4s
+[blindspot] nhanes_real seed=1: 445 high-risk patients, 301 R+hard abstentions (67.6%) in 56.2s
+[blindspot] nhanes_real seed=2: 422 high-risk patients, 253 R+hard abstentions (60.0%) in 49.6s
+[blindspot] nhanes_real seed=3: 430 high-risk patients, 268 R+hard abstentions (62.3%) in 55.1s
+[blindspot] nhanes_real seed=4: 439 high-risk patients, 258 R+hard abstentions (58.8%) in 66.6s
+
+[blindspot] === NHANES_REAL summary across seeds ===
+ seed  n_high_risk  n_abstain  pct_abstain  pct_certified_infeasible  pct_confirmed_blindspot  pct_unresolved
+    0          420        264    62.857143                 99.621212                      0.0        0.378788
+    1          445        301    67.640449                 99.667774                      0.0        0.332226
+    2          422        253    59.952607                 98.023715                      0.0        1.976285
+    3          430        268    62.325581                 97.761194                      0.0        2.238806
+    4          439        258    58.769932                 97.674419                      0.0        2.325581
+

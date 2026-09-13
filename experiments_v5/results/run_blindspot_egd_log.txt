@@ -1,0 +1,37 @@
+[blindspot-egd] uci seed=0: 25 high-risk, 9 true abstentions (36.0%), analyzing 9 in 0.2s
+[blindspot-egd]   built densification probes in 0.2s (reused for all remaining abstentions this seed)
+[blindspot-egd] uci seed=1: 20 high-risk, 20 true abstentions (100.0%), analyzing 20 in 0.1s
+[blindspot-egd]   built densification probes in 0.2s (reused for all remaining abstentions this seed)
+[blindspot-egd] uci seed=2: 23 high-risk, 5 true abstentions (21.7%), analyzing 5 in 0.1s
+[blindspot-egd]   built densification probes in 0.3s (reused for all remaining abstentions this seed)
+[blindspot-egd] uci seed=3: 22 high-risk, 21 true abstentions (95.5%), analyzing 21 in 0.1s
+[blindspot-egd]   built densification probes in 0.2s (reused for all remaining abstentions this seed)
+[blindspot-egd] uci seed=4: 23 high-risk, 21 true abstentions (91.3%), analyzing 21 in 0.1s
+[blindspot-egd]   built densification probes in 0.2s (reused for all remaining abstentions this seed)
+[blindspot-egd]   NOTE: 420 abstentions found, analyzing sample of 60
+[blindspot-egd] nhanes_real seed=0: 420 high-risk, 420 true abstentions (100.0%), analyzing 60 in 11.8s
+[blindspot-egd]   built densification probes in 2.9s (reused for all remaining abstentions this seed)
+[blindspot-egd]   NOTE: 433 abstentions found, analyzing sample of 60
+[blindspot-egd] nhanes_real seed=1: 445 high-risk, 433 true abstentions (97.3%), analyzing 60 in 12.0s
+[blindspot-egd]   built densification probes in 3.0s (reused for all remaining abstentions this seed)
+[blindspot-egd]   NOTE: 412 abstentions found, analyzing sample of 60
+[blindspot-egd] nhanes_real seed=2: 422 high-risk, 412 true abstentions (97.6%), analyzing 60 in 11.2s
+[blindspot-egd]   built densification probes in 3.2s (reused for all remaining abstentions this seed)
+[blindspot-egd]   NOTE: 430 abstentions found, analyzing sample of 60
+[blindspot-egd] nhanes_real seed=3: 430 high-risk, 430 true abstentions (100.0%), analyzing 60 in 11.1s
+[blindspot-egd]   built densification probes in 3.4s (reused for all remaining abstentions this seed)
+[blindspot-egd]   NOTE: 439 abstentions found, analyzing sample of 60
+[blindspot-egd] nhanes_real seed=4: 439 high-risk, 439 true abstentions (100.0%), analyzing 60 in 10.5s
+[blindspot-egd]   built densification probes in 2.9s (reused for all remaining abstentions this seed)
+[blindspot-egd] === summary ===
+    dataset  seed  n_high_risk  n_abstain_true  n_abstain_analyzed  pct_abstain  was_subsampled  pct_certified_infeasible  pct_confirmed_blindspot  pct_unresolved  pct_abstain_stage_no_path  pct_abstain_stage_risk_check
+        uci     0           25               9                   9    36.000000           False                 66.666667                      0.0       33.333333                        0.0                         100.0
+        uci     1           20              20                  20   100.000000           False                 35.000000                      0.0       65.000000                        0.0                         100.0
+        uci     2           23               5                   5    21.739130           False                 60.000000                      0.0       40.000000                        0.0                         100.0
+        uci     3           22              21                  21    95.454545           False                 57.142857                      0.0       42.857143                        0.0                         100.0
+        uci     4           23              21                  21    91.304348           False                 71.428571                      0.0       28.571429                        0.0                         100.0
+nhanes_real     0          420             420                  60   100.000000            True                 50.000000                      0.0       50.000000                        0.0                         100.0
+nhanes_real     1          445             433                  60    97.303371            True                 70.000000                      0.0       30.000000                        0.0                         100.0
+nhanes_real     2          422             412                  60    97.630332            True                 55.000000                      0.0       45.000000                        0.0                         100.0
+nhanes_real     3          430             430                  60   100.000000            True                 60.000000                      0.0       40.000000                        0.0                         100.0
+nhanes_real     4          439             439                  60   100.000000            True                 63.333333                      0.0       36.666667                        0.0                         100.0

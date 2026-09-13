@@ -1,0 +1,14 @@
+[audit] uci seed=0: AUC=0.7746 Brier=0.1978 empirical-7.5%-crossing(classifier prob)=0.175
+[audit] uci seed=1: AUC=0.8940 Brier=0.1721 empirical-7.5%-crossing(classifier prob)=0.275
+[audit] uci seed=2: AUC=0.8571 Brier=0.1763 empirical-7.5%-crossing(classifier prob)=0.275
+[audit] uci seed=3: AUC=0.8103 Brier=0.1885 empirical-7.5%-crossing(classifier prob)=0.275
+[audit] uci seed=4: AUC=0.8348 Brier=0.1741 empirical-7.5%-crossing(classifier prob)=0.225
+[audit] nhanes_real seed=0: AUC=0.9646 Brier=0.0698 empirical-7.5%-crossing(classifier prob)=0.075
+[audit] nhanes_real seed=1: AUC=0.9540 Brier=0.0832 empirical-7.5%-crossing(classifier prob)=0.075
+[audit] nhanes_real seed=2: AUC=0.9633 Brier=0.0728 empirical-7.5%-crossing(classifier prob)=0.075
+[audit] nhanes_real seed=3: AUC=0.9612 Brier=0.0782 empirical-7.5%-crossing(classifier prob)=0.075
+[audit] nhanes_real seed=4: AUC=0.9545 Brier=0.0857 empirical-7.5%-crossing(classifier prob)=0.075
+
+[audit] === SUMMARY (mean +/- std over 5 seeds) ===
+uci          AUC=0.8342+/-0.0406  Brier=0.1817+/-0.0099  empirical-crossing(n=5/5 seeds)=0.245+/-0.040
+nhanes_real  AUC=0.9595+/-0.0044  Brier=0.0779+/-0.0060  empirical-crossing(n=5/5 seeds)=0.075+/-0.000

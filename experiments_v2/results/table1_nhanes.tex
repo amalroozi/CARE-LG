@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\caption{CARE-LG ablation grid vs. baselines on NHANES. Mean$\pm$std over 5 seeds. ``Decoded CVR'' is the full hard+directional constraint check re-run on VAE-DECODED trajectory endpoints (Phase 3), not the original repo's hard-only CVR\%.}
+\label{tab:table1_nhanes}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\hline
+\textbf{Method} & \textbf{Success (\%)} & \textbf{Decoded CVR (\%)} $\downarrow$ & \textbf{KDE} $\uparrow$ & \textbf{Effort} $\downarrow$ & \textbf{Latency (s)} $\downarrow$ \\
+\hline
+R+hard (CARE-LG) & 100.0$\pm$0.0 & 78.1$\pm$10.4 & -7.577$\pm$0.015 & 2.57$\pm$0.35 & 0.0025$\pm$0.0000 \\
+R+soft (λ=1) & 100.0$\pm$0.0 & 61.5$\pm$18.7 & -7.567$\pm$0.017 & 3.61$\pm$0.51 & 0.0033$\pm$0.0001 \\
+R+soft (λ=10) & 100.0$\pm$0.0 & 62.1$\pm$18.4 & -7.566$\pm$0.017 & 3.70$\pm$0.53 & 0.0032$\pm$0.0000 \\
+E+hard (≈FACE-in-latent-space) & 100.0$\pm$0.0 & 79.2$\pm$11.3 & -7.572$\pm$0.016 & 2.54$\pm$0.32 & 0.0025$\pm$0.0001 \\
+E+soft (λ=1) & 100.0$\pm$0.0 & 60.7$\pm$19.0 & -7.561$\pm$0.020 & 3.50$\pm$0.47 & 0.0033$\pm$0.0002 \\
+E+none & 100.0$\pm$0.0 & 91.2$\pm$4.0 & -7.604$\pm$0.023 & 1.43$\pm$0.16 & 0.0032$\pm$0.0001 \\
+DiCE & 97.2$\pm$1.4 & 100.0$\pm$0.0 & -9.607$\pm$0.084 & 5.26$\pm$0.10 & 0.0023$\pm$0.0002 \\
+FACE & 100.0$\pm$0.0 & 91.6$\pm$2.3 & -8.121$\pm$0.041 & 6.07$\pm$0.06 & 0.0452$\pm$0.0006 \\
+GrowingSpheres (substitutes REVISE — see CHANGES.md) & 96.0$\pm$1.4 & 100.0$\pm$0.0 & -10.059$\pm$0.146 & 5.39$\pm$0.14 & 0.0007$\pm$0.0000 \\
+\hline
+\end{tabular}
+}
+\end{table}

@@ -1,0 +1,74 @@
+{
+  "semifactual_examples": [
+    {
+      "dataset": "uci",
+      "seed": 0,
+      "patient_idx": 1,
+      "text": "Even under the most favorable single-step comparison found in the training data (patient #34, 1 violated sub-condition(s) -- the fewest of any of the 113 low-risk candidates checked), risk would remain above the target threshold, because: [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint). Across the full candidate set, the most frequent obstruction(s) were: R-AGE-MONOTONIC (97% of 113 checked candidates); R-LIPID-DIRECTION (58% of 113 checked candidates); R-BP-DIRECTION (50% of 113 checked candidates). No single-hop transition to any recorded low-risk patient in the training data satisfies every clinical admissibility rule simultaneously; this is a certified structural infeasibility, not a search-coverage limitation (confirmed by Phase 2's densification probes, which resolved zero such cases).",
+      "closest_miss_candidate_idx": 34,
+      "closest_miss_violation_count": 1,
+      "blocking_rule_frequency": {
+        "R-AGE-MONOTONIC": 97.34513274336283,
+        "R-BP-DIRECTION": 49.557522123893804,
+        "R-LIPID-DIRECTION": 58.4070796460177,
+        "R-IMMUTABLE": 45.13274336283186,
+        "R-DIRECTIONAL-OTHER": 6.1946902654867255
+      }
+    },
+    {
+      "dataset": "nhanes_real",
+      "seed": 0,
+      "patient_idx": 1,
+      "text": "Even under the most favorable single-step comparison found in the training data (patient #52, 1 violated sub-condition(s) -- the fewest of any of the 1715 low-risk candidates checked), risk would remain above the target threshold, because: [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint). Across the full candidate set, the most frequent obstruction(s) were: R-AGE-MONOTONIC (100% of 300 checked candidates); R-IMMUTABLE (62% of 300 checked candidates); R-BMI-DIRECTION (45% of 300 checked candidates). No single-hop transition to any recorded low-risk patient in the training data satisfies every clinical admissibility rule simultaneously; this is a certified structural infeasibility, not a search-coverage limitation (confirmed by Phase 2's densification probes, which resolved zero such cases).",
+      "closest_miss_candidate_idx": 52,
+      "closest_miss_violation_count": 1,
+      "blocking_rule_frequency": {
+        "R-AGE-MONOTONIC": 100.0,
+        "R-BP-DIRECTION": 13.333333333333334,
+        "R-IMMUTABLE": 62.0,
+        "R-LIPID-DIRECTION": 24.0,
+        "R-BMI-DIRECTION": 45.333333333333336,
+        "R-GLUCOSE-DIRECTION": 30.333333333333332
+      }
+    },
+    {
+      "dataset": "nhanes_real",
+      "seed": 0,
+      "patient_idx": 2,
+      "text": "Even under the most favorable single-step comparison found in the training data (patient #225, 1 violated sub-condition(s) -- the fewest of any of the 1715 low-risk candidates checked), risk would remain above the target threshold, because: [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint). Across the full candidate set, the most frequent obstruction(s) were: R-AGE-MONOTONIC (100% of 300 checked candidates); R-LIPID-DIRECTION (75% of 300 checked candidates); R-BP-DIRECTION (72% of 300 checked candidates). No single-hop transition to any recorded low-risk patient in the training data satisfies every clinical admissibility rule simultaneously; this is a certified structural infeasibility, not a search-coverage limitation (confirmed by Phase 2's densification probes, which resolved zero such cases).",
+      "closest_miss_candidate_idx": 225,
+      "closest_miss_violation_count": 1,
+      "blocking_rule_frequency": {
+        "R-AGE-MONOTONIC": 100.0,
+        "R-BP-DIRECTION": 72.33333333333333,
+        "R-GLUCOSE-DIRECTION": 59.666666666666664,
+        "R-IMMUTABLE": 62.0,
+        "R-LIPID-DIRECTION": 75.33333333333333,
+        "R-BMI-DIRECTION": 59.333333333333336
+      }
+    }
+  ],
+  "guideline_derivation_examples": [
+    {
+      "dataset": "uci",
+      "seed": 0,
+      "patient_idx": 0,
+      "target_node": 225,
+      "feature_deltas_real_units": {
+        "resting_bp": -28.0,
+        "cholesterol": -9.0,
+        "max_heart_rate": 39.0,
+        "oldpeak": -3.6000001430511475
+      },
+      "derivation": [
+        "This step is clinically admissible: it passed every applicable guideline rule.",
+        "  \u2713 [R-AGE-HORIZON] Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule).",
+        "  \u2713 [R-AGE-MONOTONIC] Age cannot decrease between source and target (structural constraint).",
+        "  \u2713 [R-BP-DIRECTION] Blood pressure must trend downward or hold stable under guideline-directed management [HTN2017].",
+        "  \u2713 [R-DIRECTIONAL-OTHER] Feature must trend in its clinically admissible direction.",
+        "  \u2713 [R-IMMUTABLE] Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).",
+        "  \u2713 [R-LIPID-DIRECTION] Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018]."
+      ]
+    }
+  ]
+}

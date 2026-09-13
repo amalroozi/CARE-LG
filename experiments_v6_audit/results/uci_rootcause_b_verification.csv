@@ -1,0 +1,26 @@
+patient_idx,success,decoded_cvr_hop_ORIGINAL,decoded_cvr_endpoint_ORIGINAL,decoded_cvr_hop_FIXED,decoded_cvr_endpoint_FIXED,path_len,path,dataset,seed
+0,True,False,False,True,True,1.0,"[237, 114]",uci,0
+1,False,,,,,,,uci,0
+4,True,False,False,True,True,1.0,"[237, 70]",uci,0
+6,True,True,True,True,True,2.0,"[237, 110, 112]",uci,0
+7,True,False,False,True,True,1.0,"[237, 181]",uci,0
+8,True,False,False,True,True,1.0,"[237, 91]",uci,0
+9,False,,,,,,,uci,0
+11,False,,,,,,,uci,0
+14,True,True,True,True,True,1.0,"[237, 112]",uci,0
+16,True,False,False,True,True,1.0,"[237, 50]",uci,0
+20,True,True,True,True,True,1.0,"[237, 112]",uci,0
+24,True,False,False,False,False,1.0,"[237, 56]",uci,0
+28,False,,,,,,,uci,0
+30,True,False,False,False,False,1.0,"[237, 19]",uci,0
+32,False,,,,,,,uci,0
+34,True,False,False,True,True,1.0,"[237, 149]",uci,0
+38,True,True,True,False,False,1.0,"[237, 70]",uci,0
+39,True,True,True,True,True,1.0,"[237, 173]",uci,0
+44,True,False,False,False,False,1.0,"[237, 5]",uci,0
+45,True,False,False,True,True,1.0,"[237, 194]",uci,0
+50,False,,,,,,,uci,0
+52,False,,,,,,,uci,0
+53,True,False,False,False,False,1.0,"[237, 97]",uci,0
+55,False,,,,,,,uci,0
+57,False,,,,,,,uci,0

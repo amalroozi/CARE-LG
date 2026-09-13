@@ -1,0 +1,5 @@
+Method,Success_Rate_Pct,CVR_Pct,KDE_Density,Clinical_Cost,Latency_Sec
+DiCE,98.0,100.0,-9.5296,5.1391,0.0177
+FACE,100.0,62.0,-8.0556,6.408,0.0466
+GrowingSpheres,96.0,100.0,-10.0104,5.1925,0.0106
+CARE-LG,98.0,0.0,-8.1835,7.6536,0.0003

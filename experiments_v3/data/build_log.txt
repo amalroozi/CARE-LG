@@ -1,0 +1,27 @@
+=== Phase A: Real NHANES cohort construction ===
+Component N (raw rows): DEMO=15560 BPXO=11656 BMX=14300 TCHOL=12198 HDL=12198 GHB=10409 BPQ=10195 DIQ=14986 SMQ=11137
+N after inner-join merge on SEQN across all 9 components: 9445
+N after restricting to interviewed+examined respondents (RIDSTATR==2): 9445
+
+Missingness per feature (after component merge, before age restriction / final dropna):
+  age             :     0 missing / 9445 (0.00%)
+  sex             :     0 missing / 9445 (0.00%)
+  systolic_bp     :   988 missing / 9445 (10.46%)
+  diastolic_bp    :   988 missing / 9445 (10.46%)
+  cholesterol     :   719 missing / 9445 (7.61%)
+  bmi             :   181 missing / 9445 (1.92%)
+  glycemic_hba1c  :   540 missing / 9445 (5.72%)
+  race_group      :     0 missing / 9445 (0.00%)
+  treated_bp      :     0 missing / 9445 (0.00%)
+  smoker          :     0 missing / 9445 (0.00%)
+  diabetic        :     0 missing / 9445 (0.00%)
+
+N after restricting to PCE-valid age range [40,79]: 5373 (dropped 4072)
+N after complete-case exclusion on all model+label input fields: 4539 (dropped 834)
+N after excluding non-positive cholesterol/HDL/SBP (required for PCE log terms): 4539 (dropped 0)
+
+ASCVD 10-yr risk distribution: mean=11.54%, median=7.60%, min=0.09%, max=83.59%
+cvd_risk_flag positive rate (>=7.5% 10-yr ASCVD risk): 50.4% (2289/4539)
+
+Final N (real NHANES cohort, model-ready): 4539
+Wrote /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/data/nhanes_real.csv (model-facing, schema-matched) and /Users/amalroozi/.gemini/antigravity/scratch/care_lg/experiments_v3/data/nhanes_real_full.csv (full, with PCE provenance columns)

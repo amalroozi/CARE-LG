@@ -1,0 +1,14 @@
+[face] uci seed=0: success=25/25 (100.0%) real_cvr=96.0% in 0.0s
+[face] uci seed=1: success=20/20 (100.0%) real_cvr=90.0% in 0.0s
+[face] uci seed=2: success=23/23 (100.0%) real_cvr=100.0% in 0.0s
+[face] uci seed=3: success=22/22 (100.0%) real_cvr=100.0% in 0.0s
+[face] uci seed=4: success=23/23 (100.0%) real_cvr=95.7% in 0.0s
+[face] nhanes_real seed=0: success=420/420 (100.0%) real_cvr=100.0% in 0.9s
+[face] nhanes_real seed=1: success=445/445 (100.0%) real_cvr=99.8% in 1.0s
+[face] nhanes_real seed=2: success=422/422 (100.0%) real_cvr=100.0% in 0.9s
+[face] nhanes_real seed=3: success=430/430 (100.0%) real_cvr=99.5% in 0.9s
+[face] nhanes_real seed=4: success=439/439 (100.0%) real_cvr=100.0% in 0.9s
+
+[face] === SUMMARY (mean +/- std over seeds) ===
+uci          success=100.0+/-0.0%  real_cvr=96.3+/-4.1%
+nhanes_real  success=100.0+/-0.0%  real_cvr=99.9+/-0.2%
