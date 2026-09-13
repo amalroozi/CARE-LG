@@ -1,8 +1,8 @@
 """
 Per-(dataset, seed) model training + encoding pipeline -- the CANONICAL,
 importable version, merged into src/ from experiments_v6/lib/pipeline_v6.py
-as part of experiments_v6_audit/DEEP_AUDIT.md issue #1's resolution (see
-experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md). Trains the Phase B
+as part of archive/investigation_v2_to_v6/experiments_v6_audit/DEEP_AUDIT.md issue #1's resolution (see
+archive/investigation_v2_to_v6/experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md). Trains the Phase B
 type-aware VAE (src.vae.type_aware, ported unchanged from experiments_v3)
 instead of the original undifferentiated-continuous TabularVAE. The
 classifier is unchanged (same src.blackbox_model.RiskClassifier /
@@ -16,7 +16,7 @@ import torch
 
 from configs.dataset_config import get_dataset_config
 from src.data.loader import get_dataloaders
-from src.blackbox_model import RiskClassifier, train_blackbox_model
+from src.classifier.blackbox_model import RiskClassifier, train_blackbox_model
 from src.vae.type_aware import TabularVAETypeAware, train_vae_type_aware
 from src.seeding import set_all_seeds
 

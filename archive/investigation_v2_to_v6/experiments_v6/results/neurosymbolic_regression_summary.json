@@ -1,0 +1,14 @@
+{
+  "uci": {
+    "n_pairs": 2000,
+    "n_agree": 2000,
+    "n_disagree": 0,
+    "agreement_pct": 100.0
+  },
+  "nhanes_real": {
+    "n_pairs": 2000,
+    "n_agree": 2000,
+    "n_disagree": 0,
+    "agreement_pct": 100.0
+  }
+}

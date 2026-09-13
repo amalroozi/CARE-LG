@@ -1,4 +1,4 @@
-# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
+# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see archive/investigation_v2_to_v6/experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
 """
 Phase 5 -- three-layer explanation system.
 
@@ -174,7 +174,7 @@ def semifactual_abstention_explanation(
 
 # ---------- Layer 4: guideline-context annotations (statin / BP target) ----------
 #
-# Resolves experiments_v6_audit/DEEP_AUDIT.md issue #8: `statin_indication` and
+# Resolves archive/investigation_v2_to_v6/experiments_v6_audit/DEEP_AUDIT.md issue #8: `statin_indication` and
 # `bp_target` (src.graph.neurosymbolic) were implemented and regression-verified
 # in the prior session but never called from anywhere outside their own
 # definition file -- decorative, not surfaced in any output. This section wires
@@ -194,7 +194,7 @@ def _load_nhanes_full_df() -> pd.DataFrame:
     global _NHANES_FULL_CSV
     if _NHANES_FULL_CSV is None:
         repo_root = Path(__file__).resolve().parents[2]
-        path = repo_root / "experiments_v3" / "data" / "nhanes_real_full.csv"
+        path = repo_root / "data" / "nhanes_real_full.csv"
         _NHANES_FULL_CSV = pd.read_csv(path)
     return _NHANES_FULL_CSV
 
@@ -206,11 +206,11 @@ def nhanes_guideline_context(seed: int, test_row_position: int) -> Optional[Dict
     src.pipeline.run_dataset_seed produces, since this replicates
     src/data/loader.py::get_dataloaders' identical
     `train_test_split(X, y, test_size=0.2, random_state=seed, stratify=y)`
-    call against the row-aligned full-feature CSV (verified this session:
-    `age` and `cvd_risk_flag` are identical, row-for-row, between
-    experiments_v3/data/nhanes_real.csv and nhanes_real_full.csv), returns
-    the real ascvd_10yr_risk_pct and diabetic flag for that patient plus the
-    two guideline annotations computed from them.
+    call against the row-aligned full-feature CSV (verified: `age` and
+    `cvd_risk_flag` are identical, row-for-row, between
+    data/nhanes_real.csv and data/nhanes_real_full.csv), returns the real
+    ascvd_10yr_risk_pct and diabetic flag for that patient plus the two
+    guideline annotations computed from them.
 
     Returns None if the full CSV or its extra columns aren't available --
     never fabricates a substitute value.

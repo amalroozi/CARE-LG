@@ -36,7 +36,7 @@ from src.recourse.explanations import (
 )
 from src.graph.clinical_constraints import unscale_features, compute_clinical_effort
 
-RESULTS_DIR = REPO_ROOT / "experiments_v6" / "results"
+RESULTS_DIR = REPO_ROOT / "results" / "tables"
 INTERVENTIONS_PATH = REPO_ROOT / "configs" / "interventions.json"
 METRIC = "riemannian"
 MU = 0.5

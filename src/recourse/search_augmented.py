@@ -1,4 +1,4 @@
-# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
+# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see archive/investigation_v2_to_v6/experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
 """
 Dijkstra search over the (N+1, N+1) augmented graph (train nodes + one
 ephemeral query source node at index N). Mirrors src/recourse/search.py's

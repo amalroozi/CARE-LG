@@ -1,0 +1,42 @@
+{
+  "git_sha": "b2fb8c17b35e00c0c9ca99ec392b8149840218c9",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "grid_cells": [
+    "riemannian_hard",
+    "riemannian_soft_lam0.1",
+    "riemannian_soft_lam1.0",
+    "riemannian_soft_lam10.0",
+    "riemannian_soft_lam100.0",
+    "riemannian_none",
+    "euclidean_hard",
+    "euclidean_soft_lam0.1",
+    "euclidean_soft_lam1.0",
+    "euclidean_soft_lam10.0",
+    "euclidean_soft_lam100.0",
+    "euclidean_none"
+  ],
+  "k_neighbors": {
+    "uci": 40,
+    "nhanes_real": 80
+  },
+  "high_risk_threshold": 0.55,
+  "low_risk_threshold": 0.45,
+  "device": "cpu",
+  "torch_version": "2.13.0",
+  "timestamp": "2026-09-13 19:54:08",
+  "smoke": false,
+  "corrected_pipeline": {
+    "B1_entry_gate_fix": "gate_violates=(hard_count+dir_count)>0, check_step_horizon=True (matches interior edges)",
+    "B2_no_unnecessary_decode": "real_points use X_test/X_train directly; decoded_* fields kept only for legacy comparison"
+  }
+}

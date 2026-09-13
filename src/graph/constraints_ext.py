@@ -1,4 +1,4 @@
-# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
+# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see archive/investigation_v2_to_v6/experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
 """
 Extensions to src/graph/clinical_constraints.py needed for the ablation grid
 and decoded-space verification (Phases 1 and 3). Does NOT re-derive the

@@ -1,0 +1,525 @@
+{
+  "success_patient": {
+    "dataset": "uci",
+    "seed": 0,
+    "patient_idx": 0,
+    "raw_record": {
+      "age": 46.0,
+      "sex": 1.0,
+      "fasting_blood_sugar": 0.0,
+      "resting_bp": 150.0,
+      "cholesterol": 231.0,
+      "max_heart_rate": 147.0,
+      "oldpeak": 3.6000001430511475,
+      "exercise_angina": 0.0,
+      "slope": 2.0
+    },
+    "risk_before": 0.7501032948493958,
+    "risk_after": 0.2202044129371643,
+    "shap_top_features": [
+      {
+        "feature": "oldpeak",
+        "value": 0.2644718974394102
+      },
+      {
+        "feature": "age",
+        "value": -0.0524499477570265
+      },
+      {
+        "feature": "resting_bp",
+        "value": 0.025568637717515188
+      },
+      {
+        "feature": "max_heart_rate",
+        "value": 0.025566717137893023
+      },
+      {
+        "feature": "exercise_angina",
+        "value": -0.01262752504398426
+      },
+      {
+        "feature": "fasting_blood_sugar",
+        "value": 0.0051566604888509835
+      }
+    ],
+    "latent_z": [
+      -0.4040408730506897,
+      0.00835542380809784,
+      -0.3442557752132416,
+      -0.7750574946403503
+    ],
+    "latent_pca_sample": [
+      [
+        0.08058305084705353,
+        0.12907947599887848
+      ],
+      [
+        0.9087184071540833,
+        0.037564247846603394
+      ],
+      [
+        0.18998396396636963,
+        0.005549967288970947
+      ],
+      [
+        -0.3690260946750641,
+        0.10327161103487015
+      ],
+      [
+        0.02381737343966961,
+        -0.04816114529967308
+      ],
+      [
+        -1.9045839309692383,
+        -0.0398937463760376
+      ],
+      [
+        0.837989866733551,
+        -0.004995435476303101
+      ],
+      [
+        -1.4613406658172607,
+        0.07526779174804688
+      ],
+      [
+        1.8192384243011475,
+        -0.029618263244628906
+      ],
+      [
+        2.0915541648864746,
+        -0.09498804807662964
+      ],
+      [
+        1.6069257259368896,
+        0.03659391403198242
+      ],
+      [
+        -1.1037875413894653,
+        0.020880818367004395
+      ],
+      [
+        1.9349756240844727,
+        0.0059809088706970215
+      ],
+      [
+        0.08336450159549713,
+        -0.02920871414244175
+      ],
+      [
+        -1.2253820896148682,
+        -0.00806337594985962
+      ],
+      [
+        2.9641566276550293,
+        -0.024125099182128906
+      ],
+      [
+        -1.8717718124389648,
+        -0.08056002855300903
+      ],
+      [
+        0.76975417137146,
+        0.0019863396883010864
+      ],
+      [
+        1.9026803970336914,
+        0.028529703617095947
+      ],
+      [
+        -0.39971381425857544,
+        0.006051540374755859
+      ],
+      [
+        1.1655254364013672,
+        -0.008606106042861938
+      ],
+      [
+        -1.5863251686096191,
+        -0.06762558221817017
+      ],
+      [
+        -1.3368351459503174,
+        -0.03599146008491516
+      ],
+      [
+        -0.19875302910804749,
+        0.015253014862537384
+      ],
+      [
+        -2.2102293968200684,
+        -0.050361037254333496
+      ],
+      [
+        -1.8721485137939453,
+        -0.04519820213317871
+      ],
+      [
+        -0.7984702587127686,
+        0.1357322484254837
+      ],
+      [
+        -0.2124418020248413,
+        -0.004145905375480652
+      ],
+      [
+        0.8599711656570435,
+        0.11465486884117126
+      ],
+      [
+        -1.5297048091888428,
+        0.05101633071899414
+      ],
+      [
+        -0.07131032645702362,
+        0.00039957836270332336
+      ],
+      [
+        -0.07163364440202713,
+        0.09824714064598083
+      ],
+      [
+        -2.3226101398468018,
+        -0.06338131427764893
+      ],
+      [
+        -0.7646188735961914,
+        0.08404050767421722
+      ],
+      [
+        2.432311773300171,
+        -0.08386647701263428
+      ],
+      [
+        0.8056679964065552,
+        0.010224312543869019
+      ],
+      [
+        0.10550139844417572,
+        0.0011287927627563477
+      ],
+      [
+        1.6336129903793335,
+        -0.038632988929748535
+      ],
+      [
+        -0.8307979106903076,
+        -0.0323769748210907
+      ],
+      [
+        -1.0933690071105957,
+        0.06570342183113098
+      ],
+      [
+        -1.1674644947052002,
+        0.0679486095905304
+      ],
+      [
+        -1.4271682500839233,
+        -0.032164573669433594
+      ],
+      [
+        1.8789712190628052,
+        0.06288278102874756
+      ],
+      [
+        1.3173352479934692,
+        0.11356106400489807
+      ],
+      [
+        0.6419278383255005,
+        0.08505037426948547
+      ],
+      [
+        1.2089083194732666,
+        -0.0004614591598510742
+      ],
+      [
+        0.07899104058742523,
+        0.10913126170635223
+      ],
+      [
+        -0.5588306188583374,
+        0.05786818265914917
+      ],
+      [
+        0.07052117586135864,
+        0.004555098712444305
+      ],
+      [
+        -1.4774854183197021,
+        0.08532890677452087
+      ],
+      [
+        -0.10509838163852692,
+        -0.0688493624329567
+      ],
+      [
+        -1.2172541618347168,
+        -0.030733227729797363
+      ],
+      [
+        1.7926506996154785,
+        -0.001608133316040039
+      ],
+      [
+        0.8148441314697266,
+        0.059637099504470825
+      ],
+      [
+        -0.02841588295996189,
+        -0.019315076991915703
+      ],
+      [
+        -0.9306986331939697,
+        0.03626081347465515
+      ],
+      [
+        -1.5572110414505005,
+        -0.25051403045654297
+      ],
+      [
+        2.650456428527832,
+        0.03435647487640381
+      ],
+      [
+        1.9022166728973389,
+        -0.042228877544403076
+      ],
+      [
+        0.07029365003108978,
+        0.00450366735458374
+      ]
+    ],
+    "latent_pca_query": [
+      0.795168936252594,
+      -0.010254785418510437
+    ],
+    "latent_pca_target": [
+      1.1655254364013672,
+      -0.008606106042861938
+    ],
+    "candidate_neighbors": [
+      {
+        "node_idx": 236,
+        "admissible": false,
+        "chosen": false,
+        "dist_riemannian": 0.01569560542702675,
+        "dist_euclidean": 0.1404251605272293,
+        "blocking_reasons": [
+          "[R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].",
+          "[R-AGE-HORIZON] age: Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule).",
+          "[R-IMMUTABLE] sex: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation)."
+        ]
+      },
+      {
+        "node_idx": 114,
+        "admissible": false,
+        "chosen": false,
+        "dist_riemannian": 0.016397278755903244,
+        "dist_euclidean": 0.153840571641922,
+        "blocking_reasons": [
+          "[R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018]."
+        ]
+      },
+      {
+        "node_idx": 165,
+        "admissible": false,
+        "chosen": false,
+        "dist_riemannian": 0.018207913264632225,
+        "dist_euclidean": 0.17113928496837616,
+        "blocking_reasons": [
+          "[R-AGE-HORIZON] age: Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule)."
+        ]
+      },
+      {
+        "node_idx": 124,
+        "admissible": false,
+        "chosen": false,
+        "dist_riemannian": 0.02087988518178463,
+        "dist_euclidean": 0.07565822452306747,
+        "blocking_reasons": [
+          "[R-DIRECTIONAL-OTHER] max_heart_rate: Feature must trend in its clinically admissible direction.",
+          "[R-AGE-HORIZON] age: Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule)."
+        ]
+      },
+      {
+        "node_idx": 185,
+        "admissible": false,
+        "chosen": false,
+        "dist_riemannian": 0.03031349554657936,
+        "dist_euclidean": 0.19905871152877808,
+        "blocking_reasons": [
+          "[R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].",
+          "[R-IMMUTABLE] sex: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation)."
+        ]
+      },
+      {
+        "node_idx": 2,
+        "admissible": false,
+        "chosen": false,
+        "dist_riemannian": 0.03087380900979042,
+        "dist_euclidean": 0.1287175565958023,
+        "blocking_reasons": [
+          "[R-DIRECTIONAL-OTHER] max_heart_rate: Feature must trend in its clinically admissible direction.",
+          "[R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].",
+          "[R-DIRECTIONAL-OTHER] exercise_angina: Feature must trend in its clinically admissible direction."
+        ]
+      },
+      {
+        "node_idx": 225,
+        "admissible": true,
+        "chosen": true,
+        "dist_riemannian": 0.2712562084197998,
+        "dist_euclidean": 0.3916001617908478,
+        "blocking_reasons": []
+      }
+    ],
+    "chosen_target_node": 225,
+    "rule_checklist": [
+      {
+        "rule_id": "R-AGE-HORIZON",
+        "status": "pass",
+        "citation": "Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule)."
+      },
+      {
+        "rule_id": "R-AGE-MONOTONIC",
+        "status": "pass",
+        "citation": "Age cannot decrease between source and target (structural constraint)."
+      },
+      {
+        "rule_id": "R-BP-DIRECTION",
+        "status": "pass",
+        "citation": "Blood pressure must trend downward or hold stable under guideline-directed management [HTN2017]."
+      },
+      {
+        "rule_id": "R-DIRECTIONAL-OTHER",
+        "status": "pass",
+        "citation": "Feature must trend in its clinically admissible direction."
+      },
+      {
+        "rule_id": "R-IMMUTABLE",
+        "status": "pass",
+        "citation": "Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation)."
+      },
+      {
+        "rule_id": "R-LIPID-DIRECTION",
+        "status": "pass",
+        "citation": "Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018]."
+      }
+    ],
+    "feature_deltas": {
+      "age": {
+        "before": 46.0,
+        "after": 48.0,
+        "delta": 2.0,
+        "unit": "yrs"
+      },
+      "sex": {
+        "before": 1.0,
+        "after": 1.0,
+        "delta": 0.0,
+        "unit": "(1=male, 0=female)"
+      },
+      "fasting_blood_sugar": {
+        "before": 0.0,
+        "after": 0.0,
+        "delta": 0.0,
+        "unit": "(1=elevated fasting glucose)"
+      },
+      "resting_bp": {
+        "before": 150.0,
+        "after": 122.0,
+        "delta": -28.0,
+        "unit": "mmHg"
+      },
+      "cholesterol": {
+        "before": 231.0,
+        "after": 222.0,
+        "delta": -9.0,
+        "unit": "mg/dL"
+      },
+      "max_heart_rate": {
+        "before": 147.0,
+        "after": 186.0,
+        "delta": 39.0,
+        "unit": "bpm"
+      },
+      "oldpeak": {
+        "before": 3.6000001430511475,
+        "after": 0.0,
+        "delta": -3.6000001430511475,
+        "unit": "mm ST-depression"
+      },
+      "exercise_angina": {
+        "before": 0.0,
+        "after": 0.0,
+        "delta": 0.0,
+        "unit": "(1=exercise-induced angina present)"
+      },
+      "slope": {
+        "before": 2.0,
+        "after": 1.0,
+        "delta": -1.0,
+        "unit": "(ST-segment slope, ordinal)"
+      }
+    },
+    "plain_english": "This step is accepted: resting bp decreased by 28.0 mmHg; cholesterol decreased by 9.0 mg/dL; oldpeak decreased by 3.6 mm ST-depression; slope decreased by 1.0 (ST-segment slope, ordinal); max heart rate increased by 39.0 bpm, occurring over 2.0 years. Every applicable guideline rule (R-AGE-HORIZON, R-AGE-MONOTONIC, R-BP-DIRECTION, R-DIRECTIONAL-OTHER, R-IMMUTABLE, R-LIPID-DIRECTION) passed for this specific transition.",
+    "dist_riemannian_chosen": 0.2712562084197998,
+    "dist_euclidean_chosen": 0.3916001617908478,
+    "effort": 14.943389892578125
+  },
+  "abstain_patient": {
+    "dataset": "uci",
+    "seed": 0,
+    "patient_idx": 1,
+    "raw_record": {
+      "age": 67.0,
+      "sex": 1.0,
+      "fasting_blood_sugar": 0.0,
+      "resting_bp": 120.0,
+      "cholesterol": 229.0,
+      "max_heart_rate": 129.0,
+      "oldpeak": 2.5999999046325684,
+      "exercise_angina": 1.0,
+      "slope": 2.0
+    },
+    "risk_before": 0.8166775703430176,
+    "shap_top_features": [
+      {
+        "feature": "oldpeak",
+        "value": 0.1489112842202719
+      },
+      {
+        "feature": "age",
+        "value": 0.07346570942861325
+      },
+      {
+        "feature": "max_heart_rate",
+        "value": 0.07142818555368907
+      },
+      {
+        "feature": "exercise_angina",
+        "value": 0.02954413527489766
+      },
+      {
+        "feature": "resting_bp",
+        "value": -0.00897958643690108
+      },
+      {
+        "feature": "sex",
+        "value": 0.005572028259879647
+      }
+    ],
+    "n_candidates_checked": 113,
+    "closest_miss_candidate_idx": 34,
+    "closest_miss_violation_count": 1,
+    "blocking_rule_frequency": {
+      "R-AGE-MONOTONIC": 97.34513274336283,
+      "R-BP-DIRECTION": 49.557522123893804,
+      "R-LIPID-DIRECTION": 58.4070796460177,
+      "R-IMMUTABLE": 45.13274336283186,
+      "R-DIRECTIONAL-OTHER": 6.1946902654867255
+    },
+    "semifactual_text": "Even under the most favorable single-step comparison found in the training data (patient #34, 1 violated sub-condition(s) -- the fewest of any of the 113 low-risk candidates checked), risk would remain above the target threshold, because: [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint). Across the full candidate set, the most frequent obstruction(s) were: R-AGE-MONOTONIC (97% of 113 checked candidates); R-LIPID-DIRECTION (58% of 113 checked candidates); R-BP-DIRECTION (50% of 113 checked candidates). No single-hop transition to any recorded low-risk patient in the training data satisfies every clinical admissibility rule simultaneously; this is a certified structural infeasibility, not a search-coverage limitation (confirmed by Phase 2's densification probes, which resolved zero such cases)."
+  }
+}

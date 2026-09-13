@@ -1,0 +1,23 @@
+{
+  "git_sha": "539d87b795b78bb8f9446f99b0fabeded2c84841",
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "magnitudes_frac_std": [
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.5
+  ],
+  "max_budget": "len(admissible_features), per dataset",
+  "timestamp": "2026-09-09 13:53:41"
+}

@@ -1,4 +1,4 @@
-# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
+# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see archive/investigation_v2_to_v6/experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
 """
 Phase 4 -- neurosymbolic clinical-guideline layer, built on clingo (ASP).
 
@@ -42,7 +42,7 @@ Citations (documented once here, referenced by rule id elsewhere):
              ASCVD risk, versus the historically more lenient <140/90 mmHg
              threshold (JNC7/JNC8) used for lower-risk adults without those
              comorbidities -- the differentiation this project's `diabetic`
-             flag (experiments_v3/data/nhanes_real_full.csv) is used to apply.
+             flag (data/nhanes_real_full.csv) is used to apply.
   [ADA2023]  American Diabetes Association. "Standards of Care in Diabetes
              -2023." Diabetes Care. 2023;46(Suppl 1). Supports the <130/80
              mmHg BP target and non-worsening HbA1c-direction guidance for

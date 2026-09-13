@@ -3,5 +3,13 @@ __pycache__/
 *.pyc
 .DS_Store
 data/*
+# Real NHANES CSVs promoted from experiments_v3/data/ during the repo
+# consolidation (CHANGES.md) -- src/data/dataset_registration.py and
+# src/recourse/explanations.py now depend on these directly, so they must
+# actually be committed (the archived copy under archive/ is not a
+# substitute -- src/ should not depend on archive/). Other files under
+# data/ remain ignored, unchanged from before this reorganization.
+!data/nhanes_real.csv
+!data/nhanes_real_full.csv
 *.pt
 *.pth

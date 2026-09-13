@@ -1,0 +1,119 @@
+<!doctype html><html><head><meta charset='utf-8'/>
+<title>Recourse Report — uci patient #1 (abstained)</title>
+<style>
+:root { --bg:#f7f7f9; --panel:#fff; --text:#1a1a1a; --muted:#666; --accent:#2563eb; --border:#e2e2e6;
+        --geometry:#7c3aed; --geometry-bg:#f3edff; --neuro:#d97706; --neuro-bg:#fff7e6;
+        --xai:#2563eb; --xai-bg:#eef4ff; --ok:#16a34a; --ok-bg:#eafaf0; --bad:#dc2626; --bad-bg:#fef2f2; }
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg);
+       color: var(--text); margin:0; padding: 28px 0 60px; }
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+h1 { font-size: 24px; margin-bottom: 4px; }
+.sub { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+section { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+          padding: 20px 24px; margin-bottom: 18px; }
+h2 { font-size: 16px; margin: 0 0 10px; display:flex; align-items:center; gap:8px; }
+h3 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing:.03em; margin: 14px 0 6px; }
+p { line-height: 1.6; font-size: 14.5px; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12.5px; }
+th, td { border: 1px solid var(--border); padding: 5px 8px; text-align: left; }
+th { background: rgba(37,99,235,.07); }
+.gauge { display:flex; align-items:center; gap:20px; margin: 6px 0 14px; }
+.gauge-box { text-align:center; } .gauge-label{font-size:11px;color:var(--muted);}
+.gauge-num { font-size: 28px; font-weight: 800; }
+.risk-high { color: var(--bad); } .risk-low { color: var(--ok); }
+.chip { display:inline-block; background: rgba(37,99,235,.1); color: var(--accent); border-radius:4px;
+        padding:1px 7px; font-size:12px; margin:2px 4px 2px 0; font-family: ui-monospace, monospace; }
+.badge { display:inline-block; padding:2px 9px; border-radius:12px; font-size:11px; font-weight:700; }
+.badge-ok { background: var(--ok-bg); color: var(--ok); } .badge-bad { background: var(--bad-bg); color: var(--bad); }
+.stage { border-left: 4px solid var(--geometry); padding-left: 14px; margin: 16px 0; }
+.stage.xai { border-color: var(--xai); } .stage.neuro { border-color: var(--neuro); }
+.stage.cert-ok { border-color: var(--ok); } .stage.cert-bad { border-color: var(--bad); } .stage.data { border-color: #9ca3af; }
+.stage h2 { font-size: 14.5px; }
+details { margin-top: 8px; } summary { cursor: pointer; font-size: 12px; color: var(--muted); }
+.rule-line { font-family: ui-monospace, monospace; font-size: 12px; margin: 2px 0; }
+.rc-pass { color: var(--ok); } .rc-fail { color: var(--bad); }
+.quote { background: var(--bad-bg); border-left: 3px solid var(--bad); padding: 10px 14px; font-size: 13.5px; font-style: italic; }
+.iv { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 6px 0; }
+.iv b { color: var(--accent); }
+.note { font-size: 11.5px; color: var(--muted); }
+</style>
+<div class="wrap">
+<h1>Recourse Report — Abstention</h1>
+<div class="sub">uci · seed 0 · test patient #1 · preference profile: no_preference</div>
+
+<section>
+  <h2>Final Output</h2>
+  <table><tr><td>age</td><td>67 yrs</td></tr><tr><td>sex</td><td>1 </td></tr><tr><td>fasting_blood_sugar</td><td>0 </td></tr><tr><td>resting_bp</td><td>120 mmHg</td></tr><tr><td>cholesterol</td><td>229 mg/dL</td></tr><tr><td>max_heart_rate</td><td>129 bpm</td></tr><tr><td>oldpeak</td><td>2.6 mm ST-depression</td></tr><tr><td>exercise_angina</td><td>1 </td></tr><tr><td>slope</td><td>2 </td></tr></table>
+  <div class="gauge">
+    <div class="gauge-box"><div class="gauge-label">Risk</div><div class="gauge-num risk-high">81.7%</div></div>
+    <div style="font-size:20px;color:#999;">&rarr;</div>
+    <div class="gauge-box"><div class="gauge-label">Result</div><div class="badge badge-bad" style="font-size:14px;padding:4px 12px;">certified infeasible</div></div>
+  </div>
+  <p class="quote">&ldquo;Even under the most favorable single-step comparison found in the training data (patient #34, 1 violated sub-condition(s) -- the fewest of any of the 113 low-risk candidates checked), risk would remain above the target threshold, because: [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint). Across the full candidate set, the most frequent obstruction(s) were: R-AGE-MONOTONIC (97% of 113 checked candidates); R-LIPID-DIRECTION (58% of 113 checked candidates); R-BP-DIRECTION (50% of 113 checked candidates). No single-hop transition to any recorded low-risk patient in the training data satisfies every clinical admissibility rule simultaneously; this is a certified structural infeasibility, not a search-coverage limitation (confirmed by Phase 2's densification probes, which resolved zero such cases).&rdquo;</p>
+  
+</section>
+
+<h2 style="margin-left:4px;">Architecture Walkthrough</h2>
+
+<div class="stage xai">
+  <h2>1 &middot; Risk Classifier</h2>
+  <p>The model scored this patient at <b>81.7% predicted risk</b>.
+  The single biggest driver of this risk score was <b>oldpeak</b> (increasing risk by 0.149 on the model's own scale). Other contributing factors, in order: age (+0.073), max_heart_rate (+0.071), exercise_angina (+0.030).</p>
+  <details><summary>underlying SHAP values</summary><table><tbody>
+  <tr><td>oldpeak</td><td>+0.1489</td></tr><tr><td>age</td><td>+0.0735</td></tr><tr><td>max_heart_rate</td><td>+0.0714</td></tr><tr><td>exercise_angina</td><td>+0.0295</td></tr><tr><td>resting_bp</td><td>-0.0090</td></tr><tr><td>sex</td><td>+0.0056</td></tr>
+  </tbody></table></details>
+</div>
+
+<div class="stage">
+  <h2>2 &middot; VAE / Latent Encoding</h2>
+  <p>This patient was still mapped into the same clinically-similar-patients space as every other
+  patient — the encoding step ran normally. The problem surfaced at the next stage: none of the
+  patients near them turned out to be reachable.</p>
+</div>
+
+<div class="stage">
+  <h2>3 &middot; Graph + Riemannian Geometry</h2>
+  <p>The 6 closest real training patients by distance were examined, and
+  every one of them was clinically blocked (shown below with the specific reason for each) — this is
+  why the search had nothing nearby to route through.</p>
+  <table><thead><tr><th>Candidate</th><th>Status</th><th>Riemannian dist.</th><th>Euclidean dist.</th><th>Reason if blocked</th></tr></thead><tbody><tr><td>#86</td><td><span class="badge badge-bad">blocked</span></td><td>0.004</td><td>0.045</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] max_heart_rate: Feature must trend in its clinically admissible direction.; [R-BP-DIRECTION] resting_bp: Blood pressure must trend downward or hold stable under guideline-directed management [HTN2017].; [R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].; [R-DIRECTIONAL-OTHER] oldpeak: Feature must trend in its clinically admissible direction.; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#157</td><td><span class="badge badge-bad">blocked</span></td><td>0.008</td><td>0.100</td><td style='font-size:11px'>[R-BP-DIRECTION] resting_bp: Blood pressure must trend downward or hold stable under guideline-directed management [HTN2017].; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#127</td><td><span class="badge badge-bad">blocked</span></td><td>0.015</td><td>0.169</td><td style='font-size:11px'>[R-BP-DIRECTION] resting_bp: Blood pressure must trend downward or hold stable under guideline-directed management [HTN2017].; [R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].; [R-IMMUTABLE] sex: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr><tr><td>#166</td><td><span class="badge badge-bad">blocked</span></td><td>0.016</td><td>0.087</td><td style='font-size:11px'>[R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#39</td><td><span class="badge badge-bad">blocked</span></td><td>0.041</td><td>0.160</td><td style='font-size:11px'>[R-BP-DIRECTION] resting_bp: Blood pressure must trend downward or hold stable under guideline-directed management [HTN2017].; [R-LIPID-DIRECTION] cholesterol: Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).; [R-IMMUTABLE] sex: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr><tr><td>#108</td><td><span class="badge badge-bad">blocked</span></td><td>0.049</td><td>0.130</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] max_heart_rate: Feature must trend in its clinically admissible direction.; [R-BP-DIRECTION] resting_bp: Blood pressure must trend downward or hold stable under guideline-directed management [HTN2017].; [R-DIRECTIONAL-OTHER] slope: Feature must trend in its clinically admissible direction.; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).; [R-IMMUTABLE] sex: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr></tbody></table>
+</div>
+
+<div class="stage neuro">
+  <h2>4 &middot; Neurosymbolic Layer</h2>
+  <p>Rather than stopping at the nearest candidates, the system exhaustively checked ALL
+  <b>113</b> real low-risk patients in the training data against this
+  patient's actual values. The closest miss was training patient
+  <b>#34</b>, which still failed with
+  <b>1</b> violated guideline rule(s) — the fewest of any candidate
+  checked. The rules that recurred most often across every candidate:</p>
+  <table><thead><tr><th>Blocking rule</th><th>Frequency across all checked candidates</th></tr></thead>
+  <tbody><tr><td>R-AGE-MONOTONIC</td><td>97.3%</td></tr><tr><td>R-LIPID-DIRECTION</td><td>58.4%</td></tr><tr><td>R-BP-DIRECTION</td><td>49.6%</td></tr><tr><td>R-IMMUTABLE</td><td>45.1%</td></tr><tr><td>R-DIRECTIONAL-OTHER</td><td>6.2%</td></tr></tbody></table>
+</div>
+
+<div class="stage cert-bad">
+  <h2>5 &middot; Certified Search</h2>
+  <p>No path was chosen because none existed: this patient's classification is
+  <b>certified infeasible</b> — an exhaustive, real-value check (not a search-radius limitation) found that
+  every real recorded low-risk patient in the training data would require at least one
+  guideline-violating change to reach from this patient's actual values.</p>
+</div>
+
+<div class="stage cert-bad">
+  <h2>6 &middot; Real-Value Verification (the B1/B2 fix)</h2>
+  <p>The exhaustive check above used this patient's own recorded values directly against every real
+  low-risk training patient's own recorded values — no VAE reconstruction was involved anywhere in
+  reaching this conclusion, so the "no safe path exists" result is not an artifact of decoder
+  approximation.</p>
+</div>
+
+<div class="stage xai">
+  <h2>7 &middot; Explanation Layer</h2>
+  <p>Rather than a generic "no plan found" message, this patient is shown WHY no plan exists — the
+  specific closest-miss patient, the specific rule that still blocked even that best case, and how
+  often each type of obstruction recurred across every real alternative that was checked.</p>
+</div>
+
+</div>
+</html>

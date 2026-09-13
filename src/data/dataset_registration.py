@@ -1,10 +1,10 @@
-# --- Canonical home since Phase 1 of DEEP_AUDIT resolution (see experiments_v6_audit/DEEP_AUDIT_RESOLUTION.md); experiments_v6/lib/ re-exports this unchanged. ---
+# --- Canonical home in src/ (see CHANGES.md for the repo consolidation this file is part of). ---
 """
 Registers the real NHANES cohort as a new dataset key, 'nhanes_real', in
 configs.dataset_config.DATASET_CONFIGS at runtime -- WITHOUT editing
 configs/dataset_config.py on disk (that file, and the synthetic 'nhanes'
 entry it already defines, are left completely untouched; see
-DATA_PROVENANCE.md section 8).
+docs/DATA_PROVENANCE.md section 8).
 
 Import this module (for its side effect) before calling
 get_dataset_config('nhanes_real') or get_dataloaders(dataset_name='nhanes_real').
@@ -13,9 +13,13 @@ from pathlib import Path
 
 from configs.dataset_config import DATASET_CONFIGS
 
-# Real NHANES CSV is read from experiments_v3/data/ (read-only reuse of the v3-built
-# cohort file; experiments_v3 is never modified, only its data artifact is referenced).
-_REAL_NHANES_CSV = str(Path(__file__).resolve().parents[2] / "experiments_v3" / "data" / "nhanes_real.csv")
+# Real NHANES CSV lives at top-level data/ (promoted here from
+# experiments_v3/data/ during the repo consolidation -- see CHANGES.md and
+# .gitignore's explicit exception for this file, since data/* is otherwise
+# ignored). A historical copy remains at
+# archive/investigation_v2_to_v6/experiments_v3/data/nhanes_real.csv but
+# src/ must not depend on archive/, so this reads the top-level copy.
+_REAL_NHANES_CSV = str(Path(__file__).resolve().parents[2] / "data" / "nhanes_real.csv")
 
 if "nhanes_real" not in DATASET_CONFIGS:
     DATASET_CONFIGS["nhanes_real"] = {

@@ -1,0 +1,14 @@
+{
+  "git_sha": "539d87b795b78bb8f9446f99b0fabeded2c84841",
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "seeds": [
+    0
+  ],
+  "n_patients": 5,
+  "mu": 0.5,
+  "metric": "riemannian",
+  "timestamp": "2026-09-09 13:54:20"
+}
