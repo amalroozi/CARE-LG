@@ -1,0 +1,12 @@
+{
+  "uci": {
+    "n_checked": 62,
+    "pct_found_mean": 0.0,
+    "pct_found_std": 0.0
+  },
+  "nhanes_real": {
+    "n_checked": 1325,
+    "pct_found_mean": 0.0,
+    "pct_found_std": 0.0
+  }
+}

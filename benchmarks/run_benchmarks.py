@@ -1,6 +1,30 @@
 """
 Baseline Benchmark Runner for CARE-LG research framework.
 Evaluates DiCE, FACE, Growing Spheres, and CARE-LG across 100 high-risk test instances.
+
+*** SUPERSEDED NOTICE (added during this project's baseline-rebuild session) ***
+`run_dice`, `run_face`, and `run_growing_spheres` below predate this
+project's documented investigation phase (git history shows them added in
+one of the repository's very first commits) and, on inspection, cite no
+source paper and include no algorithm-fidelity documentation anywhere in
+this file. Most materially: `run_dice` implements a SINGLE L2-penalized
+gradient-descent counterfactual with no diversity mechanism at all --
+diversity across multiple simultaneous counterfactuals is DiCE's entire
+defining contribution over plain gradient-descent search, so this was not
+a faithful DiCE implementation.
+
+These three functions are kept here UNCHANGED, for historical reference
+only, and are NOT superseded in the sense of being deleted -- nothing that
+already depends on this file will break. The current, faithful, cited
+implementations are:
+  - DiCE          -> src/baselines/dice.py (run_dice_diverse)
+  - Growing Spheres -> src/baselines/growing_spheres.py (run_growing_spheres)
+  - FACE          -> src/baselines/face.py (already the authoritative
+                     version as of a prior session's FACE rerun; this
+                     file's `run_face` was already effectively superseded
+                     before this session)
+See docs/HISTORY.md for the full account and CHANGES.md for the real,
+executed old-vs-new comparison numbers.
 """
 
 import sys

@@ -1,0 +1,20 @@
+{
+  "uci": {
+    "stage1_success_pct_mean": 38.54624505928854,
+    "stage2_attempted_mean": 11.0,
+    "stage2_success_pct_of_attempted_mean": 4.0,
+    "stage2_success_pct_of_attempted_std": 8.94427190999916,
+    "stage2_cvr_pct_mean": 0.0,
+    "combined_success_pct_mean": 40.946245059288536,
+    "combined_success_pct_std": 11.814034726525565
+  },
+  "nhanes_real": {
+    "stage1_success_pct_mean": 50.94709886224515,
+    "stage2_attempted_mean": 164.0,
+    "stage2_success_pct_of_attempted_mean": 11.00166072533791,
+    "stage2_success_pct_of_attempted_std": 2.2348136723053558,
+    "stage2_cvr_pct_mean": 0.0,
+    "combined_success_pct_mean": 55.11306066934977,
+    "combined_success_pct_std": 3.880045438059166
+  }
+}

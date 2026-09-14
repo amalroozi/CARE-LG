@@ -115,3 +115,69 @@ move is covered by a compatibility shim, so these scripts needed no edits).
   successfully from the new paths, zero missing sections.
 - The UI and `scripts/run_single_patient.py` were exercised against the new
   structure (see final summary).
+
+## Baseline rebuild: DiCE, FACE, Growing Spheres brought to citation standard
+
+`benchmarks/run_benchmarks.py`'s `run_dice`, `run_face`, and
+`run_growing_spheres` were confirmed AI-generated prior to this project's
+documented investigation phase (git history places them in one of the
+repository's first commits), with no source-paper citation and no
+algorithm-fidelity documentation anywhere in the file — inconsistent with
+every baseline built since (REVISE, PACE, the corrected FACE rerun), which
+all cite their source and document their own deviations. **Step 0 check
+performed before any change**: grepped `docs/`, `results/`, `scripts/`,
+`ui/`, `src/` for references to these three functions or to
+`benchmarks/results.csv`/`.json` — FACE's currently-published numbers in
+`docs/FINDINGS.md` already came from a prior session's corrected rerun
+(`scripts/run_face_rerun.py`), not from `benchmarks/run_benchmarks.py`; no
+DiCE or Growing Spheres numbers existed anywhere in current docs/results.
+So no previously-published number depended on the original three functions
+being touched, and none needed correcting as a result of this rebuild.
+
+**Added**: `src/baselines/` (new package) — `dice.py` (Mothilal, Sharma,
+Tan, FAT* 2020, arXiv:1905.07697: the paper's actual joint diverse-
+counterfactual loss, k candidates optimized together with a DPP diversity
+term, not the original's single L2-penalized counterfactual),
+`growing_spheres.py` (Laugel, Lesot, Marsala, Renard, Detyniecki,
+arXiv:1712.08443: faithful expanding-spherical-shell sampling with correct
+uniform-by-volume shell sampling), and `face.py` (promoted from
+`scripts/run_face_rerun.py`, unchanged algorithm, now the single canonical
+FACE implementation both that script and any future one import from).
+`scripts/run_face_rerun.py` updated to import from `src/baselines/face.py`
+rather than containing the algorithm itself, and extended to also report
+KDE plausibility and clinical effort (previously only success/CVR/latency),
+matching the metrics reported for the other two rebuilt baselines.
+`scripts/run_baselines_rebuilt.py` (new): evaluates the new DiCE and
+Growing Spheres under this project's own corrected protocol (real-value
+CVR, full 5-seed/both-cohort cohorts) AND runs the ORIGINAL legacy
+functions on a matched 15-patients-per-seed subset for a direct old-vs-new
+comparison.
+
+**Disclosed deviations from the papers** (documented in each module's own
+docstring, not silent): DiCE's `max_iter` reduced from the paper's 5000 to
+300 for this session's full-cohort compute budget; DiCE's diversity term
+uses `logdet` rather than raw `det` for numerical stability (matches the
+official `dice-ml` reference implementation's own choice); Growing
+Spheres' `n_samples` per layer reduced from the paper's 10,000 to 2,000;
+Growing Spheres' paper-described sparsity-reduction post-processing phase
+(a separate, optional refinement step) is not implemented, only the
+defining shell-search mechanism.
+
+**Real results, executed this session** (raw data:
+`results/tables/baselines_rebuilt_per_patient.csv`,
+`results/tables/baselines_old_vs_new.csv`,
+`results/tables/baselines_rebuilt_metadata.json`; full tables in
+`docs/FINDINGS.md` section 7 and `docs/HISTORY.md`). Headline finding,
+reported plainly: the original `run_dice` was not a faithful DiCE
+implementation by the paper's own definition — no diversity mechanism at
+all, DiCE's entire defining contribution. Old-vs-new, same patients, same
+seeds: DiCE success rose 66.7%→98.7% (UCI) and 49.3%→97.3% (NHANES); DiCE
+real-value CVR fell 98.0%→74.3% (UCI) and 100.0%→69.9% (NHANES) once the
+paper's own actionability mechanism (holding immutable/non-decreasing
+features fixed) was actually applied. Growing Spheres changed less
+(82.7%→94.7% / 98.7%→100.0% success; already ~100% CVR both versions, since
+neither has any constraint awareness).
+
+`benchmarks/run_benchmarks.py`'s original three functions were left
+UNCHANGED (not deleted, per Hard Rule 3) with a superseded-notice added to
+the file's module docstring pointing to `src/baselines/`.

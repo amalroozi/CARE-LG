@@ -125,6 +125,56 @@ CARE-LG trades success rate for a genuine, verified 0% real-world violation
 guarantee, and is the only method here that distinguishes genuinely
 impossible patients from not-yet-found ones, or explains its decisions.
 
+## 7. DiCE and Growing Spheres, rebuilt to citation standard
+
+`benchmarks/run_benchmarks.py`'s original `run_dice`/`run_growing_spheres`
+predate this project's documented investigation, cited no paper, and
+documented no fidelity to their sources (see `docs/HISTORY.md`). Rebuilt
+this session from their actual papers into `src/baselines/`: DiCE
+(Mothilal, Sharma, Tan, FAT* 2020 — joint diverse-counterfactual
+optimization, k=4, the paper's own loss with lambda1=0.5/lambda2=1.0) and
+Growing Spheres (Laugel et al., arXiv:1712.08443 — expanding spherical-
+shell sampling until an "enemy" is found). Full 5-seed, both-cohort run
+under this project's own real-value CVR protocol:
+
+| Dataset | Method | Success | Real-value CVR | KDE | Effort | Latency |
+|---|---|---|---|---|---|---|
+| UCI | Growing Spheres | 94.6% ± 4.0% | 100.0% ± 0.0% | −10.77 | 6.15 | 0.0048s |
+| UCI | DiCE (diverse, k=4) | 99.0% ± 2.2% | 74.4% ± 8.8% | −38.36 | 20.31 | 0.1283s |
+| Real NHANES | Growing Spheres | 99.9% ± 0.1% | 100.0% ± 0.0% | −8.92 | 1.59 | 0.0028s |
+| Real NHANES | DiCE (diverse, k=4) | 98.5% ± 1.1% | 64.7% ± 6.3% | −15.97 | 9.82 | 0.1214s |
+
+**Old-vs-new comparison, same patients, same seeds, same 0.45 threshold
+applied to both** (raw data: `results/tables/baselines_old_vs_new.csv`):
+
+| Dataset | Method | Success (old → new) | Real-value CVR (old → new) |
+|---|---|---|---|
+| UCI | Growing Spheres | 82.7% → 94.7% | 95.2% → 100.0% |
+| UCI | DiCE | 66.7% → 98.7% | 98.0% → 74.3% |
+| Real NHANES | Growing Spheres | 98.7% → 100.0% | 100.0% → 100.0% |
+| Real NHANES | DiCE | 49.3% → 97.3% | 100.0% → 69.9% |
+
+**Reported plainly, not smoothed over**: the original `run_dice` was not a
+faithful DiCE implementation by the paper's own definition — it had no
+diversity mechanism at all, which is DiCE's defining contribution over
+plain single-counterfactual gradient search (already covered by this
+project's REVISE baseline, in latent space). The rebuild's success rate is
+roughly 30-50 points higher (more simultaneous optimization attempts per
+patient genuinely helps), and its real-value CVR is meaningfully lower
+(DiCE's own actionability mechanism — holding immutable/non-decreasing
+features fixed — was never implemented in the original, and materially
+changes which counterfactuals are found). Growing Spheres, an unconstrained
+heuristic in both versions, changed less; neither version has any
+clinical-constraint awareness, so real-value CVR stays ~100% for both. Like
+FACE and PACE above, neither rebuilt baseline distinguishes certified
+infeasibility from a search failure, or explains its output — both
+capabilities remain unique to CARE-LG in this comparison.
+
+Like the classifier audit, this did not require changing any previously-
+published number: FACE's cited numbers already came from the corrected
+rerun, and no DiCE/Growing Spheres numbers existed in `docs/FINDINGS.md`
+before this session.
+
 ## What is NOT working / not yet done (stated plainly, not buried)
 
 - VAE decoder quality was chased across two sessions (v2→v3 type-aware

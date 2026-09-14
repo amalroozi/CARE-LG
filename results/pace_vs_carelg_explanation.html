@@ -1,0 +1,83 @@
+<!doctype html><html><head><meta charset="utf-8"/>
+<title>PACE vs CARE-LG — What 0% CVR Actually Means</title>
+<style>
+body { font-family: -apple-system, sans-serif; background:#f7f7f9; margin:0; padding:24px; color:#111; }
+.wrap { max-width: 780px; margin:0 auto; }
+h1 { font-size:21px; margin-bottom:4px; }
+.sub { font-size:12.5px; color:#666; margin-bottom:20px; }
+section { background:#fff; border:1px solid #e2e2e6; border-radius:10px; padding:20px 24px; margin-bottom:16px; }
+h2 { font-size:15.5px; margin:0 0 10px; }
+p { line-height:1.65; font-size:13.5px; }
+.compare { display:flex; gap:16px; flex-wrap:wrap; margin:12px 0; }
+.compare > div { flex:1; min-width:260px; border-radius:8px; padding:14px 16px; }
+.care { background:#eafaf0; border:1px solid #16a34a; }
+.pace { background:#fef2f2; border:1px solid #dc2626; }
+.compare h3 { font-size:12.5px; margin:0 0 6px; text-transform:uppercase; letter-spacing:.03em; }
+.care h3 { color:#166534; } .pace h3 { color:#991b1b; }
+.compare p { font-size:12.5px; margin:0; }
+.stat-row { display:flex; gap:16px; margin:14px 0; }
+.stat-box { flex:1; background:#f3f4f6; border-radius:8px; padding:12px 16px; text-align:center; }
+.stat-num { font-size:22px; font-weight:800; }
+.stat-label { font-size:11px; color:#666; margin-top:2px; }
+.quote-box { background:#eef2ff; border-left:4px solid #4338ca; padding:14px 18px; margin-top:8px; font-size:13.5px; font-style:italic; color:#1e1b4b; border-radius:0 8px 8px 0; }
+.note { font-size:11.5px; color:#666; }
+</style></head><body><div class="wrap">
+
+<h1>PACE vs. CARE-LG — What "0% CVR" Actually Means</h1>
+<div class="sub">Same mechanism you built, applied differently — the crux of the fairness question between these two methods.</div>
+
+<section>
+  <h2>How PACE gets to 0%</h2>
+  <p>PACE (and this project's reimplementation of it) generates a <b>candidate perturbation</b> — a synthetic,
+  optimized point — and runs it through an ASP/symbolic admissibility filter <b>before</b> accepting it as a valid
+  counterfactual. If a candidate fails the constraint check, it's rejected and the search tries another. Only
+  constraint-satisfying candidates are ever returned. So by construction, whatever comes out the other end has
+  already passed the same kind of rule check CARE-LG's neurosymbolic layer does — that's why it's 0%, not a
+  measured rate that could have come out otherwise.</p>
+</section>
+
+<section>
+  <h2>Why this is real, but not the same claim as CARE-LG's</h2>
+  <p>The difference isn't <i>whether</i> the constraints were checked — both systems genuinely check them. The
+  difference is <b>what's being checked against.</b></p>
+  <div class="compare">
+    <div class="care">
+      <h3>CARE-LG</h3>
+      <p>The candidate is a <b>real, recorded patient</b>. When you verify "BP decreased, cholesterol decreased,
+      sex unchanged," you're checking real, lived, physiologically-coherent values — a real human actually
+      exists in that state.</p>
+    </div>
+    <div class="pace">
+      <h3>PACE</h3>
+      <p>The candidate is a <b>synthetic, optimized point</b>. It's checked feature-by-feature against the rules,
+      and each rule passes — but nothing guarantees the <i>combination</i> is something a real body could
+      actually be in. Every individual rule can pass while the combination is physiologically incoherent or
+      unprecedented, because there's no real patient anchoring it.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Why PACE's success rate is roughly double CARE-LG's</h2>
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-num" style="color:#dc2626;">80.4%</div><div class="stat-label">PACE success (UCI)</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:#16a34a;">40.9%</div><div class="stat-label">CARE-LG success (UCI, final)</div></div>
+  </div>
+  <p>This gap is very likely explained by the same real/synthetic distinction above: it's much easier to find
+  <i>some</i> synthetic point that passes rule-by-rule checks than to find an <i>actual real patient</i> who
+  satisfies all of them simultaneously. CARE-LG is solving a harder, more conservative problem — that's the
+  honest reason for the lower number, not a weaker method.</p>
+</section>
+
+<section>
+  <h2>The one-sentence fix for your slide</h2>
+  <div class="quote-box">
+    "Both CARE-LG and PACE achieve 0% CVR via rule-based filtering — but CARE-LG's targets are real, verified
+    patients, while PACE's are synthetic points that satisfy the rules without a guarantee of real-world
+    achievability."
+  </div>
+  <p class="note" style="margin-top:10px;">That sentence is both accurate and still favorable to CARE-LG — it doesn't
+  concede anything false, it just correctly scopes what "0%" means for each method.</p>
+</section>
+
+</div></body></html>

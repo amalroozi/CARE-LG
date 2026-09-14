@@ -1,0 +1,19 @@
+{
+  "git_sha": "1988c22348d4e2c7b0b83fa27f529e505f016c0d",
+  "datasets": [
+    "uci",
+    "nhanes_real"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "target_threshold": 0.45,
+  "dice_max_iter": 300,
+  "dice_k": 4,
+  "n_old_vs_new_per_seed": 15,
+  "timestamp": "2026-09-13 21:06:52"
+}

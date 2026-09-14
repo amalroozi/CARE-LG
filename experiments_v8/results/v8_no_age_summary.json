@@ -1,0 +1,16 @@
+{
+  "uci": {
+    "success_pct_mean": 96.22134387351778,
+    "success_pct_std": 4.1283634195709205,
+    "real_cvr_pct_mean": 0.0,
+    "certified_infeasible_pct_mean": 100.0,
+    "n_low_risk_train_mean": 114.0
+  },
+  "nhanes_real": {
+    "success_pct_mean": 88.7276132739169,
+    "success_pct_std": 2.033974275243289,
+    "real_cvr_pct_mean": 0.7706310004789917,
+    "certified_infeasible_pct_mean": 100.0,
+    "n_low_risk_train_mean": 1725.6
+  }
+}

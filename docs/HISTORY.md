@@ -88,13 +88,64 @@ were reworded; the guideline rules were wired into the UI; the effort
 weights were documented as unvalidated; and a permanent regression test was
 added asserting the entry-gate/interior-gate symmetry that B1 had violated.
 
+## The baseline rebuild — bringing DiCE, FACE, and Growing Spheres up to standard
+
+`benchmarks/run_benchmarks.py`'s `run_dice`, `run_face`, and
+`run_growing_spheres` predate this project's documented investigation
+phase entirely (git history places them in one of the repository's very
+first commits) and, on inspection, cite no source paper anywhere and
+include no algorithm-fidelity documentation — inconsistent with every
+baseline built since (REVISE, PACE, the corrected FACE rerun), each of
+which cites its source and documents its own deviations explicitly. This
+session rebuilt all three from their actual papers, into `src/baselines/`.
+
+**The most consequential finding, reported plainly**: the original
+`run_dice` was a single L2-penalized gradient-descent counterfactual with
+NO diversity mechanism at all. Diversity across several simultaneous
+counterfactuals is DiCE's entire defining contribution over plain
+gradient-descent search (which this project's REVISE baseline already is,
+just in latent space) — so the original was not a faithful DiCE
+implementation by the paper's own definition of the method, not merely an
+imprecise one.
+
+Real, executed old-vs-new comparison (same patients, same seeds, same
+0.45 target threshold applied to both for a fair comparison):
+
+| Dataset | Method | Success (old→new) | Real-value CVR (old→new) |
+|---|---|---|---|
+| UCI | Growing Spheres | 82.7% → 94.7% | 95.2% → 100.0% |
+| UCI | DiCE | 66.7% → 98.7% | 98.0% → 74.3% |
+| Real NHANES | Growing Spheres | 98.7% → 100.0% | 100.0% → 100.0% |
+| Real NHANES | DiCE | 49.3% → 97.3% | 100.0% → 69.9% |
+
+DiCE's success rate roughly doubled once actually implemented with its
+paper's real joint, diverse optimization (more simultaneous attempts per
+patient genuinely helps find a valid counterfactual); its real-value CVR
+dropped meaningfully once DiCE's own actionability mechanism (holding
+immutable/non-decreasing features fixed, a real part of the published
+method the original never implemented) was applied. Growing Spheres
+changed less — it was always an unconstrained, heuristic method in both
+versions, and remains one; the rebuild's more faithful shell-sampling
+mostly just makes success slightly more reliable. Full metrics (KDE,
+effort, latency) for the new implementations: `docs/FINDINGS.md`.
+
+Nothing in `docs/FINDINGS.md` or `results/` previously cited numbers from
+these three functions — FACE's currently-published numbers were already
+sourced from the corrected rerun before this session, and no DiCE/Growing
+Spheres numbers had been published anywhere in current docs. This rebuild
+therefore adds new, real baseline numbers; it does not contradict or
+require correcting any previously-published figure.
+
 ## What `src/` contains today, and why
 
 `src/` is the single, current implementation of everything above: the
 classifier (`src/classifier/`), the type-aware VAE (`src/vae/`), the
 B1/B2-fixed graph construction and neurosymbolic layer (`src/graph/`), the
 search, explanation, and preference-elicitation logic (`src/recourse/`),
-and the single-patient HTML report generator (`src/reporting/`). It is
+the single-patient HTML report generator (`src/reporting/`), and the
+cited, faithful comparison baselines (`src/baselines/`). It is
 self-contained and does not depend on `archive/`. The scripts that
 reproduce every number in `docs/FINDINGS.md` live in `scripts/`; the UI
 lives in `ui/`; results already generated live in `results/`.
+`benchmarks/run_benchmarks.py` holds the original, now-superseded baseline
+implementations, kept unmodified for historical reference only.
