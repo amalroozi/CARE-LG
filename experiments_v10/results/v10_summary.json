@@ -1,0 +1,16 @@
+{
+  "n_subsample": 20000,
+  "k_neighbors": 100,
+  "stage1_success_pct_mean": 99.39450778141358,
+  "stage1_success_pct_std": 0.3775247521346637,
+  "stage1_real_cvr_pct_mean": 0.0,
+  "n_high_risk_mean": 1685.0,
+  "n_low_risk_train_mean": 4000.0,
+  "n_certified_infeasible_mean": 9.6,
+  "stage2_attempted_mean": 9.6,
+  "stage2_success_pct_of_attempted_mean": 47.282051282051285,
+  "stage2_success_pct_of_attempted_std": 35.0361886735028,
+  "stage2_cvr_pct_mean": 0.0,
+  "combined_success_pct_mean": 99.5603775280386,
+  "combined_success_pct_std": 0.33710932849085257
+}

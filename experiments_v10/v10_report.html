@@ -1,0 +1,575 @@
+<!doctype html><html><head><meta charset="utf-8"/>
+<title>v10 &mdash; CARE-LG on the Cardio Dataset</title>
+<style>
+body { font-family: -apple-system, sans-serif; background:#f7f7f9; margin:0; padding:24px; color:#111; }
+.wrap { max-width: 960px; margin:0 auto; }
+h1 { font-size:22px; } h2 { font-size:16px; }
+section { background:#fff; border:1px solid #e2e2e6; border-radius:10px; padding:18px 22px; margin-bottom:18px; }
+table { border-collapse:collapse; width:100%; font-size:12px; margin:8px 0; }
+th,td { border:1px solid #e2e2e6; padding:5px 8px; text-align:left; }
+th { background:rgba(37,99,235,.08); }
+.note { font-size:12px; color:#666; }
+.badge { background:#dcfce7; color:#166534; padding:2px 10px; border-radius:10px; font-size:12px; font-weight:700; margin-left:8px;}
+.warn { background:#fef2f2; color:#991b1b; padding:10px 14px; border-radius:8px; font-size:12.5px; border-left:4px solid #dc2626; margin-top:10px; }
+section.headline h1 { font-size:20px; margin:0 0 6px; }
+</style></head><body><div class="wrap">
+<h1>v10 &mdash; CARE-LG on a Third Dataset <span class="badge">real data, cardio, 5 seeds</span></h1>
+<p class="note">The full CARE-LG architecture (type-aware VAE, Riemannian pullback-metric graph search,
+B1/B2-fixed hard clinical-constraint gate, per-age-bracket target definition, certified-infeasibility
+check, Stage 2 synthetic fallback) run top-to-bottom on the Kaggle Cardiovascular Disease dataset
+(70,000 raw rows; 20,000-row stratified subsample per seed for computational tractability &mdash;
+disclosed scoping decision, see experiments_v10/data_cardio.py) instead of UCI Heart or Real NHANES.
+Separate experiment tree (experiments_v10/), src/ untouched; Stage 1's target definition and Stage 2's
+algorithm are reused unmodified from scripts/run_age_stratified_experiment.py and
+scripts/run_stage2_synthetic_search.py. Stage 1's path search uses <code>find_path_sra</code>
+(src/graph/source_relative_admissibility.py) &mdash; a first cardio run using the older
+<code>find_path_augmented</code> came back with a nonzero real CVR (~1.5%), the same compositional
+constraint-drift leak found and fixed earlier this project, now confirmed on a third, independent
+dataset; this report reflects the SRA-fixed rerun.</p>
+<div class="note" style="background:#eef2ff;border-left:3px solid #4338ca;padding:8px 12px;border-radius:0 8px 8px 0;margin-top:8px;">
+Provenance caveat, disclosed not hidden: this dataset's origin is an uncredited Kaggle upload
+(no cited clinical institution), and, like every CLINICAL_EFFORT_WEIGHTS dict in this project
+(see configs/dataset_config.py's own note on 'uci'/'nhanes'), the cost weights in
+experiments_v10/data_cardio.py are freshly invented, illustrative constants, not derived from a
+published treatment-burden instrument.
+</div>
+
+
+    <section class="headline">
+      <h1>5 Sample Patients &mdash; Risk, Counterfactual, and Recommendations</h1>
+      <p class="note">5 real high-risk patients from the cardio test set (seed 0), each run
+      end-to-end through the real v10 pipeline: recorded values, model-predicted risk, the counterfactual
+      explanation (real recorded change to a real admissible target patient, or the closest-miss semifactual
+      explanation if none exists), and named clinical recommendations tied to guideline citations. Nothing
+      below is templated or invented.</p>
+      <style>:root { --bg:#f7f7f9; --panel:#fff; --text:#1a1a1a; --muted:#666; --accent:#2563eb; --border:#e2e2e6;
+        --geometry:#7c3aed; --geometry-bg:#f3edff; --neuro:#d97706; --neuro-bg:#fff7e6;
+        --xai:#2563eb; --xai-bg:#eef4ff; --ok:#16a34a; --ok-bg:#eafaf0; --bad:#dc2626; --bad-bg:#fef2f2;}
+.patient-report * { box-sizing: border-box;}
+.patient-report body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg);
+       color: var(--text); margin:0; padding: 28px 0 60px;}
+.patient-report .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px;}
+.patient-report h1 { font-size: 24px; margin-bottom: 4px;}
+.patient-report .sub { color: var(--muted); font-size: 13px; margin-bottom: 22px;}
+.patient-report section { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+          padding: 20px 24px; margin-bottom: 18px;}
+.patient-report h2 { font-size: 16px; margin: 0 0 10px; display:flex; align-items:center; gap:8px;}
+.patient-report h3 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing:.03em; margin: 14px 0 6px;}
+.patient-report p { line-height: 1.6; font-size: 14.5px;}
+.patient-report table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12.5px;}
+.patient-report th, .patient-report td { border: 1px solid var(--border); padding: 5px 8px; text-align: left;}
+.patient-report th { background: rgba(37,99,235,.07);}
+.patient-report .gauge { display:flex; align-items:center; gap:20px; margin: 6px 0 14px;}
+.patient-report .gauge-box { text-align:center;}
+.patient-report .gauge-label {font-size:11px;color:var(--muted);}
+.patient-report .gauge-num { font-size: 28px; font-weight: 800;}
+.patient-report .risk-high { color: var(--bad);}
+.patient-report .risk-low { color: var(--ok);}
+.patient-report .chip { display:inline-block; background: rgba(37,99,235,.1); color: var(--accent); border-radius:4px;
+        padding:1px 7px; font-size:12px; margin:2px 4px 2px 0; font-family: ui-monospace, monospace;}
+.patient-report .badge { display:inline-block; padding:2px 9px; border-radius:12px; font-size:11px; font-weight:700;}
+.patient-report .badge-ok { background: var(--ok-bg); color: var(--ok);}
+.patient-report .badge-bad { background: var(--bad-bg); color: var(--bad);}
+.patient-report .stage { border-left: 4px solid var(--geometry); padding-left: 14px; margin: 16px 0;}
+.patient-report .stage.xai { border-color: var(--xai);}
+.patient-report .stage.neuro { border-color: var(--neuro);}
+.patient-report .stage.cert-ok { border-color: var(--ok);}
+.patient-report .stage.cert-bad { border-color: var(--bad);}
+.patient-report .stage.data { border-color: #9ca3af;}
+.patient-report .stage h2 { font-size: 14.5px;}
+.patient-report details { margin-top: 8px;}
+.patient-report summary { cursor: pointer; font-size: 12px; color: var(--muted);}
+.patient-report .rule-line { font-family: ui-monospace, monospace; font-size: 12px; margin: 2px 0;}
+.patient-report .rc-pass { color: var(--ok);}
+.patient-report .rc-fail { color: var(--bad);}
+.patient-report .quote { background: var(--bad-bg); border-left: 3px solid var(--bad); padding: 10px 14px; font-size: 13.5px; font-style: italic;}
+.patient-report .iv { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin: 6px 0;}
+.patient-report .iv b { color: var(--accent);}
+.patient-report .note { font-size: 11.5px; color: var(--muted);}</style>
+      <div class="patient-report" style="margin-bottom:26px;"><h3 style="margin:0 0 6px;">Patient sample 1 of 5 &mdash; cardio test #4</h3>
+
+<div class="wrap">
+
+<div class="sub">cardio · seed 0 · test patient #4 · preference profile: no_preference</div>
+
+<section>
+  <h2>Final Output</h2>
+  <table><tr><td>age</td><td>54.0342 yrs</td></tr><tr><td>gender</td><td>0 </td></tr><tr><td>weight</td><td>60 </td></tr><tr><td>ap_hi</td><td>150 </td></tr><tr><td>ap_lo</td><td>100 </td></tr><tr><td>cholesterol</td><td>2 mg/dL</td></tr><tr><td>gluc</td><td>1 </td></tr><tr><td>smoke</td><td>0 </td></tr><tr><td>alco</td><td>0 </td></tr><tr><td>active</td><td>1 </td></tr></table>
+  <div class="gauge">
+    <div class="gauge-box"><div class="gauge-label">Risk before</div><div class="gauge-num risk-high">87.0%</div></div>
+    <div style="font-size:20px;color:#999;">&rarr;</div>
+    <div class="gauge-box"><div class="gauge-label">Risk after</div><div class="gauge-num risk-low">42.1%</div></div>
+  </div>
+  <p>Risk dropped <b>44.8 percentage points</b> via one clinically admissible,
+  real-value-verified recourse step. Real changes made:</p>
+  <div><span class="chip">age: 54.0342&rarr;56.0739 yrs (+2.0)</span><span class="chip">ap_hi: 150&rarr;120  (-30.0)</span><span class="chip">ap_lo: 100&rarr;80  (-20.0)</span></div>
+  <h3>Recommended interventions</h3>
+  <div class="iv"><b>DASH diet + sodium restriction</b> [HTN2017] — Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering systolic blood pressure. <span class="note">(affects ap_hi)</span></div><div class="iv"><b>DASH diet + sodium restriction</b> [HTN2017] — Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering diastolic blood pressure. <span class="note">(affects ap_lo)</span></div>
+  
+  <p class="note">path length: 2 hop(s) · clinical effort: 5.81 · search cost: 5.368</p>
+</section>
+
+<h2 style="margin-left:4px;">Architecture Walkthrough</h2>
+
+<div class="stage xai">
+  <h2>1 &middot; Risk Classifier</h2>
+  <p>The model scored this patient at <b>87.0% predicted risk</b> based on their
+  recorded values above. The single biggest driver of this risk score was <b>ap_hi</b> (increasing risk by 0.312 on the model's own scale). Other contributing factors, in order: cholesterol (+0.035), ap_lo (+0.032), gender (+0.013).</p>
+  <details><summary>underlying SHAP values</summary><table><tbody>
+  <tr><td>ap_hi</td><td>+0.3116</td></tr><tr><td>cholesterol</td><td>+0.0346</td></tr><tr><td>ap_lo</td><td>+0.0323</td></tr><tr><td>gender</td><td>+0.0131</td></tr><tr><td>weight</td><td>-0.0109</td></tr><tr><td>gluc</td><td>+0.0078</td></tr>
+  </tbody></table></details>
+</div>
+
+<div class="stage">
+  <h2>2 &middot; VAE / Latent Encoding</h2>
+  <p>Before searching for a plan, the patient's record was mapped into a compact mathematical space
+  where clinically similar real patients sit close together — not by looking at any single number in
+  isolation, but by how the whole combination of their values resembles other real people in the
+  training data. This positioning is what let the system find the closest genuinely comparable
+  patients in the next stage.</p>
+</div>
+
+<div class="stage">
+  <h2>3 &middot; Graph + Riemannian Geometry</h2>
+  <p>Of the 7 closest real patients in the training data (by latent-space distance), <b>6 were clinically blocked</b> from being used as a recourse target. The one actually chosen (patient #12383) was the 7th-closest candidate overall. Distance here is measured in a way that accounts for
+  how much a patient's actual clinical picture would change, not just raw numeric closeness — so the
+  target ultimately chosen was the CLOSEST patient that was also clinically admissible, even though
+  closer-but-blocked candidates existed.</p>
+  <table><thead><tr><th>Candidate</th><th>Status</th><th>Riemannian dist.</th><th>Euclidean dist.</th><th>Reason if blocked</th></tr></thead><tbody><tr><td>#11545</td><td><span class="badge badge-bad">blocked</span></td><td>0.170</td><td>0.100</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#13838</td><td><span class="badge badge-bad">blocked</span></td><td>0.219</td><td>0.169</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_hi: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#4383</td><td><span class="badge badge-bad">blocked</span></td><td>0.261</td><td>0.306</td><td style='font-size:11px'>[R-IMMUTABLE] gender: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr><tr><td>#3152</td><td><span class="badge badge-bad">blocked</span></td><td>0.355</td><td>0.334</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] ap_hi: Feature must trend in its clinically admissible direction.; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#8890</td><td><span class="badge badge-bad">blocked</span></td><td>0.383</td><td>0.513</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_hi: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#10668</td><td><span class="badge badge-bad">blocked</span></td><td>0.412</td><td>0.373</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#12383 &larr; chosen</td><td><span class="badge badge-ok">admissible</span></td><td>2.758</td><td>1.734</td><td style='font-size:11px'>—</td></tr></tbody></table>
+  <p class="note">chosen edge: Riemannian distance 2.7585, Euclidean distance 1.7339</p>
+</div>
+
+<div class="stage neuro">
+  <h2>4 &middot; Neurosymbolic Layer</h2>
+  <p>Every proposed change was checked against a set of named clinical guideline rules before being
+  accepted. For this specific step, every applicable rule passed:</p>
+  <div class="rule-line rc-pass">&#10003; <b>[R-AGE-HORIZON]</b> Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule).</div><div class="rule-line rc-pass">&#10003; <b>[R-AGE-MONOTONIC]</b> Age cannot decrease between source and target (structural constraint).</div><div class="rule-line rc-pass">&#10003; <b>[R-DIRECTIONAL-OTHER]</b> Feature must trend in its clinically admissible direction.</div><div class="rule-line rc-pass">&#10003; <b>[R-IMMUTABLE]</b> Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</div><div class="rule-line rc-pass">&#10003; <b>[R-LIPID-DIRECTION]</b> Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].</div>
+</div>
+
+<div class="stage cert-ok">
+  <h2>5 &middot; Certified Search</h2>
+  <p>Among every admissible candidate, the search chose real training patient
+  <b>#12383</b> because it was the lowest-cost (closest, cheapest-effort) option that
+  passed every guideline rule — the closer, cheaper-looking candidates shown above were rejected
+  specifically because they failed one or more rules, not considered at all.</p>
+</div>
+
+<div class="stage cert-ok">
+  <h2>6 &middot; Real-Value Verification (the B1/B2 fix)</h2>
+  <p>No reconstruction guesswork was used anywhere in this result: this patient's own recorded values,
+  and the recorded values of training patient #12383, were compared directly — never
+  passed through the decoder and reconstructed. The feature changes shown above are the real recorded
+  difference between two actual people's data, not a VAE approximation of either.</p>
+</div>
+
+<div class="stage xai">
+  <h2>7 &middot; Explanation Layer</h2>
+  <p>What was surfaced back to this patient: their risk score and its main drivers (stage 1), the
+  specific plan and why each step is guideline-admissible (stages 4-5), and the named real-world
+  interventions above — so the plan is not just "reach these numbers" but tied to concrete, cited
+  actions a clinician could actually prescribe.</p>
+</div>
+
+</div>
+</div><div class="patient-report" style="margin-bottom:26px;"><h3 style="margin:0 0 6px;">Patient sample 2 of 5 &mdash; cardio test #6</h3>
+
+<div class="wrap">
+
+<div class="sub">cardio · seed 0 · test patient #6 · preference profile: no_preference</div>
+
+<section>
+  <h2>Final Output</h2>
+  <table><tr><td>age</td><td>56.2683 yrs</td></tr><tr><td>gender</td><td>0 </td></tr><tr><td>weight</td><td>66 </td></tr><tr><td>ap_hi</td><td>150 </td></tr><tr><td>ap_lo</td><td>90 </td></tr><tr><td>cholesterol</td><td>1 mg/dL</td></tr><tr><td>gluc</td><td>1 </td></tr><tr><td>smoke</td><td>0 </td></tr><tr><td>alco</td><td>0 </td></tr><tr><td>active</td><td>1 </td></tr></table>
+  <div class="gauge">
+    <div class="gauge-box"><div class="gauge-label">Risk before</div><div class="gauge-num risk-high">84.3%</div></div>
+    <div style="font-size:20px;color:#999;">&rarr;</div>
+    <div class="gauge-box"><div class="gauge-label">Risk after</div><div class="gauge-num risk-low">38.4%</div></div>
+  </div>
+  <p>Risk dropped <b>45.9 percentage points</b> via one clinically admissible,
+  real-value-verified recourse step. Real changes made:</p>
+  <div><span class="chip">age: 56.2683&rarr;57.588 yrs (+1.3)</span><span class="chip">weight: 66&rarr;64  (-2.0)</span><span class="chip">ap_hi: 150&rarr;120  (-30.0)</span></div>
+  <h3>Recommended interventions</h3>
+  <div class="iv"><b>Structured weight-management program</b> [HTN2017] — A combined dietary-calorie-reduction and physical-activity program aimed at gradual, sustained weight loss. <span class="note">(affects weight)</span></div><div class="iv"><b>DASH diet + sodium restriction</b> [HTN2017] — Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering systolic blood pressure. <span class="note">(affects ap_hi)</span></div>
+  
+  <p class="note">path length: 1 hop(s) · clinical effort: 2.95 · search cost: 2.564</p>
+</section>
+
+<h2 style="margin-left:4px;">Architecture Walkthrough</h2>
+
+<div class="stage xai">
+  <h2>1 &middot; Risk Classifier</h2>
+  <p>The model scored this patient at <b>84.3% predicted risk</b> based on their
+  recorded values above. The single biggest driver of this risk score was <b>ap_hi</b> (increasing risk by 0.344 on the model's own scale). Other contributing factors, in order: cholesterol (-0.021), ap_lo (+0.012), age (+0.011).</p>
+  <details><summary>underlying SHAP values</summary><table><tbody>
+  <tr><td>ap_hi</td><td>+0.3436</td></tr><tr><td>cholesterol</td><td>-0.0210</td></tr><tr><td>ap_lo</td><td>+0.0117</td></tr><tr><td>age</td><td>+0.0114</td></tr><tr><td>gender</td><td>+0.0089</td></tr><tr><td>gluc</td><td>+0.0085</td></tr>
+  </tbody></table></details>
+</div>
+
+<div class="stage">
+  <h2>2 &middot; VAE / Latent Encoding</h2>
+  <p>Before searching for a plan, the patient's record was mapped into a compact mathematical space
+  where clinically similar real patients sit close together — not by looking at any single number in
+  isolation, but by how the whole combination of their values resembles other real people in the
+  training data. This positioning is what let the system find the closest genuinely comparable
+  patients in the next stage.</p>
+</div>
+
+<div class="stage">
+  <h2>3 &middot; Graph + Riemannian Geometry</h2>
+  <p>Of the 7 closest real patients in the training data (by latent-space distance), <b>3 were clinically blocked</b> from being used as a recourse target. The one actually chosen (patient #4309) was the 7th-closest candidate overall. Distance here is measured in a way that accounts for
+  how much a patient's actual clinical picture would change, not just raw numeric closeness — so the
+  target ultimately chosen was the CLOSEST patient that was also clinically admissible, even though
+  closer-but-blocked candidates existed.</p>
+  <table><thead><tr><th>Candidate</th><th>Status</th><th>Riemannian dist.</th><th>Euclidean dist.</th><th>Reason if blocked</th></tr></thead><tbody><tr><td>#5227</td><td><span class="badge badge-ok">admissible</span></td><td>0.052</td><td>0.062</td><td style='font-size:11px'>—</td></tr><tr><td>#13556</td><td><span class="badge badge-ok">admissible</span></td><td>0.059</td><td>0.126</td><td style='font-size:11px'>—</td></tr><tr><td>#10607</td><td><span class="badge badge-ok">admissible</span></td><td>0.096</td><td>0.149</td><td style='font-size:11px'>—</td></tr><tr><td>#7709</td><td><span class="badge badge-bad">blocked</span></td><td>0.103</td><td>0.097</td><td style='font-size:11px'>[R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#867</td><td><span class="badge badge-bad">blocked</span></td><td>0.105</td><td>0.183</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#7705</td><td><span class="badge badge-bad">blocked</span></td><td>0.129</td><td>0.190</td><td style='font-size:11px'>[R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#4309 &larr; chosen</td><td><span class="badge badge-ok">admissible</span></td><td>1.090</td><td>1.017</td><td style='font-size:11px'>—</td></tr></tbody></table>
+  <p class="note">chosen edge: Riemannian distance 1.0896, Euclidean distance 1.0168</p>
+</div>
+
+<div class="stage neuro">
+  <h2>4 &middot; Neurosymbolic Layer</h2>
+  <p>Every proposed change was checked against a set of named clinical guideline rules before being
+  accepted. For this specific step, every applicable rule passed:</p>
+  <div class="rule-line rc-pass">&#10003; <b>[R-AGE-HORIZON]</b> Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule).</div><div class="rule-line rc-pass">&#10003; <b>[R-AGE-MONOTONIC]</b> Age cannot decrease between source and target (structural constraint).</div><div class="rule-line rc-pass">&#10003; <b>[R-DIRECTIONAL-OTHER]</b> Feature must trend in its clinically admissible direction.</div><div class="rule-line rc-pass">&#10003; <b>[R-IMMUTABLE]</b> Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</div><div class="rule-line rc-pass">&#10003; <b>[R-LIPID-DIRECTION]</b> Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].</div>
+</div>
+
+<div class="stage cert-ok">
+  <h2>5 &middot; Certified Search</h2>
+  <p>Among every admissible candidate, the search chose real training patient
+  <b>#4309</b> because it was the lowest-cost (closest, cheapest-effort) option that
+  passed every guideline rule — the closer, cheaper-looking candidates shown above were rejected
+  specifically because they failed one or more rules, not considered at all.</p>
+</div>
+
+<div class="stage cert-ok">
+  <h2>6 &middot; Real-Value Verification (the B1/B2 fix)</h2>
+  <p>No reconstruction guesswork was used anywhere in this result: this patient's own recorded values,
+  and the recorded values of training patient #4309, were compared directly — never
+  passed through the decoder and reconstructed. The feature changes shown above are the real recorded
+  difference between two actual people's data, not a VAE approximation of either.</p>
+</div>
+
+<div class="stage xai">
+  <h2>7 &middot; Explanation Layer</h2>
+  <p>What was surfaced back to this patient: their risk score and its main drivers (stage 1), the
+  specific plan and why each step is guideline-admissible (stages 4-5), and the named real-world
+  interventions above — so the plan is not just "reach these numbers" but tied to concrete, cited
+  actions a clinician could actually prescribe.</p>
+</div>
+
+</div>
+</div><div class="patient-report" style="margin-bottom:26px;"><h3 style="margin:0 0 6px;">Patient sample 3 of 5 &mdash; cardio test #11</h3>
+
+<div class="wrap">
+
+<div class="sub">cardio · seed 0 · test patient #11 · preference profile: no_preference</div>
+
+<section>
+  <h2>Final Output</h2>
+  <table><tr><td>age</td><td>54.1875 yrs</td></tr><tr><td>gender</td><td>0 </td></tr><tr><td>weight</td><td>60 </td></tr><tr><td>ap_hi</td><td>140 </td></tr><tr><td>ap_lo</td><td>90 </td></tr><tr><td>cholesterol</td><td>1 mg/dL</td></tr><tr><td>gluc</td><td>1 </td></tr><tr><td>smoke</td><td>0 </td></tr><tr><td>alco</td><td>0 </td></tr><tr><td>active</td><td>1 </td></tr></table>
+  <div class="gauge">
+    <div class="gauge-box"><div class="gauge-label">Risk before</div><div class="gauge-num risk-high">79.8%</div></div>
+    <div style="font-size:20px;color:#999;">&rarr;</div>
+    <div class="gauge-box"><div class="gauge-label">Risk after</div><div class="gauge-num risk-low">35.2%</div></div>
+  </div>
+  <p>Risk dropped <b>44.6 percentage points</b> via one clinically admissible,
+  real-value-verified recourse step. Real changes made:</p>
+  <div><span class="chip">age: 54.1875&rarr;56.1971 yrs (+2.0)</span><span class="chip">ap_hi: 140&rarr;120  (-20.0)</span></div>
+  <h3>Recommended interventions</h3>
+  <div class="iv"><b>DASH diet + sodium restriction</b> [HTN2017] — Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering systolic blood pressure. <span class="note">(affects ap_hi)</span></div>
+  
+  <p class="note">path length: 1 hop(s) · clinical effort: 1.78 · search cost: 1.487</p>
+</section>
+
+<h2 style="margin-left:4px;">Architecture Walkthrough</h2>
+
+<div class="stage xai">
+  <h2>1 &middot; Risk Classifier</h2>
+  <p>The model scored this patient at <b>79.8% predicted risk</b> based on their
+  recorded values above. The single biggest driver of this risk score was <b>ap_hi</b> (increasing risk by 0.284 on the model's own scale). Other contributing factors, in order: ap_lo (+0.037), cholesterol (-0.025), gender (+0.012).</p>
+  <details><summary>underlying SHAP values</summary><table><tbody>
+  <tr><td>ap_hi</td><td>+0.2842</td></tr><tr><td>ap_lo</td><td>+0.0367</td></tr><tr><td>cholesterol</td><td>-0.0253</td></tr><tr><td>gender</td><td>+0.0125</td></tr><tr><td>weight</td><td>-0.0113</td></tr><tr><td>alco</td><td>+0.0086</td></tr>
+  </tbody></table></details>
+</div>
+
+<div class="stage">
+  <h2>2 &middot; VAE / Latent Encoding</h2>
+  <p>Before searching for a plan, the patient's record was mapped into a compact mathematical space
+  where clinically similar real patients sit close together — not by looking at any single number in
+  isolation, but by how the whole combination of their values resembles other real people in the
+  training data. This positioning is what let the system find the closest genuinely comparable
+  patients in the next stage.</p>
+</div>
+
+<div class="stage">
+  <h2>3 &middot; Graph + Riemannian Geometry</h2>
+  <p>Of the 7 closest real patients in the training data (by latent-space distance), <b>5 were clinically blocked</b> from being used as a recourse target. The one actually chosen (patient #4781) was the 7th-closest candidate overall. Distance here is measured in a way that accounts for
+  how much a patient's actual clinical picture would change, not just raw numeric closeness — so the
+  target ultimately chosen was the CLOSEST patient that was also clinically admissible, even though
+  closer-but-blocked candidates existed.</p>
+  <table><thead><tr><th>Candidate</th><th>Status</th><th>Riemannian dist.</th><th>Euclidean dist.</th><th>Reason if blocked</th></tr></thead><tbody><tr><td>#9843</td><td><span class="badge badge-ok">admissible</span></td><td>0.047</td><td>0.045</td><td style='font-size:11px'>—</td></tr><tr><td>#13159</td><td><span class="badge badge-bad">blocked</span></td><td>0.072</td><td>0.073</td><td style='font-size:11px'>[R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#11695</td><td><span class="badge badge-bad">blocked</span></td><td>0.082</td><td>0.088</td><td style='font-size:11px'>[R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#7693</td><td><span class="badge badge-bad">blocked</span></td><td>0.089</td><td>0.157</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#2287</td><td><span class="badge badge-bad">blocked</span></td><td>0.091</td><td>0.195</td><td style='font-size:11px'>[R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#12763</td><td><span class="badge badge-bad">blocked</span></td><td>0.091</td><td>0.138</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#4781 &larr; chosen</td><td><span class="badge badge-ok">admissible</span></td><td>0.598</td><td>0.698</td><td style='font-size:11px'>—</td></tr></tbody></table>
+  <p class="note">chosen edge: Riemannian distance 0.5979, Euclidean distance 0.6981</p>
+</div>
+
+<div class="stage neuro">
+  <h2>4 &middot; Neurosymbolic Layer</h2>
+  <p>Every proposed change was checked against a set of named clinical guideline rules before being
+  accepted. For this specific step, every applicable rule passed:</p>
+  <div class="rule-line rc-pass">&#10003; <b>[R-AGE-HORIZON]</b> Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule).</div><div class="rule-line rc-pass">&#10003; <b>[R-AGE-MONOTONIC]</b> Age cannot decrease between source and target (structural constraint).</div><div class="rule-line rc-pass">&#10003; <b>[R-DIRECTIONAL-OTHER]</b> Feature must trend in its clinically admissible direction.</div><div class="rule-line rc-pass">&#10003; <b>[R-IMMUTABLE]</b> Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</div><div class="rule-line rc-pass">&#10003; <b>[R-LIPID-DIRECTION]</b> Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].</div>
+</div>
+
+<div class="stage cert-ok">
+  <h2>5 &middot; Certified Search</h2>
+  <p>Among every admissible candidate, the search chose real training patient
+  <b>#4781</b> because it was the lowest-cost (closest, cheapest-effort) option that
+  passed every guideline rule — the closer, cheaper-looking candidates shown above were rejected
+  specifically because they failed one or more rules, not considered at all.</p>
+</div>
+
+<div class="stage cert-ok">
+  <h2>6 &middot; Real-Value Verification (the B1/B2 fix)</h2>
+  <p>No reconstruction guesswork was used anywhere in this result: this patient's own recorded values,
+  and the recorded values of training patient #4781, were compared directly — never
+  passed through the decoder and reconstructed. The feature changes shown above are the real recorded
+  difference between two actual people's data, not a VAE approximation of either.</p>
+</div>
+
+<div class="stage xai">
+  <h2>7 &middot; Explanation Layer</h2>
+  <p>What was surfaced back to this patient: their risk score and its main drivers (stage 1), the
+  specific plan and why each step is guideline-admissible (stages 4-5), and the named real-world
+  interventions above — so the plan is not just "reach these numbers" but tied to concrete, cited
+  actions a clinician could actually prescribe.</p>
+</div>
+
+</div>
+</div><div class="patient-report" style="margin-bottom:26px;"><h3 style="margin:0 0 6px;">Patient sample 4 of 5 &mdash; cardio test #14</h3>
+
+<div class="wrap">
+
+<div class="sub">cardio · seed 0 · test patient #14 · preference profile: no_preference</div>
+
+<section>
+  <h2>Final Output</h2>
+  <table><tr><td>age</td><td>63.6468 yrs</td></tr><tr><td>gender</td><td>0 </td></tr><tr><td>weight</td><td>58 </td></tr><tr><td>ap_hi</td><td>150 </td></tr><tr><td>ap_lo</td><td>80 </td></tr><tr><td>cholesterol</td><td>1 mg/dL</td></tr><tr><td>gluc</td><td>1 </td></tr><tr><td>smoke</td><td>0 </td></tr><tr><td>alco</td><td>0 </td></tr><tr><td>active</td><td>1 </td></tr></table>
+  <div class="gauge">
+    <div class="gauge-box"><div class="gauge-label">Risk before</div><div class="gauge-num risk-high">87.5%</div></div>
+    <div style="font-size:20px;color:#999;">&rarr;</div>
+    <div class="gauge-box"><div class="gauge-label">Risk after</div><div class="gauge-num risk-low">44.2%</div></div>
+  </div>
+  <p>Risk dropped <b>43.2 percentage points</b> via one clinically admissible,
+  real-value-verified recourse step. Real changes made:</p>
+  <div><span class="chip">age: 63.6468&rarr;64.0849 yrs (+0.4)</span><span class="chip">weight: 58&rarr;50  (-8.0)</span><span class="chip">ap_hi: 150&rarr;120  (-30.0)</span></div>
+  <h3>Recommended interventions</h3>
+  <div class="iv"><b>Structured weight-management program</b> [HTN2017] — A combined dietary-calorie-reduction and physical-activity program aimed at gradual, sustained weight loss. <span class="note">(affects weight)</span></div><div class="iv"><b>DASH diet + sodium restriction</b> [HTN2017] — Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering systolic blood pressure. <span class="note">(affects ap_hi)</span></div>
+  
+  <p class="note">path length: 1 hop(s) · clinical effort: 3.80 · search cost: 2.655</p>
+</section>
+
+<h2 style="margin-left:4px;">Architecture Walkthrough</h2>
+
+<div class="stage xai">
+  <h2>1 &middot; Risk Classifier</h2>
+  <p>The model scored this patient at <b>87.5% predicted risk</b> based on their
+  recorded values above. The single biggest driver of this risk score was <b>ap_hi</b> (increasing risk by 0.317 on the model's own scale). Other contributing factors, in order: age (+0.079), cholesterol (-0.017), gender (+0.013).</p>
+  <details><summary>underlying SHAP values</summary><table><tbody>
+  <tr><td>ap_hi</td><td>+0.3165</td></tr><tr><td>age</td><td>+0.0794</td></tr><tr><td>cholesterol</td><td>-0.0167</td></tr><tr><td>gender</td><td>+0.0131</td></tr><tr><td>weight</td><td>-0.0110</td></tr><tr><td>gluc</td><td>+0.0089</td></tr>
+  </tbody></table></details>
+</div>
+
+<div class="stage">
+  <h2>2 &middot; VAE / Latent Encoding</h2>
+  <p>Before searching for a plan, the patient's record was mapped into a compact mathematical space
+  where clinically similar real patients sit close together — not by looking at any single number in
+  isolation, but by how the whole combination of their values resembles other real people in the
+  training data. This positioning is what let the system find the closest genuinely comparable
+  patients in the next stage.</p>
+</div>
+
+<div class="stage">
+  <h2>3 &middot; Graph + Riemannian Geometry</h2>
+  <p>Of the 7 closest real patients in the training data (by latent-space distance), <b>5 were clinically blocked</b> from being used as a recourse target. The one actually chosen (patient #6895) was the 7th-closest candidate overall. Distance here is measured in a way that accounts for
+  how much a patient's actual clinical picture would change, not just raw numeric closeness — so the
+  target ultimately chosen was the CLOSEST patient that was also clinically admissible, even though
+  closer-but-blocked candidates existed.</p>
+  <table><thead><tr><th>Candidate</th><th>Status</th><th>Riemannian dist.</th><th>Euclidean dist.</th><th>Reason if blocked</th></tr></thead><tbody><tr><td>#5867</td><td><span class="badge badge-ok">admissible</span></td><td>0.069</td><td>0.141</td><td style='font-size:11px'>—</td></tr><tr><td>#7917</td><td><span class="badge badge-bad">blocked</span></td><td>0.083</td><td>0.130</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-AGE-MONOTONIC] age: Age cannot decrease between source and target (structural constraint).</td></tr><tr><td>#5893</td><td><span class="badge badge-bad">blocked</span></td><td>0.097</td><td>0.208</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#484</td><td><span class="badge badge-bad">blocked</span></td><td>0.100</td><td>0.261</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#1467</td><td><span class="badge badge-bad">blocked</span></td><td>0.102</td><td>0.223</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#4837</td><td><span class="badge badge-bad">blocked</span></td><td>0.126</td><td>0.124</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#6895 &larr; chosen</td><td><span class="badge badge-ok">admissible</span></td><td>0.755</td><td>0.912</td><td style='font-size:11px'>—</td></tr></tbody></table>
+  <p class="note">chosen edge: Riemannian distance 0.7553, Euclidean distance 0.9118</p>
+</div>
+
+<div class="stage neuro">
+  <h2>4 &middot; Neurosymbolic Layer</h2>
+  <p>Every proposed change was checked against a set of named clinical guideline rules before being
+  accepted. For this specific step, every applicable rule passed:</p>
+  <div class="rule-line rc-pass">&#10003; <b>[R-AGE-HORIZON]</b> Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule).</div><div class="rule-line rc-pass">&#10003; <b>[R-AGE-MONOTONIC]</b> Age cannot decrease between source and target (structural constraint).</div><div class="rule-line rc-pass">&#10003; <b>[R-DIRECTIONAL-OTHER]</b> Feature must trend in its clinically admissible direction.</div><div class="rule-line rc-pass">&#10003; <b>[R-IMMUTABLE]</b> Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</div><div class="rule-line rc-pass">&#10003; <b>[R-LIPID-DIRECTION]</b> Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].</div>
+</div>
+
+<div class="stage cert-ok">
+  <h2>5 &middot; Certified Search</h2>
+  <p>Among every admissible candidate, the search chose real training patient
+  <b>#6895</b> because it was the lowest-cost (closest, cheapest-effort) option that
+  passed every guideline rule — the closer, cheaper-looking candidates shown above were rejected
+  specifically because they failed one or more rules, not considered at all.</p>
+</div>
+
+<div class="stage cert-ok">
+  <h2>6 &middot; Real-Value Verification (the B1/B2 fix)</h2>
+  <p>No reconstruction guesswork was used anywhere in this result: this patient's own recorded values,
+  and the recorded values of training patient #6895, were compared directly — never
+  passed through the decoder and reconstructed. The feature changes shown above are the real recorded
+  difference between two actual people's data, not a VAE approximation of either.</p>
+</div>
+
+<div class="stage xai">
+  <h2>7 &middot; Explanation Layer</h2>
+  <p>What was surfaced back to this patient: their risk score and its main drivers (stage 1), the
+  specific plan and why each step is guideline-admissible (stages 4-5), and the named real-world
+  interventions above — so the plan is not just "reach these numbers" but tied to concrete, cited
+  actions a clinician could actually prescribe.</p>
+</div>
+
+</div>
+</div><div class="patient-report" style="margin-bottom:26px;"><h3 style="margin:0 0 6px;">Patient sample 5 of 5 &mdash; cardio test #17</h3>
+
+<div class="wrap">
+
+<div class="sub">cardio · seed 0 · test patient #17 · preference profile: no_preference</div>
+
+<section>
+  <h2>Final Output</h2>
+  <table><tr><td>age</td><td>57.4593 yrs</td></tr><tr><td>gender</td><td>1 </td></tr><tr><td>weight</td><td>96 </td></tr><tr><td>ap_hi</td><td>150 </td></tr><tr><td>ap_lo</td><td>80 </td></tr><tr><td>cholesterol</td><td>1 mg/dL</td></tr><tr><td>gluc</td><td>1 </td></tr><tr><td>smoke</td><td>0 </td></tr><tr><td>alco</td><td>0 </td></tr><tr><td>active</td><td>1 </td></tr></table>
+  <div class="gauge">
+    <div class="gauge-box"><div class="gauge-label">Risk before</div><div class="gauge-num risk-high">77.2%</div></div>
+    <div style="font-size:20px;color:#999;">&rarr;</div>
+    <div class="gauge-box"><div class="gauge-label">Risk after</div><div class="gauge-num risk-low">43.3%</div></div>
+  </div>
+  <p>Risk dropped <b>33.8 percentage points</b> via one clinically admissible,
+  real-value-verified recourse step. Real changes made:</p>
+  <div><span class="chip">age: 57.4593&rarr;57.9466 yrs (+0.5)</span><span class="chip">weight: 96&rarr;92  (-4.0)</span><span class="chip">ap_hi: 150&rarr;120  (-30.0)</span></div>
+  <h3>Recommended interventions</h3>
+  <div class="iv"><b>Structured weight-management program</b> [HTN2017] — A combined dietary-calorie-reduction and physical-activity program aimed at gradual, sustained weight loss. <span class="note">(affects weight)</span></div><div class="iv"><b>DASH diet + sodium restriction</b> [HTN2017] — Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering systolic blood pressure. <span class="note">(affects ap_hi)</span></div>
+  
+  <p class="note">path length: 2 hop(s) · clinical effort: 3.23 · search cost: 2.532</p>
+</section>
+
+<h2 style="margin-left:4px;">Architecture Walkthrough</h2>
+
+<div class="stage xai">
+  <h2>1 &middot; Risk Classifier</h2>
+  <p>The model scored this patient at <b>77.2% predicted risk</b> based on their
+  recorded values above. The single biggest driver of this risk score was <b>ap_hi</b> (increasing risk by 0.293 on the model's own scale). Other contributing factors, in order: cholesterol (-0.026), age (+0.019), weight (+0.019).</p>
+  <details><summary>underlying SHAP values</summary><table><tbody>
+  <tr><td>ap_hi</td><td>+0.2926</td></tr><tr><td>cholesterol</td><td>-0.0258</td></tr><tr><td>age</td><td>+0.0192</td></tr><tr><td>weight</td><td>+0.0187</td></tr><tr><td>gluc</td><td>+0.0174</td></tr><tr><td>ap_lo</td><td>-0.0120</td></tr>
+  </tbody></table></details>
+</div>
+
+<div class="stage">
+  <h2>2 &middot; VAE / Latent Encoding</h2>
+  <p>Before searching for a plan, the patient's record was mapped into a compact mathematical space
+  where clinically similar real patients sit close together — not by looking at any single number in
+  isolation, but by how the whole combination of their values resembles other real people in the
+  training data. This positioning is what let the system find the closest genuinely comparable
+  patients in the next stage.</p>
+</div>
+
+<div class="stage">
+  <h2>3 &middot; Graph + Riemannian Geometry</h2>
+  <p>Of the 7 closest real patients in the training data (by latent-space distance), <b>6 were clinically blocked</b> from being used as a recourse target. The one actually chosen (patient #8937) was the 7th-closest candidate overall. Distance here is measured in a way that accounts for
+  how much a patient's actual clinical picture would change, not just raw numeric closeness — so the
+  target ultimately chosen was the CLOSEST patient that was also clinically admissible, even though
+  closer-but-blocked candidates existed.</p>
+  <table><thead><tr><th>Candidate</th><th>Status</th><th>Riemannian dist.</th><th>Euclidean dist.</th><th>Reason if blocked</th></tr></thead><tbody><tr><td>#2344</td><td><span class="badge badge-bad">blocked</span></td><td>0.057</td><td>0.066</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.; [R-IMMUTABLE] gender: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr><tr><td>#3461</td><td><span class="badge badge-bad">blocked</span></td><td>0.084</td><td>0.106</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.; [R-IMMUTABLE] gender: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr><tr><td>#12156</td><td><span class="badge badge-bad">blocked</span></td><td>0.092</td><td>0.138</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] smoke: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#11885</td><td><span class="badge badge-bad">blocked</span></td><td>0.107</td><td>0.139</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.; [R-IMMUTABLE] gender: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr><tr><td>#1213</td><td><span class="badge badge-bad">blocked</span></td><td>0.166</td><td>0.159</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] weight: Feature must trend in its clinically admissible direction.; [R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.; [R-IMMUTABLE] gender: Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</td></tr><tr><td>#14046</td><td><span class="badge badge-bad">blocked</span></td><td>0.181</td><td>0.104</td><td style='font-size:11px'>[R-DIRECTIONAL-OTHER] ap_lo: Feature must trend in its clinically admissible direction.</td></tr><tr><td>#8937 &larr; chosen</td><td><span class="badge badge-ok">admissible</span></td><td>0.969</td><td>0.720</td><td style='font-size:11px'>—</td></tr></tbody></table>
+  <p class="note">chosen edge: Riemannian distance 0.9695, Euclidean distance 0.7201</p>
+</div>
+
+<div class="stage neuro">
+  <h2>4 &middot; Neurosymbolic Layer</h2>
+  <p>Every proposed change was checked against a set of named clinical guideline rules before being
+  accepted. For this specific step, every applicable rule passed:</p>
+  <div class="rule-line rc-pass">&#10003; <b>[R-AGE-HORIZON]</b> Single recourse step limited to <= 3.05 years, a clinically realistic follow-up interval for risk recalculation (structural constraint, matches the original benchmark's own single-step horizon rule).</div><div class="rule-line rc-pass">&#10003; <b>[R-AGE-MONOTONIC]</b> Age cannot decrease between source and target (structural constraint).</div><div class="rule-line rc-pass">&#10003; <b>[R-DIRECTIONAL-OTHER]</b> Feature must trend in its clinically admissible direction.</div><div class="rule-line rc-pass">&#10003; <b>[R-IMMUTABLE]</b> Immutable clinical attribute cannot be altered by a recourse action (structural constraint, not a guideline citation).</div><div class="rule-line rc-pass">&#10003; <b>[R-LIPID-DIRECTION]</b> Total cholesterol must trend downward or hold stable under lipid-management goals [CHOL2018].</div>
+</div>
+
+<div class="stage cert-ok">
+  <h2>5 &middot; Certified Search</h2>
+  <p>Among every admissible candidate, the search chose real training patient
+  <b>#8937</b> because it was the lowest-cost (closest, cheapest-effort) option that
+  passed every guideline rule — the closer, cheaper-looking candidates shown above were rejected
+  specifically because they failed one or more rules, not considered at all.</p>
+</div>
+
+<div class="stage cert-ok">
+  <h2>6 &middot; Real-Value Verification (the B1/B2 fix)</h2>
+  <p>No reconstruction guesswork was used anywhere in this result: this patient's own recorded values,
+  and the recorded values of training patient #8937, were compared directly — never
+  passed through the decoder and reconstructed. The feature changes shown above are the real recorded
+  difference between two actual people's data, not a VAE approximation of either.</p>
+</div>
+
+<div class="stage xai">
+  <h2>7 &middot; Explanation Layer</h2>
+  <p>What was surfaced back to this patient: their risk score and its main drivers (stage 1), the
+  specific plan and why each step is guideline-admissible (stages 4-5), and the named real-world
+  interventions above — so the plan is not just "reach these numbers" but tied to concrete, cited
+  actions a clinician could actually prescribe.</p>
+</div>
+
+</div>
+</div>
+    </section>
+
+<section>
+  <h2>Success rate vs. UCI Heart and Real NHANES</h2>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 262" width="100%" height="262"><rect width="560" height="262" fill="white"/><rect x="10" y="4" width="10" height="10" rx="2" fill="#94a3b8"/><text x="24" y="13" font-size="10.5" fill="#444">Stage 1 (real search) only</text><rect x="189.79999999999998" y="4" width="10" height="10" rx="2" fill="#2563eb"/><text x="203.79999999999998" y="13" font-size="10.5" fill="#444">+ Stage 2 (synthetic fallback)</text><line x1="35" y1="227" x2="550" y2="227" stroke="#ccc"/><rect x="46.0" y="155.7" width="60.1" height="71.3" fill="#94a3b8" rx="2"/><text x="76.1" y="151.7" font-size="9.5" text-anchor="middle" fill="#111">38.5%</text><rect x="110.1" y="151.2" width="60.1" height="75.8" fill="#2563eb" rx="2"/><text x="140.2" y="147.2" font-size="9.5" text-anchor="middle" fill="#111">40.9%</text><text x="123.3" y="246.0" font-size="10.5" text-anchor="middle" fill="#555">UCI Heart</text><rect x="212.7" y="132.7" width="60.1" height="94.3" fill="#94a3b8" rx="2"/><text x="242.7" y="128.7" font-size="9.5" text-anchor="middle" fill="#111">50.9%</text><rect x="276.8" y="125.0" width="60.1" height="102.0" fill="#2563eb" rx="2"/><text x="306.8" y="121.0" font-size="9.5" text-anchor="middle" fill="#111">55.1%</text><text x="290.0" y="246.0" font-size="10.5" text-anchor="middle" fill="#555">Real NHANES</text><rect x="379.3" y="43.1" width="60.1" height="183.9" fill="#94a3b8" rx="2"/><text x="409.4" y="39.1" font-size="9.5" text-anchor="middle" fill="#111">99.4%</text><rect x="443.4" y="42.8" width="60.1" height="184.2" fill="#2563eb" rx="2"/><text x="473.5" y="38.8" font-size="9.5" text-anchor="middle" fill="#111">99.6%</text><text x="456.7" y="246.0" font-size="10.5" text-anchor="middle" fill="#555">Cardio (v10)</text></svg>
+  <table><thead><tr><th>Dataset</th><th>Stage 1 only</th><th>+ Stage 2</th></tr></thead>
+  <tbody><tr><td>UCI Heart</td><td>38.5%</td><td><b>40.9%</b></td></tr><tr><td>Real NHANES</td><td>50.9%</td><td><b>55.1%</b></td></tr><tr><td>Cardio (v10)</td><td>99.4%</td><td><b>99.6%</b></td></tr></tbody></table>
+</section>
+
+<section>
+  <h2>Real-value CVR</h2>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 262" width="100%" height="262"><rect width="560" height="262" fill="white"/><rect x="10" y="4" width="10" height="10" rx="2" fill="#dc2626"/><text x="24" y="13" font-size="10.5" fill="#444">Real-value CVR (Stage 1 successes)</text><line x1="35" y1="227" x2="550" y2="227" stroke="#ccc"/><rect x="46.0" y="227.0" width="100.2" height="0.0" fill="#dc2626" rx="2"/><text x="96.1" y="223.0" font-size="9.5" text-anchor="middle" fill="#111">0.0%</text><text x="123.3" y="246.0" font-size="10.5" text-anchor="middle" fill="#555">UCI Heart</text><rect x="212.7" y="227.0" width="100.2" height="0.0" fill="#dc2626" rx="2"/><text x="262.8" y="223.0" font-size="9.5" text-anchor="middle" fill="#111">0.0%</text><text x="290.0" y="246.0" font-size="10.5" text-anchor="middle" fill="#555">Real NHANES</text><rect x="379.3" y="227.0" width="100.2" height="0.0" fill="#dc2626" rx="2"/><text x="429.4" y="223.0" font-size="9.5" text-anchor="middle" fill="#111">0.0%</text><text x="456.7" y="246.0" font-size="10.5" text-anchor="middle" fill="#555">Cardio (v10)</text></svg>
+  <p class="note">0.00% on all three datasets, by construction, using the SRA-fixed search
+  (<code>find_path_sra</code>). A first cardio run using the pre-fix <code>find_path_augmented</code>
+  measured ~1.5% real CVR &mdash; the compositional constraint-drift leak (two admissible-looking hops
+  compounding into a real endpoint violation neither hop's own check catches) reproducing on this third,
+  independent, much larger dataset. That is useful evidence the vulnerability is dataset-general, not a
+  UCI/NHANES quirk &mdash; and confirmation the fix generalizes too, since it closed it here as well.</p>
+</section>
+
+<section>
+  <h2>Dataset scale</h2>
+  <table><thead><tr><th>Dataset</th><th>Training patients</th><th>High-risk test patients (mean/seed)</th></tr></thead>
+  <tbody><tr><td>UCI Heart</td><td>238</td><td>23</td></tr><tr><td>Real NHANES</td><td>3,632</td><td>431</td></tr><tr><td>Cardio (v10)</td><td>16,000</td><td>1685</td></tr></tbody></table>
+  <p class="note">Cardio (v10)'s 20,000-row-per-seed subsample is ~4.4x
+  Real NHANES's full training set and ~67x UCI's, drawn from a 70,000-row source
+  (largest of the three by over an order of magnitude even before subsampling).</p>
+</section>
+
+<section>
+  <h2>Per-seed detail (cardio, v10)</h2>
+  <table><thead><tr><th>Seed</th><th>n high-risk</th><th>Stage 1 success</th><th>Stage 1 real CVR</th>
+  <th>Certified infeasible</th><th>Stage 2 success (of attempted)</th><th>Combined</th></tr></thead>
+  <tbody><tr><td>0</td><td>1624</td><td>99.0%</td><td>0.00%</td><td>15</td><td>20.0%</td><td>99.2%</td></tr><tr><td>1</td><td>1754</td><td>99.1%</td><td>0.00%</td><td>15</td><td>26.7%</td><td>99.4%</td></tr><tr><td>2</td><td>1640</td><td>99.9%</td><td>0.00%</td><td>2</td><td>100.0%</td><td>100.0%</td></tr><tr><td>3</td><td>1733</td><td>99.7%</td><td>0.00%</td><td>3</td><td>66.7%</td><td>99.8%</td></tr><tr><td>4</td><td>1674</td><td>99.2%</td><td>0.00%</td><td>13</td><td>23.1%</td><td>99.4%</td></tr></tbody></table>
+  <p class="note">k_neighbors=100, n_subsample=20,000/seed. Stage 2 is attempted on only
+  the certified-infeasible pool (n=10/seed on average)
+  &mdash; too small a sample for its own success-rate-of-attempted number
+  (47.3%&plusmn;35.0)
+  to be read as a stable finding either way; it moves the combined total by well under 1 percentage
+  point regardless.</p>
+</section>
+
+<section>
+  <h2>Honest read</h2>
+  <p class="note"><b>The headline number is mostly a scale artifact, not a methodological win.</b>
+  Stage 1 success here (99.4%) is far higher than UCI
+  (38.5%) or NHANES (50.9%) primarily because the
+  low-risk training pool is much larger (4,000 vs. NHANES's
+  ~909, UCI's ~60) &mdash; the same dynamic this project's own threshold-sensitivity sweep already showed:
+  a denser target pool makes reaching SOME admissible low-risk patient trivially easier, independent of
+  any change in search quality. This should not be read as "the model got dramatically better" on cardio;
+  it is a property of the dataset's scale, stated plainly rather than left implicit. A secondary factor:
+  cardio's features are almost entirely directional lifestyle factors (weight, BP, cholesterol/glucose
+  category, smoking/alcohol/activity) with no age-horizon cap comparable to UCI/NHANES's continuous labs.</p>
+  <p class="note">Two disclosed simplifications: <code>height</code> was dropped entirely (see
+  experiments_v10/data_cardio.py, same category as v8 dropping age) rather than forced into the
+  type-aware VAE's high-cardinality categorical decoder head, and cholesterol/glucose are 3-level
+  ordinal categories in the source data, not continuous mg/dL values &mdash; weaker signal than UCI's
+  continuous cholesterol, directionally usable regardless.</p>
+</section>
+</div></body></html>

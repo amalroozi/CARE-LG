@@ -1,0 +1,43 @@
+{
+  "_note": "Real-world intervention names for the cardio dataset's mutable features, cited against the SAME guideline registry src/graph/neurosymbolic.py already uses ([PCE2013], [HTN2017], [ADA2023], [CHOL2018]). Named intervention CATEGORIES from established clinical guidance, not fabricated numbers -- same convention as configs/interventions.json.",
+  "weight": {
+    "name": "Structured weight-management program",
+    "description": "A combined dietary-calorie-reduction and physical-activity program aimed at gradual, sustained weight loss.",
+    "citation": "HTN2017"
+  },
+  "ap_hi": {
+    "name": "DASH diet + sodium restriction",
+    "description": "Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering systolic blood pressure.",
+    "citation": "HTN2017"
+  },
+  "ap_lo": {
+    "name": "DASH diet + sodium restriction",
+    "description": "Dietary Approaches to Stop Hypertension (DASH) eating pattern and reduced dietary sodium, the guideline's first-line lifestyle intervention for lowering diastolic blood pressure.",
+    "citation": "HTN2017"
+  },
+  "cholesterol": {
+    "name": "Statin therapy + reduced dietary saturated fat",
+    "description": "Lipid-lowering pharmacotherapy (statins) combined with reduced saturated/trans fat intake, the guideline's core approach to lowering cholesterol.",
+    "citation": "CHOL2018"
+  },
+  "gluc": {
+    "name": "Glycemic control program (diet, exercise, medication adherence)",
+    "description": "Combined lifestyle and pharmacologic management of blood glucose aimed at lowering glucose toward guideline targets.",
+    "citation": "ADA2023"
+  },
+  "smoke": {
+    "name": "Smoking cessation program",
+    "description": "Behavioral counseling combined with pharmacotherapy (e.g. nicotine replacement) for smoking cessation, standard guideline-directed risk-reduction advice.",
+    "citation": "PCE2013"
+  },
+  "alco": {
+    "name": "Alcohol-reduction counseling",
+    "description": "Brief behavioral counseling aimed at reducing heavy alcohol consumption, a standard guideline-directed lifestyle risk-reduction measure.",
+    "citation": "PCE2013"
+  },
+  "active": {
+    "name": "Supervised physical activity program",
+    "description": "A structured program to increase regular physical activity, the guideline's first-line lifestyle intervention for cardiovascular risk reduction.",
+    "citation": "HTN2017"
+  }
+}
