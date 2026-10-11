@@ -64,8 +64,12 @@ def _lookup_certification(dataset: str, seed: int, patient_idx: int) -> str:
     return "unresolved"
 
 
-def run_single_patient(dataset: str, seed: int, patient_idx: int, profile: str = "no_preference") -> Dict:
-    run = run_dataset_seed(dataset, seed, device=torch.device("cpu"))
+def run_single_patient(dataset: str, seed: int, patient_idx: int, profile: str = "no_preference", run=None) -> Dict:
+    """`run` may be a pre-computed DatasetRun (from run_dataset_seed) to avoid
+    retraining the VAE/classifier when calling this repeatedly for the same
+    (dataset, seed) across many patient_idx values."""
+    if run is None:
+        run = run_dataset_seed(dataset, seed, device=torch.device("cpu"))
     edge_table = build_edge_table(run.vae, run.Z_train, run.X_train, run.feature_metadata,
                                   run.scaler, run.feature_cols, k=run.k_neighbors)
     profiles = preference_profiles(dataset, run.effort_weights)

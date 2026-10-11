@@ -16,3 +16,7 @@ shap>=0.51.0
 fastapi>=0.141.1
 uvicorn[standard]>=0.52.4
 pytest>=9.1.1
+# --- needed by experiment_final (parquet cache, oracle model, Holm correction) ---
+pyarrow
+xgboost
+statsmodels
