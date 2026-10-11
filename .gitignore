@@ -13,3 +13,32 @@ data/*
 !data/nhanes_real_full.csv
 *.pt
 *.pth
+
+# --- added by the repo clean-up ---
+**/data/raw/
+*.pkl
+__pycache__/
+.venv/
+Graph_faceSynthetic.pk
+.pytest_cache/
+archive/
+.pytest_cache/
+archive/
+paper_overleaf/
+paper_overleaf_tools/
+experiment_final/paper/
+external_baselines/
+external_datasets/
+experiment_final/results/run_full_nhanes/
+experiment_final/results/tables/
+experiment_final/results/run_view/
+experiment_final/results/*.log
+experiment_final/MD files/
+experiment_final/data/
+CLAUDE.md
+RUNNING_THE_PROJECT.md
+CHANGES.md
+.claude/
+references/
+results/
+docs/
