@@ -1,0 +1,22 @@
+nhanes_variable,value,icd10_code,label
+diabetic,True,E11,"Doctor-told diabetes (DIQ010=1). NHANES does not record diabetes type; mapped to type 2 (about 90-95% of adult diabetes). VERIFY."
+treated_bp,True,I10,"Taking prescribed medicine for high blood pressure (BPQ050A=1; BPQ150=1 in 2021-2023, which has no BPQ050A) implies diagnosed hypertension."
+BPQ020,1,I10,Ever told by a doctor you had high blood pressure.
+BPQ080,1,E78.5,"Ever told by a doctor your blood cholesterol was high (hyperlipidaemia, unspecified)."
+smoker,True,Z72.0,Current cigarette smoker (SMQ020=1 and SMQ040 in {1;2}); tobacco use rather than dependence (no dependence assessment).
+MCQ160B,1,I50.9,"Ever told congestive heart failure (heart failure, unspecified)."
+MCQ160C,1,I25.10,Ever told coronary heart disease (atherosclerotic heart disease of native coronary artery).
+MCQ160E,1,I25.2,Ever told heart attack (old myocardial infarction).
+MCQ160F,1,Z86.73,Ever told stroke (personal history of cerebral infarction without residual deficits).
+MCQ160P (2017+),1,J44.9,"Ever told COPD, emphysema or chronic bronchitis (COPD, unspecified)."
+MCQ160G (1999-2016),1,J43.9,"Ever told you had emphysema (codebook verified); emphysema, unspecified."
+MCQ160K (1999-2016),1,J42,"Ever told you had chronic bronchitis (codebook verified); unspecified chronic bronchitis."
+MCQ035,1,J45.909,"Still have asthma (unspecified asthma, uncomplicated)."
+MCQ170L,1,K76.9,"Still have a liver condition (liver disease, unspecified)."
+MCQ230A-D,37,C73,"Cancer type code 37 = Thyroid (verified in the P_MCQ.htm codebook frequency table); malignant neoplasm of thyroid gland."
+KIQ022,1,N18.9,"Ever told you had weak/failing kidneys (codebook KIQ_U_D wording verified); chronic kidney disease, unspecified."
+KIQ020 (1999-2000 only),1,N18.9,"Same item in the 1999-2000 KIQ file ('Ever told you had weak/failing kidneys', codebook verified)."
+KIQ025,1,N18.6;Z99.2,Received dialysis in past 12 months (end-stage renal disease; dependence on renal dialysis).
+RIDEXPRG,1,Z33.1,Pregnancy status positive at exam.
+bmi,>=30,E66.9,"Derived from the baseline BMI >= 30 kg/m2 (obesity, unspecified; WHO_BMI)."
+RXDRSC1-3,<code>,<code>,ICD-10-CM reason-for-use codes reported with each prescription; trailing NCHS 'P' suffix stripped and resolved to the most specific existing ICD-10-CM 2027 node; '99999' (unknown) dropped.

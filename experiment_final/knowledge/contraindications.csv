@@ -1,0 +1,19 @@
+rule_id,intervention_class,contraindicated_icd10_node,node_label,reason,citation,verify
+C-MET-N184,metformin,N18.4,"Chronic kidney disease, stage 4 (severe)",Metformin contraindicated at eGFR <30 mL/min/1.73m2 (lactic acidosis risk),FDA_METFORMIN2016;ADA2024,1
+C-MET-N185,metformin,N18.5,"Chronic kidney disease, stage 5",Metformin contraindicated at eGFR <30 mL/min/1.73m2,FDA_METFORMIN2016;ADA2024,1
+C-MET-N186,metformin,N18.6,End stage renal disease,Metformin contraindicated in end-stage renal disease,FDA_METFORMIN2016;ADA2024,1
+C-MET-Z992,metformin,Z99.2,Dependence on renal dialysis,Metformin contraindicated on dialysis,FDA_METFORMIN2016;KDIGO2022DM,1
+C-SGLT2-Z992,sglt2i,Z99.2,Dependence on renal dialysis,SGLT2i not initiated in patients on dialysis,KDIGO2024;KDIGO2022DM,1
+C-SGLT2-N186,sglt2i,N18.6,End stage renal disease,SGLT2i initiation not recommended at eGFR <20 / kidney failure,KDIGO2024,1
+C-SGLT2-E10,sglt2i,E10,Type 1 diabetes mellitus,SGLT2i not approved in type 1 diabetes (diabetic ketoacidosis risk),ADA2024,1
+C-GLP1-C73,glp1ra,C73,Malignant neoplasm of thyroid gland,"Boxed warning: contraindicated with personal history of medullary thyroid carcinoma (C73 covers all thyroid cancers; conservative, verify)",FDA_GLP1;ADA2024,1
+C-GLP1-E3122,glp1ra,E31.2,Multiple endocrine neoplasia,Contraindicated with MEN 2 (attached at E31.2 so MEN 2A/2B inherit),FDA_GLP1,1
+C-ACEARB-Z331,acei_arb,Z33.1,"Pregnant state, incidental",ACE inhibitors / ARBs contraindicated in pregnancy (fetotoxicity),HTN2017,1
+C-ACEARB-T783,acei_arb,T78.3,Angioneurotic edema,History of angioedema contraindicates ACE inhibitors (class-level here; ARB cross-reactivity is low but conservative),HTN2017,1
+C-BB-J45,beta_blocker_nonselective,J45,Asthma,Non-selective beta-blockers contraindicated in asthma (bronchospasm),GINA2024;HTN2017,1
+C-BB-I442,beta_blocker_nonselective,I44.2,"Atrioventricular block, complete",Beta-blockers contraindicated in high-degree AV block without a pacemaker,HTN2017,1
+C-THZ-M10,thiazide,M10,Gout,History of gout: thiazides raise uric acid; avoid unless on uric-acid-lowering therapy (relative; treated as blocking),HTN2017,1
+C-THZ-E871,thiazide,E87.1,Hypo-osmolality and hyponatremia,Thiazides worsen hyponatraemia,HTN2017,1
+C-STATIN-K72,statin,K72,"Hepatic failure, not elsewhere classified",Statins contraindicated in acute liver failure / decompensated liver disease,CHOL2018,1
+C-STATIN-K746,statin,K74.6,Other and unspecified cirrhosis of liver,Decompensated cirrhosis: statin contraindicated (conservative; compensated cirrhosis may tolerate statins),CHOL2018,1
+C-STATIN-Z331,statin,Z33.1,"Pregnant state, incidental",Statins should be discontinued in pregnancy,CHOL2018,1

@@ -1,0 +1,11 @@
+rule_id,attached_icd10_node,condition,description,citation,verify
+A-STATIN-PCE,ROOT,ascvd_ge:7.5,"10-year ASCVD risk >= 7.5% (PCE): moderate-intensity statin is reasonable after a clinician-patient risk discussion (intermediate risk 7.5-19.9%; high-intensity if >=20%).",CHOL2018;PCE2013,1
+A-STATIN-DM,E08-E13,,"Diabetes, age 40-75: moderate-intensity statin regardless of estimated 10-year risk.",CHOL2018;ADA2024,1
+A-STATIN-ASCVD,I20-I25,,"Clinical ASCVD (ischaemic heart disease): high-intensity statin indicated (secondary prevention); the PCE label is not validated in this group.",CHOL2018,1
+A-STATIN-STROKE,Z86.73,,"Prior stroke/TIA: high-intensity statin indicated (secondary prevention); the PCE label is not validated in this group.",CHOL2018,1
+A-BP-DM,E08-E13,,Diabetes: blood-pressure target <130/80 mmHg replaces the generic <140/90.,ADA2024;HTN2017,1
+A-BP-CKD,N18,,"CKD: blood-pressure target <130/80 mmHg (HTN2017); KDIGO 2021 suggests SBP <120 with standardised measurement.",HTN2017;KDIGO2021BP,1
+A-SGLT2-CKD,N18,,CKD: SGLT2 inhibitor recommended for kidney/cardiovascular protection when eGFR >= 20 irrespective of HbA1c.,KDIGO2024,1
+A-SMOKING,Z72.0,,Tobacco use: offer cessation counselling plus pharmacotherapy at every visit.,PREV2019,1
+A-HF-SGLT2,I50,,Heart failure: SGLT2 inhibitor is part of guideline-directed medical therapy.,HF2022,1
+A-HORIZON,ROOT,,Tier-1 (real-patient) recourse targets are at most 3.05 years older than the patient (follow-up interval for risk recalculation).,STRUCT,0

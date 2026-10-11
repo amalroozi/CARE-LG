@@ -1,0 +1,24 @@
+# CARE-LG — tiered, ontology-grounded actionable recourse. Locked settings.
+datasets: [nhanes_pooled, nhanes, uci, cardio]        # primary first; add eicu_demo / mimic via adapters only
+primary_dataset: nhanes_pooled
+paths:
+  nhanes_full_csv: ../data/nhanes_real_full.csv
+  nhanes_raw_xpt_dir: ../archive/investigation_v2_to_v6/experiments_v3/data_raw
+  nhanes_extra_dir: data/raw/nhanes_extra          # P_RXQ_RX.xpt, P_MCQ.xpt, P_KIQ_U.xpt (user downloads)
+  nhanes_pooled_dir: data/raw/nhanes_pooled
+  uci_csv: ../data/uci_heart.csv
+  cardio_loader: ../archive/experiments_v10/data_cardio.py
+  icd10cm_table_index_zip: ../archive/experiments_caren/data/raw/ICD10CM Table and Index 2027.zip
+  icd10cm_descriptions_zip: ../archive/experiments_caren/data/raw/ICD10CM Code Descriptions 2027.zip
+seeds: [0, 1, 2, 3, 4]
+split: {test_size: 0.2, stratify: true}
+models: [mlp, xgboost]                 # mlp = existing RiskClassifier; recourse oracle = better validation AUC (report both)
+thresholds: {high: 0.55, low: 0.45, age_stratified_targets: true}
+latent: {dim: 4, epochs: 25, age_loss_weight: 8.0}
+graph: {k: {nhanes_pooled: 120, nhanes: 80, uci: 40, cardio: 100}, metric: riemannian}
+tier1: {sra: true, exhaustive_two_hop_check: true}
+tier2: {method: guided_genetic, variant: riemannian_natural_gradient, n_counterfactuals: 3}
+rules: {soft_change_percentile: 95, integer_scale: 1000}
+recommendation: {escalation: [lifestyle, single_drug, combination], skip_current_meds: true}
+baselines: [face, dice, growing_spheres, pace_style, cchvae, wachter, reachable_set_verification]
+ablations: [tier1_only, no_ontology, no_inheritance, no_guidance, soft_as_hard, no_escalation, euclidean, no_sra, ontology_as_features]

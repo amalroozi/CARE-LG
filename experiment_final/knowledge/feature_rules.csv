@@ -1,0 +1,31 @@
+rule_id,feature,applies_to_icd10_node,direction,target_low,target_high,max_plausible_change,min_meaningful_change,phys_min,phys_max,citation,verify,notes
+F-AGE,age,ROOT,non_decreasing,,,,,18,100,STRUCT,0,"Cannot decrease (0.1 y tolerance); tier-1 total path horizon <= 3.05 y (CARE-LG R-AGE-HORIZON)."
+F-SEX,sex,ROOT,equal,,,,,0,1,STRUCT,0,Immutable.
+F-FBS,fasting_glucose_flag,ROOT,equal,,,,,0,1,CARELG_META,0,"UCI fbs>120 mg/dL flag; immutable in the CARE-LG schema (configs/dataset_config.py)."
+F-SBP,systolic_bp,ROOT,reduce,90,140,40,5,70,250,JNC8;HTN2017,1,"Generic adult target <140/90 (JNC8 general population; HTN2017 stage-2 threshold). max_plausible_change ~ lifestyle + 2-drug combination (author approximation from LAW2009 effects)."
+F-SBP-DM,systolic_bp,E08-E13,reduce,90,130,,,,,ADA2024;HTN2017,1,Diabetes: BP target <130/80 mmHg if it can be safely attained.
+F-SBP-CKD,systolic_bp,N18,reduce,90,130,,,,,HTN2017;KDIGO2021BP,1,CKD: target <130/80 (HTN2017); KDIGO 2021 suggests SBP <120 with standardised office BP when tolerated (not used: different measurement protocol).
+F-SBP-ASCVD,systolic_bp,I20-I25,reduce,90,130,,,,,HTN2017,1,Established ischaemic heart disease: target <130/80.
+F-SBP-STROKE,systolic_bp,Z86.73,reduce,90,130,,,,,HTN2017,1,Prior stroke/TIA (secondary prevention): target <130/80.
+F-SBP-HF,systolic_bp,I50,reduce,90,130,,,,,HTN2017;HF2022,1,Heart failure with hypertension: target <130/80.
+F-DBP,diastolic_bp,ROOT,reduce,60,90,25,3,40,150,JNC8;HTN2017,1,Generic adult target <90 mmHg.
+F-DBP-DM,diastolic_bp,E08-E13,reduce,60,80,,,,,ADA2024;HTN2017,1,Diabetes: <80 mmHg.
+F-DBP-CKD,diastolic_bp,N18,reduce,60,80,,,,,HTN2017,1,CKD: <80 mmHg.
+F-DBP-ASCVD,diastolic_bp,I20-I25,reduce,60,80,,,,,HTN2017,1,Ischaemic heart disease: <80 mmHg.
+F-DBP-STROKE,diastolic_bp,Z86.73,reduce,60,80,,,,,HTN2017,1,Prior stroke/TIA: <80 mmHg.
+F-DBP-HF,diastolic_bp,I50,reduce,60,80,,,,,HTN2017;HF2022,1,Heart failure with hypertension: <80 mmHg.
+F-TC,total_cholesterol,ROOT,reduce,,200,90,10,70,450,NCEP2002;CHOL2018,1,"Desirable total cholesterol <200 mg/dL (ATP III); CHOL2018 targets LDL-C which these datasets do not record. max change ~ high-intensity statin effect on TC (author approximation, verify)."
+F-BMI,bmi,ROOT,reduce,18.5,25,5,0.5,14,80,WHO_BMI;OBESITY2013,1,"Normal BMI 18.5-24.9; max change ~15% body weight at BMI 33 (author approximation from WILDING2021, verify)."
+F-A1C,hba1c,ROOT,reduce,4.0,5.7,2.0,0.3,3.5,17,ADA2024,1,No diabetes: normal HbA1c <5.7% (5.7-6.4 = prediabetes).
+F-A1C-DM,hba1c,E08-E13,reduce,6.0,7.0,,,,,ADA2024;ADA2025,1,"Diabetes: HbA1c goal <7% for many non-pregnant adults; lower bound 6.0% is an author-chosen hypoglycaemia guard (soft rule), verify."
+F-MAXHR,max_heart_rate,ROOT,increase,,,30,5,60,220,CARELG_META,1,UCI exercise-test maximum heart rate; direction-only rule from the CARE-LG schema (no guideline target).
+F-STDEP,st_depression,ROOT,reduce,0,0.5,2,0.5,0,7,CARELG_META,1,UCI oldpeak (exercise-induced ST depression); direction-only in CARE-LG; 0.5 mm upper bound is an author choice (verify).
+F-ANGINA,exercise_angina,ROOT,reduce,0,0,1,1,0,1,CARELG_META,1,UCI exercise-induced angina flag.
+F-SLOPE,st_slope,ROOT,reduce,1,1,2,1,1,3,CARELG_META,1,"UCI ST-segment slope (1 upsloping, 2 flat, 3 downsloping); upsloping treated as target (author choice, verify)."
+F-WEIGHT,body_weight,ROOT,reduce,,,15,2,35,200,OBESITY2013,1,"Cardio dataset body weight (kg); no height-free target. max change ~15% weight loss (author approximation, verify)."
+F-CHOLCAT,cholesterol_category,ROOT,reduce,1,1,2,1,1,3,CARDIO_KAGGLE;NCEP2002,1,"Cardio ordinal cholesterol (1 normal, 2 above normal, 3 well above normal); target = normal."
+F-GLUCCAT,glucose_category,ROOT,reduce,1,1,2,1,1,3,CARDIO_KAGGLE;ADA2024,1,"Cardio ordinal glucose (1 normal, 2 above normal, 3 well above normal); target = normal."
+F-SMOKE,smoking,ROOT,reduce,0,0,1,1,0,1,LE8_2022;PREV2019,1,Non-smoking is the target.
+F-ALCO,alcohol,ROOT,reduce,0,0,1,1,0,1,HTN2017,1,Cardio self-reported alcohol intake flag; moderation/abstinence target.
+F-ACTIVE,physical_activity,ROOT,increase,1,1,1,1,0,1,LE8_2022;PREV2019,1,Physically active is the target.
+F-CONCEPT-FLAG,concept_flag,ROOT,equal,,,,,0,1,STRUCT,0,"Ontology-as-features ablation only: ICD-10-CM block indicator appended to the model inputs; immutable."
