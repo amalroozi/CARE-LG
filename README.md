@@ -1,88 +1,48 @@
 # CARE-LG: Clinical Algorithmic Recourse via Latent Geometry
 
-**CARE-LG** finds clinically admissible recourse plans for patients flagged
-high-risk for cardiovascular disease. Given a real patient, it encodes them
-into a learned latent space, builds a graph over real training patients
-weighted by a Riemannian metric derived from the VAE decoder's own geometry,
-and searches for the cheapest path to a real, recorded low-risk patient —
-filtering every step through a neurosymbolic layer of cited clinical
-guideline rules (ACC/AHA, ADA). Patients with no admissible path are not
-given a generic error — they receive a certified-infeasibility
-classification and a semifactual explanation grounded in an exhaustive
-check of every real alternative.
+### **[▶ Open the final report](https://htmlpreview.github.io/?https://github.com/amalroozi/CARE-LG/blob/main/experiment_final/results/report_final.html)**
 
-This repository went through a multi-session investigation (see
-`docs/HISTORY.md`) that found and fixed two code-level bugs which had let
-early versions silently accept clinically unsafe plans. **`src/` is the
-current, corrected implementation** — the investigation that produced it is
-preserved in `archive/` as historical record, not as active code.
+The report shows one patient's recommendation plan, the CARE-LG architecture, the patient in the rule-pruned latent graph, and all final results.
 
-## Current results (real data, 5 seeds — see `docs/FINDINGS.md` for full detail)
+## What CARE-LG does
 
-| Dataset | Success rate | Real-world constraint violation | Certified infeasible (of abstentions) |
-|---|---|---|---|
-| UCI Heart | 38.6% ± 13.1% | **0.00% ± 0.00%** | 87.9% |
-| Real NHANES (PCE-labeled) | 37.7% ± 3.4% | **0.00% ± 0.00%** | 98.5% |
+For every high-risk cardiovascular patient, CARE-LG returns one of three outcomes, together with an ordered, contraindication-free treatment plan:
 
-Read plainly: when CARE-LG finds a plan, it is real-world constraint-safe
-with no exceptions found across 4,500+ evaluations. It does not find a plan
-for roughly 6 in 10 high-risk patients — and for the large majority of
-those, an exhaustive check confirms no safe single-step plan actually
-exists in the data, rather than the search having simply failed to find one.
+1. **Tier 1: certified real.** A safe path to a real, recorded lower-risk patient, found by Dijkstra on a rule-pruned latent graph and certified by a clingo logic program.
+2. **Tier 2: guided synthetic.** If no real patient is reachable, an ontology-guided genetic search for a new, valid, plausible profile.
+3. **Tier 3: certified none.** An exhaustive proof that no safe real target exists, with the closest miss.
 
-## Install
+A learned risk model and latent graph are constrained and guided by medical rules (an ICD-10-CM ontology with inherited guideline rules): the neurosymbolic part.
+
+## Results (5 seeds)
+
+| Dataset | High-risk test patients | Admissible recourse (Tier 1 + 2) | Tier 1 (certified real) | Tier 3 (certified none) | Tier-1 real-value violations | Contraindicated cards |
+|---|---|---|---|---|---|---|
+| NHANES 1999-2023 | 15,002 | 96.4% | 63.1% | 3.6% | 0 | 0 |
+| NHANES 2017-2020 | 2,151 | 83.7% | 40.0% | 16.3% | 0 | 0 |
+| Kaggle CVD-8k | 3,296 | 99.9% | 98.8% | 0.1% | 0 | 0 |
+| UCI Heart | 115 | 95.8% | 26.0% | 4.2% | 0 | 0 |
+
+Kaggle CVD-8k is an 8,000-patient stratified subsample of the Kaggle Cardiovascular Disease dataset (Ulianova 2019). All numbers are means over 5 seeds.
+
+## Install and run
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Run it
-
-**Single-patient report** (no server; trains models, writes and opens an
-HTML report explaining every pipeline stage for that one real patient):
+From the repo root:
 ```bash
-python -m scripts.run_single_patient --dataset uci --seed 0 --patient_idx 0
+.venv/bin/python -m pytest experiment_final                  # tests
+.venv/bin/python -m experiment_final.src.build_report        # rebuild the final report
+.venv/bin/python -m experiment_final.src.narrate --tier 2    # print one patient's plan (tiers 1, 2, 3)
+open experiment_final/results/report_final.html              # open the report locally
 ```
-
-**Interactive UI** (patient selector, risk gauge, preference control,
-step-by-step plan with guideline citations, abstention explanations):
-```bash
-python -m uvicorn ui.server:app --host 127.0.0.1 --port 8731
-# open http://127.0.0.1:8731/
-```
-
-**Reproduce the findings** (5 seeds, both datasets — ~10 min):
-```bash
-python -m scripts.run_grid --datasets uci nhanes_real --seeds 0 1 2 3 4
-python -m scripts.run_blindspot --datasets uci nhanes_real --seeds 0 1 2 3 4
-python -m scripts.run_classifier_audit
-python -m pytest tests/
-```
+Commands for showing a different patient are at the top of `RUNNING_THE_PROJECT.md`.
 
 ## Where things are
 
-- **`src/`** — the current implementation: `classifier/` (risk model),
-  `vae/` (type-aware VAE), `graph/` (CALG construction + Riemannian metric
-  + neurosymbolic admissibility layer), `recourse/` (search, explanations,
-  preference elicitation), `reporting/` (single-patient HTML report).
-- **`scripts/`** — entry points that reproduce every result in `docs/FINDINGS.md`.
-- **`ui/`** — the local interactive UI.
-- **`tests/`** — regression tests, including the entry-gate/interior-gate
-  symmetry check (`test_gate_symmetry.py`) that guards against the bug this
-  project's central fix addressed.
-- **`docs/`** — `FINDINGS.md` (current results), `METHOD.md` (method
-  description, including the neurosymbolic rule base with citations),
-  `HISTORY.md` (how the project got here, in plain language),
-  `CLASSIFIER_AUDIT.md`, `DATA_PROVENANCE.md`.
-- **`results/`** — current, reproducible output (tables, figures, the full
-  HTML report, two example single-patient reports).
-- **`archive/investigation_v2_to_v6/`** — the full six-session
-  investigation that led to `src/`, preserved as historical record. Not
-  meant to be run from its new location; read `docs/HISTORY.md` first.
-
-## Requirements
-
-Python 3.11, PyTorch 2.0+. `clingo` (ASP solver for the neurosymbolic
-layer), `shap` (explanations), and `fastapi`/`uvicorn` (UI) are all in
-`requirements.txt` and install cleanly with no compiler step.
+- **`experiment_final/`**: the final project (`src/` pipeline, `adapters/` datasets, `knowledge/` clinical rule and intervention tables, `tests/`, `results/`, `MD files/` documentation). Start with its `README.md`.
+- **`src/`**: the VAE, graph and baseline code that the final project builds on.
+- **`RUNNING_THE_PROJECT.md`**: all commands.
