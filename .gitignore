@@ -42,3 +42,18 @@ CHANGES.md
 references/
 results/
 docs/
+external_baselines/
+external_datasets/
+experiment_final/results/run_full_nhanes/
+experiment_final/results/tables/
+experiment_final/results/run_view/
+experiment_final/results/*.log
+experiment_final/MD files/
+experiment_final/data/
+CLAUDE.md
+RUNNING_THE_PROJECT.md
+CHANGES.md
+.claude/
+references/
+results/
+docs/
