@@ -46,3 +46,5 @@ Commands for showing a different patient are at the top of `RUNNING_THE_PROJECT.
 - **`experiment_final/`**: the final project (`src/` pipeline, `adapters/` datasets, `knowledge/` clinical rule and intervention tables, `tests/`, `results/`, `MD files/` documentation). Start with its `README.md`.
 - **`src/`**: the VAE, graph and baseline code that the final project builds on.
 - **`RUNNING_THE_PROJECT.md`**: all commands.
+
+### ▶ [CARE-LG Pipeline](https://amalroozi.github.io/CARE-LG/pipeline.html)
