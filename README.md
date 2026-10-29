@@ -1,5 +1,7 @@
 # CARE-LG: Clinical Algorithmic Recourse via Latent Geometry
-### ▶ [CARE-LG Pipeline](https://amalroozi.github.io/CARE-LG/docs/pipeline.html)
+
+### **[▶ CARE-LG Pipeline](https://amalroozi.github.io/CARE-LG/docs/pipeline.html)**
+
 ### **[▶ Open the final report](https://htmlpreview.github.io/?https://github.com/amalroozi/CARE-LG/blob/main/experiment_final/results/report_final.html)**
 
 The report shows one patient's recommendation plan, the CARE-LG architecture, the patient in the rule-pruned latent graph, and all final results.
