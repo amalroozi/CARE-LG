@@ -1,0 +1,5 @@
+dataset,n,tier1_paths,real_violation_any_node,real_violation_endpoint,certificates_ok,mean_hops
+cardio,3296,3255,0,0,3255,1.3824884792626728
+nhanes,2151,857,0,0,857,1.0233372228704785
+nhanes_pooled,15002,9471,0,0,9471,1.054376517791152
+uci,115,29,0,0,29,1.0689655172413792
